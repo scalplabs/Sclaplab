@@ -1,13 +1,4 @@
-<!doctype html>
-<html lang="ko">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#090c12">
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px}img{max-width:100%}</style>
-</head>
-<body>
-<title>스캘프 랩</title>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090c12"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px}img{max-width:100%}</style></head><body><title>스캘프 랩</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@1,800&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
@@ -262,7 +253,7 @@ td .sub{display:block;color:var(--muted);font-size:10.5px;font-family:var(--f-nu
 .empty-state{padding:26px 16px;text-align:center;color:var(--muted);font-size:12.5px;line-height:1.6}
 
 /* toasts */
-.toasts{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 64px);z-index:60;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none;width:min(92vw,380px)}
+.toasts{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 64px);z-index:88;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none;width:min(92vw,380px)}
 .toast{background:var(--panel-2);border:1px solid var(--line-2);border-left:3px solid var(--gold);border-radius:6px;padding:9px 12px;font-size:12.5px;box-shadow:0 10px 30px rgba(0,0,0,.45);animation:tin .2s ease-out;width:100%}
 .toast.buy{border-left-color:var(--up)}.toast.sell{border-left-color:var(--down)}
 .toast b{font-weight:700}
@@ -411,7 +402,7 @@ td .sub{display:block;color:var(--muted);font-size:10.5px;font-family:var(--f-nu
 .my-grid small{font-size:10px;color:var(--muted)}
 .my-set{display:flex;flex-direction:column;gap:8px;padding-top:4px}
 .nickrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px}
-.nickrow input{height:38px;background:var(--bg);border:1px solid var(--line-2);border-radius:6px;color:var(--fg);padding:0 10px;font:600 13px var(--f-ui);outline:none;min-width:0}
+.nickrow input{height:44px;background:var(--bg);border:1px solid var(--line-2);border-radius:6px;color:var(--fg);padding:0 12px;font:600 16px var(--f-ui);outline:none;min-width:0}
 .nickrow input:focus{border-color:var(--gold)}
 .nickrow button{padding:0 14px;border-radius:6px;background:var(--gold);color:#1a1205;font-weight:700;font-size:12.5px}
 .my-set .reset{align-self:flex-start}
@@ -571,6 +562,162 @@ td .sub{display:block;color:var(--muted);font-size:10.5px;font-family:var(--f-nu
 .loading{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--bg);color:var(--muted);font-size:13px}
 .spin{width:16px;height:16px;border-radius:50%;border:2px solid var(--line-2);border-top-color:var(--gold);animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+/* v12: 레버리지 · 상점 · 명예의 전당 */
+.levrow{display:flex;flex-direction:column;align-items:stretch;gap:5px}
+.levrow .fl{margin:0}
+.levseg{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;background:var(--bg);border:1px solid var(--line-2);border-radius:6px;padding:2px}
+.levseg button{min-width:0;padding:6px 0;border-radius:4px;font:600 11.5px var(--f-num);color:var(--muted)}
+.levseg button.on{background:var(--panel-2);color:var(--fg);box-shadow:inset 0 0 0 1px var(--line-2)}
+.levrow.hot .levseg button.on{color:#ff9f45;box-shadow:inset 0 0 0 1px #ff9f45;background:rgba(255,159,69,.1)}
+.lev{color:#ff9f45}
+#levM span:first-child,#levL span:first-child{white-space:nowrap}
+#levLv{font-size:12px}
+.sidetag{display:inline-block;font:700 10px var(--f-ui);border-radius:3px;padding:0 4px;margin-left:6px;vertical-align:1px}.sidetag.long{color:var(--up);background:rgba(246,70,93,.14)}.sidetag.short{color:var(--down);background:rgba(56,132,255,.16)}
+.sides button small{font-size:11px;opacity:.75;font-weight:600}
+.levtag{display:inline-block;font:700 10px var(--f-num);color:#ff9f45;border:1px solid rgba(255,159,69,.55);border-radius:3px;padding:0 4px;margin-left:6px;vertical-align:1px}
+.coin{color:var(--gold);font-weight:700}
+.pix{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
+.pix.head{width:72px;height:auto}
+.pix.mid{width:144px;max-width:100%;height:auto;margin:4px auto 0}
+.pix.big{width:192px;max-width:100%;height:auto}
+.rk-car{display:flex;align-items:center;justify-content:center;width:72px}
+.rk-car .pix{width:72px;height:auto;border-radius:0;background:none}
+.rk-row{grid-template-columns:24px 72px minmax(0,1fr) auto}
+.rk-face{width:32px;height:32px;border-radius:50%;justify-self:center}
+.rk-ava{justify-self:center}
+.my-carslot{flex:none;display:flex;align-items:center}
+.my-nocar{font-size:10.5px;color:var(--dim);border:1px dashed var(--line-2);border-radius:6px;padding:8px 10px}
+.my-id b{font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.my-id b.none{color:var(--muted);font-weight:600}
+.nick-edit{align-self:flex-start;font-size:12px;font-weight:600;color:var(--gold);padding:3px 0}
+.nickrow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px;padding:0 16px 12px}
+.nickrow input{height:44px;font-size:16px}
+.nickrow button{min-width:58px;font-size:14px}
+.nickrow button.ghost{background:var(--panel-2);color:var(--fg);border:1px solid var(--line-2)}
+.my-tabs{grid-template-columns:repeat(4,1fr)}
+.pseg.three{grid-template-columns:1fr .8fr 1.2fr}
+.hall-h{margin:6px 0 2px;font-size:13px;color:var(--muted);font-weight:700;letter-spacing:.02em}
+.hw-row{display:grid;grid-template-columns:24px 72px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 4px;border-bottom:1px solid var(--line)}
+.hw-row.me{background:rgba(242,181,68,.07);border-radius:8px}
+.hw-w{font-weight:700;color:var(--gold);font-size:13px}
+.hd{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.hd h4{margin:0 0 6px;font-size:13px}
+.hd h4 span{color:var(--muted);font-weight:400;margin-left:4px}
+.hd ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.hd-row{display:grid;grid-template-columns:22px 72px minmax(0,1fr) auto;gap:8px;align-items:center;font-size:12.5px}
+.hd-row b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hd-row b em,.hw-row b em{font-style:normal;font-size:10px;font-weight:700;color:#1a1205;background:var(--gold);border-radius:3px;padding:0 4px;margin-left:4px}
+.medal{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:#1a1205}
+.m1 .medal{background:#f2b544}.m2 .medal{background:#cfd6e4}.m3 .medal{background:#d08a5a}
+#hallView{display:flex;flex-direction:column;gap:10px}
+.hall-empty{text-align:center;padding:28px 12px;border:1px dashed var(--line-2);border-radius:12px}
+.hall-empty b{font-size:14px}
+.hall-empty p{margin:6px 0 0;font-size:12.5px;line-height:1.6;color:var(--muted)}
+.shop-top{display:flex;flex-direction:column;gap:10px}
+.shop-me{display:flex;align-items:center;gap:14px;padding:14px;background:radial-gradient(120% 140% at 0% 100%,rgba(242,181,68,.14),transparent 60%),var(--bg);border:1px solid var(--line);border-radius:12px}
+.shop-none{width:120px;padding:18px 8px;text-align:center;font-size:11px;color:var(--dim);border:1px dashed var(--line-2);border-radius:8px}
+.shop-me .pix.big{width:144px}
+.shop-me-t{display:flex;flex-direction:column;gap:3px;min-width:0}
+.shop-me-t b{font-size:14.5px}
+.shop-me-t span{font-size:11.5px;color:var(--muted);line-height:1.5}
+.shop-coin{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;align-items:baseline;padding:10px 14px;border:1px solid rgba(242,181,68,.35);border-radius:10px;background:rgba(242,181,68,.06)}
+.shop-coin span{font-size:12px;color:var(--muted)}
+.shop-coin b{font-size:20px;color:var(--gold);text-align:right}
+.shop-coin small{grid-column:1/-1;font-size:11px;color:var(--muted)}
+.shop-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.scard{display:flex;flex-direction:column;gap:6px;padding:10px;background:var(--bg);border:1px solid var(--line);border-radius:10px}
+.scard.own{border-color:rgba(53,201,180,.45)}
+.scard.gold{background:radial-gradient(100% 100% at 50% 0%,rgba(242,201,76,.16),transparent 70%),var(--bg);border-color:rgba(242,201,76,.5)}
+.sc-t{display:flex;flex-direction:column;gap:1px;min-width:0}
+.sc-t b{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-t span{font-size:11.5px;color:var(--gold)}
+.scard.own .sc-t span{color:var(--teal)}
+.sbtn{padding:8px 0;border-radius:6px;font-size:12px;font-weight:700;background:var(--panel-2);border:1px solid var(--line-2);color:var(--fg)}
+.sbtn.buy{background:var(--gold);border-color:var(--gold);color:#1a1205}
+.sbtn.arm{background:#ff9f45;border-color:#ff9f45}
+.sbtn.on{color:var(--teal);border-color:rgba(53,201,180,.5)}
+.sbtn:disabled{opacity:.6;cursor:default}
+.my-ret{min-height:38px;flex-direction:column;flex-wrap:nowrap}
+@media (max-width:640px){
+  .my-tabs button{font-size:12.5px}
+}
+/* v14: 롱·숏 · 마을 · 서킷 */
+.navbtn{padding:0 11px 0 5px}
+.navbtn svg{stroke:var(--gold)}
+.shopbtn svg{stroke:#7ccf3a}.rankbtn svg{stroke:#f2c94c}.vilbtn svg{stroke:#35c9b4}
+.navbtn,.mybtn{white-space:nowrap;flex:none}
+@media (max-width:640px){
+  .ctrl{gap:4px;width:100%;flex-wrap:nowrap}
+  .todaybox{margin-right:auto;min-width:0}
+  .todaybox b{font-size:13px;white-space:nowrap}
+  .ctrl .mybtn{flex-direction:column;justify-content:center;gap:1px;width:50px;height:46px;padding:0;border-radius:11px;font-size:10.5px;font-weight:700;line-height:1.1}
+  .ctrl .mybtn img,.ctrl .mybtn svg{width:22px;height:22px;padding:2px;background:none}
+}
+@media (max-width:350px){.ctrl .mybtn{width:44px}}
+.mktseg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:8px 10px 0}
+.mktseg button{height:34px;border-radius:7px;border:1px solid var(--line-2);color:var(--muted);font-weight:700;font-size:13px;background:var(--bg)}
+.mktseg button small{font-size:10px;font-weight:600;opacity:.8}
+.mktseg button.on{color:var(--fg);border-color:var(--gold);background:rgba(242,181,68,.1)}
+.mktseg button[data-mk=fut].on{border-color:#ff9f45;background:rgba(255,159,69,.1)}
+.sidetag.spot{color:var(--muted);background:var(--panel-2)}
+.tpsl.short .tps-row button{letter-spacing:0}
+.sc-won{display:block;font-size:10.5px;color:var(--muted)}
+.sc-spd{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--muted);margin-top:3px}
+.sc-spd i{flex:1;max-width:60px;height:4px;border-radius:2px;background:var(--line-2);position:relative;overflow:hidden}
+.sc-spd i::after{content:"";position:absolute;inset:0;width:var(--w);background:linear-gradient(90deg,#35c9b4,#f2b544,#e5383b)}
+body.vil-on{overflow:hidden}
+.vil{position:fixed;inset:0;z-index:70;background:#0b0f17;display:flex;flex-direction:column;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);user-select:none;-webkit-user-select:none;touch-action:none}
+.vil-top{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--line);background:var(--bg)}
+.vil-back{display:inline-flex;align-items:center;gap:2px;height:34px;padding:0 12px 0 6px;border-radius:17px;border:1px solid var(--line-2);background:var(--panel);font-weight:700;font-size:12.5px}
+.vil-back svg{width:16px;height:16px;fill:none;stroke:var(--fg);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.vil-seg{display:flex;background:var(--panel);border:1px solid var(--line-2);border-radius:17px;padding:2px}
+.vil-seg button{height:28px;padding:0 12px;border-radius:14px;font-weight:700;font-size:12.5px;color:var(--muted)}
+.vil-seg button.on{background:var(--gold);color:#1a1205}
+.vil-on{margin-left:auto;font-size:11.5px;color:var(--muted);white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.vil-on.on::before{content:"";width:7px;height:7px;border-radius:50%;background:#35c9b4;box-shadow:0 0 0 3px rgba(53,201,180,.2)}
+.vil-on.err,.vil-on.solo{color:#ff9f45}
+.vil-stage{position:relative;flex:1;min-height:0}
+#vilCv{position:absolute;inset:0;width:100%;height:100%;display:block;image-rendering:pixelated}
+.vil-car{position:absolute;left:10px;top:10px;display:flex;align-items:center;gap:8px;padding:5px 10px 5px 6px;border-radius:10px;background:rgba(9,12,18,.82);border:1px solid var(--line-2);text-align:left;max-width:calc(100% - 20px)}
+.vil .vil-car img.pix{width:52px;height:auto;max-width:none}
+.vil-car b{display:block;font-size:12.5px}.vil-car small{display:block;font-size:10.5px;color:var(--muted)}
+.vc-chg{margin-left:6px;font-size:11px;font-weight:700;color:var(--gold);white-space:nowrap}
+.vc-walk{display:inline-flex;width:40px;justify-content:center;font-size:20px}
+.vil-pick{position:absolute;left:10px;top:64px;z-index:3;width:min(300px,calc(100% - 20px));max-height:calc(100% - 80px);overflow:auto;background:var(--panel-2);border:1px solid var(--line-2);border-radius:10px;padding:8px;box-shadow:0 16px 40px rgba(0,0,0,.5)}
+.vil-pick p{font-size:12px;font-weight:700;padding:4px 6px 8px}.vil-pick p small{font-weight:500;color:var(--muted);margin-left:4px}
+.vil-pick button{display:flex;align-items:center;gap:8px;width:100%;padding:6px 8px;border-radius:7px;font-size:12.5px;font-weight:600;text-align:left}
+.vil-pick button:hover{background:var(--panel)}.vil-pick button.on{background:rgba(242,181,68,.12);color:var(--gold)}
+.vil .vil-pick button img.pix{width:48px;height:auto}.vil-pick button small{margin-left:auto;color:var(--muted);font-size:11px}
+.vil-pick button.shop{justify-content:center;color:#7ccf3a;margin-top:4px;border:1px dashed var(--line-2)}
+.vil-hud{position:absolute;right:10px;top:10px;display:grid;grid-template-columns:repeat(2,auto);gap:4px 14px;padding:8px 12px;background:rgba(9,12,18,.82);border:1px solid var(--line-2);border-radius:10px}
+.vil-hud div{display:flex;flex-direction:column}.vil-hud span{font-size:10px;color:var(--muted)}.vil-hud b{font-size:13px}.vil-hud b.gold{color:var(--gold)}
+.vil-board{position:absolute;right:10px;top:100px;width:200px;padding:8px 10px;background:rgba(9,12,18,.78);border:1px solid var(--line-2);border-radius:10px;font-size:11.5px}
+.vil-board p{font-weight:700;margin-bottom:4px;font-size:11px;color:var(--muted)}
+.vil-board div{display:flex;align-items:center;gap:6px;padding:2px 0}.vil-board div.me{color:var(--gold)}
+.vil-board i{font-style:normal;width:14px;color:var(--muted)}.vil-board span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:76px}
+.vil-board small{color:var(--muted);font-size:10px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;flex:1}.vil-board b{margin-left:auto}
+.vil-log{position:absolute;left:10px;bottom:10px;width:min(360px,calc(100% - 150px));display:flex;flex-direction:column;gap:3px;pointer-events:none}
+.vil.circ .vil-log{bottom:84px}
+.vl-row{align-self:flex-start;max-width:100%;white-space:normal;overflow-wrap:anywhere;padding:4px 9px;border-radius:8px;background:rgba(9,12,18,.78);font-size:12px;line-height:1.4;transition:opacity 1.2s;word-break:break-all}
+.vl-row b{margin-right:6px;color:#9fd8ff}.vl-row.mine b{color:var(--gold)}.vl-row.sys b{color:#7ccf3a}.vl-row.sys span{color:var(--muted)}
+.vl-row.old{opacity:.0}
+.vil-act{position:absolute;left:50%;bottom:max(16px,min(150px,18%));transform:translateX(-50%);height:42px;padding:0 20px;border-radius:21px;background:var(--gold);color:#1a1205;font-weight:800;font-size:13.5px;box-shadow:0 8px 24px rgba(0,0,0,.45);animation:vpop .25s ease-out}
+@keyframes vpop{from{transform:translateX(-50%) scale(.85);opacity:0}}
+.vil-pad{position:absolute;right:12px;bottom:12px;display:grid;grid-template-columns:repeat(3,42px);grid-template-rows:repeat(3,42px);gap:3px;touch-action:none}
+.vil-pad button{width:42px;height:42px;border-radius:10px;background:rgba(24,30,42,.82);border:1px solid rgba(255,255,255,.12);color:var(--fg);font-size:14px;touch-action:none}
+.vil-pad button.on{background:var(--gold);color:#1a1205}
+.vil-pad [data-k=up]{grid-column:2;grid-row:1}.vil-pad [data-k=left]{grid-column:1;grid-row:2}.vil-pad [data-k=right]{grid-column:3;grid-row:2}.vil-pad [data-k=down]{grid-column:2;grid-row:3}
+.vil.circ .vil-pad{left:12px;right:12px;grid-template-columns:58px 58px 1fr 58px 58px;grid-template-rows:58px;gap:6px;pointer-events:none}
+.vil.circ .vil-pad button{width:58px;height:58px;pointer-events:auto;font-size:16px}
+.vil.circ .vil-pad [data-k=left]{grid-column:1;grid-row:1}.vil.circ .vil-pad [data-k=right]{grid-column:2;grid-row:1}.vil.circ .vil-pad [data-k=down]{grid-column:4;grid-row:1}.vil.circ .vil-pad [data-k=up]{grid-column:5;grid-row:1}
+.vil.circ .vil-pad [data-k=up]::after{content:"가속";display:block;font-size:9.5px}.vil.circ .vil-pad [data-k=down]::after{content:"브레이크";display:block;font-size:9.5px}
+.vil-chat{display:flex;gap:6px;padding:8px 10px;border-top:1px solid var(--line);background:var(--bg)}
+.vil-chat input{flex:1;min-width:0;height:38px;border-radius:19px;border:1px solid var(--line-2);background:var(--panel);color:var(--fg);padding:0 14px;font-size:16px;outline:none}
+.vil-chat input:focus{border-color:var(--gold)}
+.vil-chat button{height:38px;padding:0 16px;border-radius:19px;background:var(--panel-2);border:1px solid var(--line-2);font-weight:700;font-size:13px}
+@media (min-width:900px){.vil-chat input{font-size:13.5px}.vil-board{top:110px}}
+@media (max-width:640px){.vil.circ .vil-board{top:104px;width:150px}.vil.circ .vil-car small,.vil.circ .vc-chg{display:none}.vil.circ .vil-car img{width:40px}.vil-hud{gap:2px 10px;padding:6px 9px}.vil-hud b{font-size:12px}.vil-log{width:calc(100% - 160px)}.vil.circ .vil-log{width:calc(100% - 20px)}}
+
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -587,6 +734,9 @@ td .sub{display:block;color:var(--muted);font-size:10.5px;font-family:var(--f-nu
     </div>
     <div class="ctrl">
       <div class="todaybox"><span>오늘 손익</span><b class="num" id="todayPnl">0원</b></div>
+      <button class="mybtn navbtn vilbtn" id="vilBtn" aria-label="개미 마을 들어가기"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 7.5L8 3l5.5 4.5V13h-11z"/><path d="M6.5 13V9.5h3V13"/></svg><span>마을</span></button>
+      <button class="mybtn navbtn shopbtn" id="shopBtn" aria-label="상점 열기"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6.5h12l-1 7H3z"/><path d="M5.5 6.5V5a2.5 2.5 0 015 0v1.5"/></svg><span>상점</span></button>
+      <button class="mybtn navbtn rankbtn" id="rankBtn" aria-label="랭킹 보기"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2.5h6v3.5a3 3 0 01-6 0z"/><path d="M5 3.5H3a2 2 0 002 3M11 3.5h2a2 2 0 01-2 3M8 9v3M5.5 13.5h5"/></svg><span>랭킹</span></button>
       <button class="mybtn" id="myBtn" aria-label="마이페이지 열기"><img id="myAva" alt="" hidden><svg id="myIco" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5.5" r="2.8"/><path d="M2.8 14c.7-2.8 2.7-4.2 5.2-4.2s4.5 1.4 5.2 4.2"/></svg><span>마이</span></button>
     </div>
   </header>
@@ -695,9 +845,11 @@ td .sub{display:block;color:var(--muted);font-size:10.5px;font-family:var(--f-nu
     </section>
 
     <section class="panel ticket" aria-label="주문">
-      <div class="sides"><button data-side="buy" class="buy on">매수</button><button data-side="sell" class="sell">매도</button></div>
+      <div class="mktseg" id="mktSeg"><button data-mk="spot" class="on">현물</button><button data-mk="fut">선물 <small>롱·숏</small></button></div>
+      <div class="sides"><button data-side="buy" class="buy on">매수 <small>롱</small></button><button data-side="sell" class="sell">매도 <small>숏</small></button></div>
       <div class="tk">
         <div class="seg" id="typeSeg"><button data-type="limit" class="on">지정가</button><button data-type="market">시장가</button></div>
+        <div class="levrow" id="levRow"><span class="fl">레버리지</span><div class="levseg" id="levSeg"><button data-l="1" class="on">1x</button><button data-l="2">2x</button><button data-l="3">3x</button><button data-l="5">5x</button><button data-l="10">10x</button></div></div>
         <div class="row"><span id="availLabel">주문가능</span><span class="num" id="avail"></span></div>
         <label class="fl" for="inPrice">가격 (원)</label>
         <div class="stepper" id="pxBox"><button id="pxDn" aria-label="한 호가 내리기">−</button><input id="inPrice" class="num" inputmode="numeric" autocomplete="off"><button id="pxUp" aria-label="한 호가 올리기">+</button></div>
@@ -713,9 +865,11 @@ td .sub{display:block;color:var(--muted);font-size:10.5px;font-family:var(--f-nu
           </div>
         </div>
         <div class="row total"><span>주문총액</span><span class="num" id="total">0원</span></div>
+        <div class="row" id="levM" hidden><span>필요 증거금</span><span class="num" id="levMv"></span></div>
+        <div class="row" id="levL" hidden><span>반대매매가</span><span class="num down" id="levLv"></span></div>
         <button class="submit buy" id="submitBtn">매수</button>
-        <p class="fine">수수료 0.015% · 매도 시 거래세 0.18% (게임 설정)</p>
-        <p class="keys"><kbd>B</kbd> 시장가 매수 · <kbd>S</kbd> 보유분 전량 매도 · <kbd>1</kbd>~<kbd>5</kbd> 종목 전환</p>
+        <p class="fine" id="tkFine"></p>
+        <p class="keys"><kbd>B</kbd> 시장가 매수 · <kbd>S</kbd> 보유 포지션 전량 정리 · <kbd>1</kbd>~<kbd>5</kbd> 종목 전환</p>
       </div>
     </section>
 
@@ -732,6 +886,24 @@ td .sub{display:block;color:var(--muted);font-size:10.5px;font-family:var(--f-nu
   </main>
 </div>
 
+<div class="vil" id="vil" hidden>
+  <div class="vil-top">
+    <button class="vil-back" id="vilBack" aria-label="거래소로 돌아가기"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8l5 5"/></svg>거래소</button>
+    <div class="vil-seg" id="vilSeg"><button data-m="village" class="on">개미 마을</button><button data-m="circuit">서킷</button></div>
+    <span class="vil-on" id="vilOn"></span>
+  </div>
+  <div class="vil-stage">
+    <canvas id="vilCv" aria-label="위에서 내려다본 픽셀 마을"></canvas>
+    <button class="vil-car" id="vilCar" aria-label="탈 차 바꾸기"></button>
+    <div class="vil-pick" id="vilPick" hidden></div>
+    <div class="vil-hud" id="vilHud" hidden></div>
+    <div class="vil-board" id="vilBoard" hidden></div>
+    <div class="vil-log" id="vilLog" aria-live="polite"></div>
+    <button class="vil-act" id="vilAct" hidden></button>
+    <div class="vil-pad" id="vilPad" aria-label="방향 버튼"><button data-k="up" aria-label="위">▲</button><button data-k="left" aria-label="왼쪽">◀</button><button data-k="right" aria-label="오른쪽">▶</button><button data-k="down" aria-label="아래">▼</button></div>
+  </div>
+  <form class="vil-chat" id="vilChat"><input id="vilIn" maxlength="60" placeholder="채팅 (지금 접속한 사람만 봐요)" autocomplete="off" enterkeyhint="send" aria-label="채팅 입력"><button type="submit">보내기</button></form>
+</div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="sheet-bg" id="psBg" hidden>
   <div class="psheet" role="dialog" aria-modal="true" aria-labelledby="psTitle">
@@ -772,13 +944,15 @@ td .sub{display:block;color:var(--muted);font-size:10.5px;font-family:var(--f-nu
   </div>
 </div>
 <div class="my-bg" id="myBg" hidden>
-  <aside class="mypanel" role="dialog" aria-modal="true" aria-labelledby="myTitle">
+  <aside class="mypanel" role="dialog" aria-modal="true" aria-labelledby="myNickShow">
     <div class="my-head">
       <img class="my-ava" id="myAva2" alt="" hidden>
-      <div class="my-id"><b id="myTitle">내 계좌</b><span id="myNickLine"></span></div>
+      <div class="my-carslot" id="myCarSlot"></div>
+      <div class="my-id"><b id="myNickShow">닉네임 없음</b><button type="button" class="nick-edit" id="nickEdit">닉네임 정하기</button></div>
       <button type="button" class="ps-x" id="myClose" aria-label="닫기">×</button>
     </div>
-    <div class="my-tabs" id="myTabs" role="tablist"><button type="button" data-my="asset" class="on">자산</button><button type="button" data-my="pf">포트폴리오</button><button type="button" data-my="rank">랭킹</button></div>
+    <div class="nickrow" id="nickRow" hidden><input id="nickIn" maxlength="12" placeholder="랭킹에 나올 이름 (최대 12자)" autocomplete="off" enterkeyhint="done"><button type="button" id="nickSave">저장</button><button type="button" id="nickCancel" class="ghost">취소</button></div>
+    <div class="my-tabs" id="myTabs" role="tablist"><button type="button" data-my="asset" class="on">자산</button><button type="button" data-my="pf">포트폴리오</button><button type="button" data-my="rank">랭킹</button><button type="button" data-my="shop">상점</button></div>
     <div class="my-body">
       <section id="myAsset">
         <div class="my-hero"><span>총 자산</span><b id="mEq" class="num"></b><div class="my-ret num" id="mRet"></div></div>
@@ -788,8 +962,6 @@ td .sub{display:block;color:var(--muted);font-size:10.5px;font-family:var(--f-nu
         </div>
         <div class="my-grid" id="mGrid"></div>
         <div class="my-set">
-          <label class="ps-lab" for="nickIn">랭킹 닉네임</label>
-          <div class="nickrow"><input id="nickIn" maxlength="12" placeholder="최대 12자" autocomplete="off"><button type="button" id="nickSave">저장</button></div>
           <button type="button" id="resetAcct2" class="reset">계좌 초기화</button>
           <p class="my-note">계좌는 이 기기에 저장돼요. 랭킹에는 닉네임, 총자산, 수익률, 체결 횟수만 올라가요. 브라우저 데이터를 지우면 새 참가자로 다시 시작돼요.</p>
         </div>
@@ -799,10 +971,16 @@ td .sub{display:block;color:var(--muted);font-size:10.5px;font-family:var(--f-nu
         <div class="pf-list" id="pfList"></div>
       </section>
       <section id="myRank" hidden>
-        <div class="pseg" id="rkSeg"><button type="button" data-rk="all" class="on">총 수익률</button><button type="button" data-rk="today">오늘 수익률</button></div>
+        <div class="pseg three" id="rkSeg"><button type="button" data-rk="all" class="on">총 수익률</button><button type="button" data-rk="today">오늘</button><button type="button" data-rk="hall">명예의 전당</button></div>
         <p class="rk-msg" id="rkMsg"></p>
         <ol class="rk-list" id="rkList"></ol>
         <div class="rk-me" id="rkMe"></div>
+        <div id="hallView" hidden></div>
+      </section>
+      <section id="myShop" hidden>
+        <div class="shop-top" id="shopTop"></div>
+        <div id="shopList"></div>
+        <p class="my-note">차는 꾸미기 아이템이에요. 매매 자금이나 수익률에는 영향을 주지 않아요. 브랜드와 차종은 모두 가상이에요.</p>
       </section>
     </div>
   </aside>
@@ -880,13 +1058,21 @@ const nextDn = p => p - tickSize(p - 1);
 
 let syms = [], active = 0;
 const A = {}, G = { loading: true, catchup: null, news: [], at: 0 };
-const U = { side: 'buy', type: 'limit', price: 0, follow: true, tab: 'pos', zoom: 8, hover: null, tf: '1', off: 0, tool: 'cursor', draft: null, sel: null, magnet: true, ind: { ma: true, bb: false, vwap: false, sub: 'none' }, style: 'candle', yScale: 1, lineDrag: null, bt: 'book', hideDraw: false, hoverDraw: null, textEdit: null, ov: { sr: false, fib: false, ch: false }, fit: true };
+const U = { side: 'buy', type: 'limit', price: 0, follow: true, tab: 'pos', zoom: 8, hover: null, tf: '1', off: 0, tool: 'cursor', draft: null, sel: null, magnet: true, ind: { ma: true, bb: false, vwap: false, sub: 'none' }, style: 'candle', yScale: 1, yOff: 0, mkt: 'spot', lineDrag: null, bt: 'book', hideDraw: false, hoverDraw: null, textEdit: null, ov: { sr: false, fib: false, ch: false }, fit: true, lev: 1 };
+try { if (localStorage.getItem('scalplab.mkt') === 'fut') U.mkt = 'fut'; } catch (e) {}
+try { const l = +localStorage.getItem('scalplab.lev'); if ([1, 2, 3, 5, 10].includes(l)) U.lev = l; } catch (e) {}
 try { const o = JSON.parse(localStorage.getItem('scalplab.ov') || 'null'); if (o) Object.assign(U.ov, o); } catch (e) {}
 try { const o = JSON.parse(localStorage.getItem('scalplab.ind') || 'null'); if (o) { Object.assign(U.ind, o.ind || {}); if (o.style) U.style = o.style; } } catch (e) {}
 let timer = null, dirty = true, lastPrice = 0;
 
 const cur = () => syms[active];
-const bySym = code => syms.find(s => s.code === code);
+// 선물은 같은 종목·같은 시세의 별도 상품: code에 @F를 붙인 키로 따로 보유한다
+const FSYM = {};
+function fsym(s) { const c = FSYM[s.code]; if (c && c.base === s) return c; return (FSYM[s.code] = Object.create(s, { code: { value: s.code + '@F' }, base: { value: s }, fut: { value: true } })); }
+const baseSym = s => (s && s.base) || s;
+const bySym = code => { const f = /@F$/.test(code), s = syms.find(x => x.code === (f ? code.slice(0, -2) : code)); return f && s ? fsym(s) : s; };
+const curT = () => U.mkt === 'fut' ? fsym(cur()) : cur();
+const nmOf = s => s.name + (s.fut ? ' 선물' : '');
 const askOf = s => nextUp(s.price);
 const bidOf = s => s.price;
 
@@ -1171,7 +1357,7 @@ function applyTrade(s, T, p, q, buyer, live) {
     s.flow.push(buyer ? [q, 0] : [0, q]); if (s.flow.length > 120) s.flow.shift();
     s.tape.unshift({ sec: T, p, q, b: buyer }); if (s.tape.length > 30) s.tape.length = 30;
   }
-  if (T > (A.lastSeen || 0)) { G.at = T; processOrders(s); checkStops(s); checkAlerts(s); G.at = 0; }
+  if (T > (A.lastSeen || 0)) { G.at = T; processOrders(s); checkStops(s); checkAlerts(s); const F = fsym(s); processOrders(F); checkStops(F); G.at = 0; }
 }
 function newDisplayDay(s, day, p) {
   if (s.dispDay != null) {
@@ -1214,7 +1400,7 @@ function advance(s, T) {
 function microTick() {
   const T = nowSec();
   const day = Math.floor(T / DAY_SEC);
-  if (day !== TODAY_DAY) { TODAY_DAY = day; A.dayKey = day; A.dayStartEq = equity(); }
+  if (day !== TODAY_DAY) { TODAY_DAY = day; A.dayKey = day; A.dayStartEq = equity(); attendance(); MY.hallAt = 0; }
   for (const s of syms) {
     advance(s, T);
     const rem = Math.max(.05, s.tB - T), dt = Math.min(rem, Math.max(.05, T - s.dispT));
@@ -1274,85 +1460,154 @@ function saveNow() {
 }
 function saveSoon() { const t = Date.now(); if (t - saveT > 3000) { saveT = t; saveNow(); } }
 function loadSaved() { try { return JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); } catch (e) { return null; } }
-function freshAccount() { return { cash: SEED, pos: {}, orders: [], fills: [], realized: 0, costs: 0, sells: 0, wins: 0, oid: 1, lastSeen: 0, since: nowSec(), hist: [] }; }
+function freshAccount() { return { cash: SEED, pos: {}, orders: [], fills: [], realized: 0, costs: 0, sells: 0, wins: 0, oid: 1, lastSeen: 0, since: nowSec(), hist: [], coins: 500, cars: [], car: '' }; }
+const LEVS = [1, 2, 3, 5, 10], MMR = 0.02;            // 유지증거금률 2%: 내 돈(증거금+평가손익)이 평가액의 2% 밑이면 반대매매
+/* 포지션 한 종목 = 롱 또는 숏 하나 (원웨이 모드)
+   롱: qty, avg(수수료 포함 매입단가), debt(빌린 돈)        → 내 몫 = qty×가격 − debt
+   숏: qty, avg(수수료·세금 뺀 실제 매도단가), margin(증거금) → 내 몫 = margin + (avg − 가격)×qty */
+const isShort = p => !!p && p.side === 'short';
+const sideKo = p => isShort(p) ? '숏' : '롱';
+const posEq = (p, P) => isShort(p) ? p.margin + (p.avg - P) * p.qty : p.qty * P - (p.debt || 0);
+const posPnl = (p, P) => isShort(p) ? (p.avg - P) * p.qty : (P - p.avg) * p.qty;
+const closePnl = (p, px, q) => isShort(p) ? (p.avg - px * (1 + FEE)) * q : (px * (1 - FEE - TAX) - p.avg) * q;
+const posRet = (p, P) => p.avg ? (isShort(p) ? p.avg / P - 1 : P / p.avg - 1) : 0;
+const levOf = p => !p || !p.qty ? 1 : isShort(p) ? (p.avg * p.qty) / Math.max(1, p.margin) : p.debt > 0 ? (p.avg * p.qty) / Math.max(1, p.avg * p.qty - p.debt) : 1;
+const levTxt = p => { const l = levOf(p); return 'x' + (l >= 9.95 ? 10 : Math.round(l * 10) / 10); };
+const isLev = p => !!p && (isShort(p) || p.debt > 0);
+function liqOf(p) {
+  if (!p || !p.qty) return 0;
+  if (isShort(p)) return (p.margin + p.avg * p.qty) / (p.qty * (1 + MMR));
+  return p.debt > 0 ? p.debt / (p.qty * (1 - MMR)) : 0;
+}
+// 지금 이 쪽(buy/sell) 주문이 새 포지션을 여는지, 있는 포지션을 줄이는지
+function intentOf(s, side) {
+  if (!s.fut) return side === 'buy' ? 'L+' : 'L-';                // 현물은 사고팔기만
+  const p = A.pos[s.code];
+  if (side === 'buy') return isShort(p) && p.qty > 0 ? 'S-' : 'L+';
+  return p && !isShort(p) && p.qty > 0 ? 'L-' : 'S+';
+}
+const INTENT_KO = { 'L+': '롱 진입', 'L-': '롱 정리', 'S+': '숏 진입', 'S-': '숏 정리' };
 
 /* ---------- account ---------- */
 function equity() {
   let e = A.cash;
-  for (const o of A.orders) if (o.side === 'buy') e += o.reserve;
-  for (const c in A.pos) e += A.pos[c].qty * bySym(c).price;
+  for (const o of A.orders) if (o.reserve) e += o.reserve;
+  for (const c in A.pos) e += posEq(A.pos[c], bySym(c).price);
   return e;
 }
-function posOf(code) { return A.pos[code] || (A.pos[code] = { qty: 0, avg: 0, locked: 0 }); }
+function posOf(code, side = 'long') { return A.pos[code] || (A.pos[code] = side === 'short' ? { side: 'short', qty: 0, avg: 0, locked: 0, margin: 0 } : { qty: 0, avg: 0, locked: 0, debt: 0 }); }
 function cleanPos(code) { const p = A.pos[code]; if (p && p.qty <= 0 && p.locked <= 0) delete A.pos[code]; }
+const closable = p => p ? p.qty - p.locked : 0;
 
-function addBuy(s, q, px, stops) {
+function addBuy(s, q, px, stops, borrow = 0) {
   const p = posOf(s.code), fee = px * q * FEE;
+  p.debt = (p.debt || 0) + borrow;
   p.avg = (p.avg * p.qty + px * q + fee) / (p.qty + q);
   p.qty += q; A.costs += fee;
-  recordFill(s, 'buy', px, q, null);
+  recordFill(s, 'buy', px, q, null, 0, s.fut ? '롱 진입' : '매수');
   applyStops(s, stops);
 }
-function doSell(s, q, px) {
-  const p = A.pos[s.code];
-  const gross = px * q, cost = gross * (FEE + TAX), proceeds = gross - cost;
-  const pnl = proceeds - p.avg * q;
-  p.qty -= q; A.cash += proceeds; A.realized += pnl; A.costs += cost; A.sells++;
+function addShort(s, q, px, margin, stops) {
+  const p = posOf(s.code, 'short'), net = px * (1 - FEE - TAX);
+  p.avg = (p.avg * p.qty + net * q) / (p.qty + q);
+  p.qty += q; p.margin += margin; A.costs += px * q * (FEE + TAX);
+  recordFill(s, 'sell', px, q, null, 0, '숏 진입');
+  applyStops(s, stops);
+}
+function finishClose(s, pnl, px, q, side, tag) {
+  A.realized += pnl; A.sells++;
   if (pnl > 0) A.wins++;
-  recordFill(s, 'sell', px, q, pnl);
+  const earned = pnl > 0 ? Math.floor(pnl / 1000) : 0;          // 수익 1,000원당 1코인
+  if (earned) A.coins = (A.coins || 0) + earned;
+  recordFill(s, side, px, q, pnl, earned, tag);
   cleanPos(s.code);
 }
-function recordFill(s, side, px, q, pnl) {
+function doSell(s, q, px) {                                      // 롱 정리
+  const p = A.pos[s.code];
+  const gross = px * q, cost = gross * (FEE + TAX), proceeds = gross - cost;
+  const pnl = proceeds - p.avg * q, repay = p.debt ? p.debt * q / p.qty : 0;
+  p.qty -= q; A.cash += proceeds - repay; A.costs += cost;
+  if (repay) p.debt = p.qty > 0 ? Math.max(0, p.debt - repay) : 0;
+  finishClose(s, pnl, px, q, 'sell', s.fut ? '롱 정리' : '매도');
+}
+function doCover(s, q, px) {                                     // 숏 정리 (되사기)
+  const p = A.pos[s.code];
+  const fee = px * q * FEE, pnl = (p.avg - px) * q - fee, mShare = p.margin * q / p.qty;
+  p.qty -= q; p.margin = p.qty > 0 ? Math.max(0, p.margin - mShare) : 0;
+  A.cash += mShare + pnl; A.costs += fee;
+  finishClose(s, pnl, px, q, 'buy', '숏 정리');
+}
+function closeAt(s, q, px) { const p = A.pos[s.code]; if (!p) return; if (isShort(p)) doCover(s, q, px); else doSell(s, q, px); }
+function recordFill(s, side, px, q, pnl, earned, tag) {
   const T = G.at || nowSec();
   s.tape.unshift({ sec: T, p: px, q, b: side === 'buy', mine: true }); if (s.tape.length > 30) s.tape.length = 30;
-  A.fills.unshift({ code: s.code, name: s.name, side, px, q, pnl, ts: Math.floor(T / 60) });
+  A.fills.unshift({ code: s.code, name: nmOf(s), side, px, q, pnl, ts: Math.floor(T / 60), tag: tag || '' });
   if (A.fills.length > 300) A.fills.length = 300;
   RK.want = true;
-  const msg = `<b>${side === 'buy' ? '매수' : '매도'} 체결</b> · ${s.name} ${won(q)}주 @ ${won(px)}원` + (pnl != null ? ` · <span class="${cls(pnl)}">${sgnWon(pnl)}원</span>` : '');
+  const msg = `<b>${tag || (side === 'buy' ? '매수' : '매도')} 체결</b> · ${nmOf(s)} ${won(q)}주 @ ${won(px)}원` + (pnl != null ? ` · <span class="${cls(pnl)}">${sgnWon(pnl)}원</span>` : '') + (earned ? ` · <span class="coin">+${won(earned)}코인</span>` : '');
   if (G.catchup) G.catchup.push(msg); else toast(msg, side);
   saveSoon();
 }
 
-function marketBuy(s, q, stops) {
-  const px = askOf(s), need = px * q * (1 + FEE);
+// 시장가 매수: 숏이 있으면 되사기(정리), 없으면 롱 진입
+function marketBuy(s, q, stops, lev = 1) {
+  if (!s.fut) lev = 1;
+  const p = A.pos[s.code], px = askOf(s);
+  if (isShort(p) && p.qty > 0) {
+    if (q > closable(p)) return toast(`숏 ${won(closable(p))}주까지만 되살 수 있어요. 롱으로 바꾸려면 숏을 먼저 정리해 주세요.`);
+    doCover(s, q, px); saveNow(); return true;
+  }
+  const margin = px * q / lev, need = margin + px * q * FEE;
   if (need > A.cash + 1e-6) return toast('주문가능 금액이 부족해요. 수량을 줄여 보세요.');
   A.cash -= need;
-  addBuy(s, q, px, stops);
+  addBuy(s, q, px, stops, px * q - margin);
   saveNow();
   return true;
 }
-function marketSell(s, q) {
-  const p = A.pos[s.code], avail = p ? p.qty - p.locked : 0;
-  if (q > avail) return toast(`매도 가능 수량은 ${won(avail)}주예요.`);
-  doSell(s, q, bidOf(s));
+// 시장가 매도: 롱이 있으면 정리, 없으면 숏 진입
+function marketSell(s, q, stops, lev = 1) {
+  if (!s.fut) lev = 1;
+  const p = A.pos[s.code], px = bidOf(s);
+  if (!s.fut && !(p && p.qty > 0)) return toast('현물은 가진 주식만 팔 수 있어요. 숏(공매도)은 선물 탭에서 해요.');
+  if (p && !isShort(p) && p.qty > 0) {
+    if (q > closable(p)) return toast(s.fut ? `롱 ${won(closable(p))}주까지만 팔 수 있어요. 숏으로 바꾸려면 롱을 먼저 정리해 주세요.` : `매도 가능 수량은 ${won(closable(p))}주예요.`);
+    doSell(s, q, px); saveNow(); return true;
+  }
+  const margin = px * q / lev;
+  if (margin > A.cash + 1e-6) return toast('주문가능 금액이 부족해요. 수량을 줄여 보세요.');
+  A.cash -= margin;
+  addShort(s, q, px, margin, stops);
   saveNow();
   return true;
 }
-function placeLimit(s, side, price, q, stops, quiet) {
+function marketClose(s, q) { const p = A.pos[s.code]; if (!p) return false; return isShort(p) ? marketBuy(s, q) : marketSell(s, q); }
+
+function placeLimit(s, side, price, q, stops, quiet, lev = 1) {
+  if (!s.fut) lev = 1;
   if (!(price > 0)) return toast('주문 가격을 확인해 주세요.');
   if (price % tickSize(price) !== 0) return toast(`${won(tickSize(price))}원 단위로 입력해 주세요.`);
-  if (side === 'buy') {
-    if (price >= askOf(s)) return marketBuy(s, q, stops);
-    const reserve = price * q * (1 + FEE);
+  const intent = intentOf(s, side), p = A.pos[s.code];
+  if (side === 'buy' && price >= askOf(s)) return marketBuy(s, q, stops, lev);
+  if (side === 'sell' && price <= bidOf(s)) return marketSell(s, q, stops, lev);
+  const o = { id: A.oid++, code: s.code, side, intent, price, q, ts: clockMin(), stops, lev };
+  if (intent === 'L+' || intent === 'S+') {
+    const reserve = price * q * (1 / lev + (intent === 'L+' ? FEE : 0));
     if (reserve > A.cash + 1e-6) return toast('주문가능 금액이 부족해요. 수량을 줄여 보세요.');
-    A.cash -= reserve;
-    A.orders.push({ id: A.oid++, code: s.code, side, price, q, reserve, ts: clockMin(), stops });
+    A.cash -= reserve; o.reserve = reserve;
   } else {
-    const p = A.pos[s.code], avail = p ? p.qty - p.locked : 0;
-    if (q > avail) return toast(`매도 가능 수량은 ${won(avail)}주예요.`);
-    if (price <= bidOf(s)) return marketSell(s, q);
+    if (q > closable(p)) return toast(!s.fut ? (closable(p) ? `매도 가능 수량은 ${won(closable(p))}주예요.` : '현물은 가진 주식만 팔 수 있어요. 숏(공매도)은 선물 탭에서 해요.') : `${sideKo(p)} ${won(closable(p))}주까지만 정리 주문을 넣을 수 있어요.`);
     p.locked += q;
-    A.orders.push({ id: A.oid++, code: s.code, side, price, q, ts: clockMin() });
   }
-  if (!quiet) toast(`<b>주문 접수</b> · ${s.name} ${won(q)}주 ${won(price)}원 ${side === 'buy' ? '매수' : '매도'} 대기`, side);
+  A.orders.push(o);
+  if (!quiet) toast(`<b>주문 접수</b> · ${nmOf(s)} ${won(q)}주 ${won(price)}원 ${s.fut ? INTENT_KO[intent] : side === 'buy' ? '매수' : '매도'}${lev > 1 && o.reserve ? ' x' + lev : ''} 대기`, side);
   saveNow();
   return true;
 }
 function cancelOrder(id, silent) {
   const i = A.orders.findIndex(o => o.id === id); if (i < 0) return;
   const o = A.orders[i]; A.orders.splice(i, 1);
-  if (o.side === 'buy') A.cash += o.reserve;
-  else { const p = A.pos[o.code]; if (p) { p.locked -= o.q; cleanPos(o.code); } }
+  if (o.reserve) A.cash += o.reserve;
+  else { const p = A.pos[o.code]; if (p) { p.locked = Math.max(0, p.locked - o.q); cleanPos(o.code); } }
   if (!silent) toast(`주문 취소 · ${bySym(o.code).name} ${won(o.q)}주`);
   saveNow();
   dirty = true;
@@ -1360,36 +1615,51 @@ function cancelOrder(id, silent) {
 function processOrders(s) {
   for (const o of A.orders.slice()) {
     if (o.code !== s.code) continue;
-    if (o.side === 'buy' && s.price <= o.price) {
-      A.orders.splice(A.orders.indexOf(o), 1);
-      A.cash += o.reserve - o.price * o.q * (1 + FEE);
-      addBuy(s, o.q, o.price, o.stops);
-    } else if (o.side === 'sell' && s.price >= o.price) {
-      A.orders.splice(A.orders.indexOf(o), 1);
-      A.pos[o.code].locked -= o.q;
-      doSell(s, o.q, o.price);
+    const hit = o.side === 'buy' ? s.price <= o.price : s.price >= o.price;
+    if (!hit) continue;
+    A.orders.splice(A.orders.indexOf(o), 1);
+    const intent = o.intent || (o.side === 'buy' ? 'L+' : 'L-'), lv = o.lev || 1, p = A.pos[s.code];
+    if (intent === 'L+') {
+      if (isShort(p)) { A.cash += o.reserve; continue; }               // 그사이 숏이 생겼으면 취소
+      A.cash += o.reserve - o.price * o.q * (1 / lv + FEE);
+      addBuy(s, o.q, o.price, o.stops, o.price * o.q * (1 - 1 / lv));
+    } else if (intent === 'S+') {
+      if (p && !isShort(p)) { A.cash += o.reserve; continue; }
+      addShort(s, o.q, o.price, o.reserve, o.stops);
+    } else {
+      if (!p) continue;
+      p.locked = Math.max(0, p.locked - o.q);
+      const q = Math.min(o.q, p.qty); if (q > 0) closeAt(s, q, o.price); else cleanPos(s.code);
     }
   }
 }
 
 /* ---------- 익절·손절 · 정정 ---------- */
+// 롱은 익절이 위·손절이 아래, 숏은 반대
+const tpHit = (p, P, v) => isShort(p) ? P <= v : P >= v;
+const slHit = (p, P, v) => isShort(p) ? P >= v : P <= v;
+function stopErr(p, key, price, P, what = '현재가') {
+  const up = (key === 'tp') !== isShort(p);                      // 롱 익절·숏 손절은 위쪽
+  if (up && price <= P) return `${key === 'tp' ? '익절' : '손절'}가는 ${what}보다 높아야 해요${isShort(p) ? ' (숏)' : ''}.`;
+  if (!up && price >= P) return `${key === 'tp' ? '익절' : '손절'}가는 ${what}보다 낮아야 해요${isShort(p) ? ' (숏)' : ''}.`;
+  return '';
+}
 function setStop(s, key, price, quiet) {
   const p = A.pos[s.code]; if (!p) return false;
   price = roundTick(price);
-  if (key === 'tp' && price <= s.price) { toast('익절가는 현재가보다 높아야 해요.'); return false; }
-  if (key === 'sl' && price >= s.price) { toast('손절가는 현재가보다 낮아야 해요.'); return false; }
+  const err = stopErr(p, key, price, s.price); if (err) { toast(err); return false; }
   p[key] = price;
-  if (!quiet) toast(`<b>${key === 'tp' ? '익절' : '손절'} 설정</b> · ${s.name} ${won(price)}원 (${pctS(price / p.avg - 1)})`);
+  if (!quiet) toast(`<b>${key === 'tp' ? '익절' : '손절'} 설정</b> · ${s.name} ${sideKo(p)} ${won(price)}원 (${pctS(posRet(p, price))})`);
   fillStopsInputs(); saveNow(); dirty = true; return true;
 }
 function applyStops(s, st) { if (!st) return; if (st.tp) setStop(s, 'tp', st.tp, true); if (st.sl) setStop(s, 'sl', st.sl, true); }
 function closePos(s, why) {
-  for (const o of A.orders.slice()) if (o.code === s.code && o.side === 'sell') cancelOrder(o.id, true);
+  for (const o of A.orders.slice()) if (o.code === s.code && !o.reserve) cancelOrder(o.id, true);
   const p = A.pos[s.code]; if (!p) return;
-  const q = p.qty - p.locked; if (q <= 0) return;
-  const msg = `<b>${why} 발동</b> · ${s.name} ${won(q)}주 시장가 매도`;
-  if (G.catchup) G.catchup.push(msg); else toast(msg, 'sell');
-  doSell(s, q, bidOf(s));
+  const q = closable(p); if (q <= 0) return;
+  const msg = `<b>${why} 발동</b> · ${s.name} ${sideKo(p)} ${won(q)}주 시장가 ${isShort(p) ? '되사기' : '매도'}`;
+  if (G.catchup) G.catchup.push(msg); else toast(msg, isShort(p) ? 'buy' : 'sell');
+  closeAt(s, q, isShort(p) ? askOf(s) : bidOf(s));
 }
 function checkAlerts(s) {
   for (const d of s.draw) {
@@ -1402,40 +1672,55 @@ function checkAlerts(s) {
     }
   }
 }
-function checkStops(s) {
+function liquidate(s) {
   const p = A.pos[s.code]; if (!p) return;
+  for (const o of A.orders.slice()) if (o.code === s.code && !o.reserve) cancelOrder(o.id, true);
+  p.ps = []; p.tp = 0; p.sl = 0;
+  const q = closable(p); if (q <= 0) return;
+  const msg = `<b>반대매매</b> · 증거금이 바닥나서 ${s.name} ${sideKo(p)} ${won(q)}주가 강제 정리됐어요 (${levTxt(p)})`;
+  if (G.catchup) G.catchup.push(msg); else toast(msg, 'sell', 5000);
+  closeAt(s, q, isShort(p) ? askOf(s) : bidOf(s));
+  if (A.cash < 0) A.cash = 0;                                    // 손실은 넣은 증거금까지만
+}
+function checkStops(s) {
+  const p = A.pos[s.code]; if (!p || !p.qty) return;
+  if (isLev(p)) { const v = p.qty * s.price; if (posEq(p, s.price) <= v * MMR) return liquidate(s); }
   if (p.ps && p.ps.length) for (const st of p.ps.slice()) {
-    if (!(st.kind === 'tp' ? s.price >= st.price : s.price <= st.price)) continue;
-    p.ps = p.ps.filter(x => x.gid !== st.gid);                 // 같은 묶음의 반대쪽 주문은 취소 (OCO)
-    const q = Math.min(st.q, p.qty - p.locked);
+    if (!(st.kind === 'tp' ? tpHit(p, s.price, st.price) : slHit(p, s.price, st.price))) continue;
+    p.ps = p.ps.filter(x => x.gid !== st.gid);                   // 같은 묶음의 반대쪽 주문은 취소 (OCO)
+    const q = Math.min(st.q, closable(p));
     if (q > 0) {
-      const msg = `<b>부분 ${st.kind === 'tp' ? '익절' : '손절'} 발동</b> · ${s.name} ${won(q)}주 시장가 매도`;
+      const msg = `<b>부분 ${st.kind === 'tp' ? '익절' : '손절'} 발동</b> · ${s.name} ${sideKo(p)} ${won(q)}주 시장가 정리`;
       if (G.catchup) G.catchup.push(msg); else toast(msg, 'sell');
-      doSell(s, q, bidOf(s));
+      closeAt(s, q, isShort(p) ? askOf(s) : bidOf(s));
     }
     if (!A.pos[s.code]) return;
   }
-  if (p.tp && s.price >= p.tp) closePos(s, '익절');
-  else if (p.sl && s.price <= p.sl) closePos(s, '손절');
+  if (p.tp && tpHit(p, s.price, p.tp)) closePos(s, '익절');
+  else if (p.sl && slHit(p, s.price, p.sl)) closePos(s, '손절');
 }
 function modifyOrder(id, price) {
   const o = A.orders.find(x => x.id === id); if (!o || price === o.price) return;
   const s = bySym(o.code);
   cancelOrder(id, true);
-  if (placeLimit(s, o.side, price, o.q, o.stops, true)) toast(`<b>주문 정정</b> · ${s.name} ${won(o.price)} → ${won(price)}원`, o.side);
-  else placeLimit(s, o.side, o.price, o.q, o.stops, true);
+  if (placeLimit(s, o.side, price, o.q, o.stops, true, o.lev || 1)) toast(`<b>주문 정정</b> · ${s.name} ${won(o.price)} → ${won(price)}원`, o.side);
+  else placeLimit(s, o.side, o.price, o.q, o.stops, true, o.lev || 1);
 }
 const numIn = sel => parseInt(($(sel).value || '').replace(/[^0-9]/g, ''), 10) || 0;
-function readStops(base) {
+function readStops(base, short) {
   const tp = numIn('#inTp'), sl = numIn('#inSl');
   if (!tp && !sl) return null;
-  if (tp && tp <= base) { toast('익절가는 주문가보다 높아야 해요.'); return false; }
-  if (sl && sl >= base) { toast('손절가는 주문가보다 낮아야 해요.'); return false; }
+  const fake = { side: short ? 'short' : 'long' };
+  const e = (tp && stopErr(fake, 'tp', tp, base, '주문가')) || (sl && stopErr(fake, 'sl', sl, base, '주문가'));
+  if (e) { toast(e); return false; }
   return { tp: tp ? roundTick(tp) : 0, sl: sl ? roundTick(sl) : 0 };
 }
+// 지금 고른 쪽이 '정리'면 보유분의 익절·손절을 보여 준다
 function fillStopsInputs() {
-  if (U.side !== 'sell' || !syms.length) return;
-  const p = A.pos[cur().code];
+  if (!syms.length) return;
+  const s = curT(), it = intentOf(s, U.side);
+  if (it !== 'L-' && it !== 'S-') return;
+  const p = A.pos[s.code];
   $('#inTp').value = p && p.tp ? won(p.tp) : '';
   $('#inSl').value = p && p.sl ? won(p.sl) : '';
 }
@@ -1481,18 +1766,21 @@ const qtyVal = () => parseInt(($('#inQty').value || '').replace(/[^0-9]/g, ''), 
 const priceVal = () => U.type === 'market' ? (U.side === 'buy' ? askOf(cur()) : bidOf(cur())) : U.price;
 
 function maxQty() {
-  const s = cur();
-  if (U.side === 'buy') { const px = U.type === 'market' ? askOf(s) : (U.price || s.price); return Math.floor(A.cash / (px * (1 + FEE))); }
-  const p = A.pos[s.code]; return p ? p.qty - p.locked : 0;
+  const s = curT();
+  const it = intentOf(s, U.side), px = U.type === 'market' ? (U.side === 'buy' ? askOf(s) : bidOf(s)) : (U.price || s.price);
+  if (it === 'L+') return Math.floor(A.cash / (px * (1 / (s.fut ? U.lev : 1) + FEE)));
+  if (it === 'S+') return Math.floor(A.cash / (px / U.lev));
+  return closable(A.pos[s.code]);
 }
 function submit() {
   if (!canTrade()) return;
-  const s = cur(), q = qtyVal();
+  const s = curT(), q = qtyVal();
   if (q <= 0) return toast('수량을 입력해 주세요.');
   let ok, stops = null;
-  if (U.side === 'buy' && $('#tpslOn').checked) { stops = readStops(priceVal()); if (stops === false) return; }
-  if (U.type === 'market') ok = U.side === 'buy' ? marketBuy(s, q, stops) : marketSell(s, q);
-  else ok = placeLimit(s, U.side, U.price, q, stops);
+  const it = intentOf(s, U.side), opening = it === 'L+' || it === 'S+';
+  if (opening && $('#tpslOn').checked) { stops = readStops(priceVal(), it === 'S+'); if (stops === false) return; }
+  if (U.type === 'market') ok = U.side === 'buy' ? marketBuy(s, q, stops, U.lev) : marketSell(s, q, stops, U.lev);
+  else ok = placeLimit(s, U.side, U.price, q, stops, false, opening ? U.lev : 1);
   if (ok) { $('#inQty').value = ''; U.follow = true; dirty = true; }
 }
 
@@ -1516,8 +1804,8 @@ function setPsQty(q, fromSlider) {
 function openSheet(code, view) {
   const s = bySym(code), p = A.pos[code]; if (!p) return;
   Object.assign(PS, { open: true, code, view, scope: 'full', ctype: 'market' });
-  $('#psTitle').textContent = view === 'tpsl' ? '익절·손절 설정' : '보유분 매도';
-  $('#psSub').textContent = `${s.name} · ${s.code}`;
+  $('#psTitle').textContent = view === 'tpsl' ? `익절·손절 설정${s.fut ? ' · ' + sideKo(p) : ''}` : !s.fut ? '보유분 매도' : isShort(p) ? '숏 정리 (되사기)' : '롱 정리 (매도)';
+  $('#psSub').textContent = `${nmOf(s)} · ${baseSym(s).code}`;
   $('#psTp').value = p.tp ? won(p.tp) : ''; $('#psSlv').value = p.sl ? won(p.sl) : '';
   pctFromPrice('tp'); pctFromPrice('sl');
   $('#psPx').value = won(s.price);
@@ -1535,32 +1823,32 @@ function syncSheet() {
   $('#psQtyBlk').hidden = PS.view === 'tpsl' && PS.scope === 'full';
   $('#psPxRow').hidden = !(PS.view === 'close' && PS.ctype === 'limit');
   $('#psNote').textContent = PS.view !== 'tpsl' ? '' : PS.scope === 'full'
-    ? '보유 수량 전체에 걸려요. 현재가가 익절가 이상이 되거나 손절가 이하가 되면 시장가로 전량 매도돼요.'
+    ? (isShort(A.pos[PS.code]) ? '숏 전체에 걸려요. 가격이 익절가 이하로 내려가거나 손절가 이상으로 올라가면 시장가로 전부 되사요.' : '보유 수량 전체에 걸려요. 현재가가 익절가 이상이 되거나 손절가 이하가 되면 시장가로 전량 매도돼요.')
     : '정한 수량에만 걸려요. 익절과 손절을 같이 넣으면 한쪽이 체결될 때 다른 쪽은 자동으로 취소돼요.';
   if (PS.view === 'tpsl' && PS.scope === 'part') { $('#psTp').value = ''; $('#psSlv').value = ''; $('#psTpPct').value = ''; $('#psSlPct').value = ''; }
   else if (PS.view === 'tpsl') { const p = A.pos[PS.code]; if (p) { $('#psTp').value = p.tp ? won(p.tp) : ''; $('#psSlv').value = p.sl ? won(p.sl) : ''; pctFromPrice('tp'); pctFromPrice('sl'); } }
   dirty = true;
 }
 const psIds = k => k === 'tp' ? ['#psTp', '#psTpPct'] : ['#psSlv', '#psSlPct'];
-function pctFromPrice(k) { const p = A.pos[PS.code]; if (!p) return; const [a, b] = psIds(k), v = numIn(a); if (document.activeElement !== $(b)) $(b).value = v ? ((v / p.avg - 1) * 100).toFixed(2) : ''; }
-function priceFromPct(k) { const p = A.pos[PS.code]; if (!p) return; const [a, b] = psIds(k), raw = $(b).value.replace(/[^0-9.\-]/g, ''); const v = parseFloat(raw); $(a).value = raw && isFinite(v) ? won(roundTick(p.avg * (1 + v / 100))) : ''; }
+function pctFromPrice(k) { const p = A.pos[PS.code]; if (!p) return; const [a, b] = psIds(k), v = numIn(a); if (document.activeElement !== $(b)) $(b).value = v ? (posRet(p, v) * 100).toFixed(2) : ''; }
+function priceFromPct(k) { const p = A.pos[PS.code]; if (!p) return; const [a, b] = psIds(k), raw = $(b).value.replace(/[^0-9.\-]/g, ''); const v = parseFloat(raw); $(a).value = raw && isFinite(v) ? won(roundTick(isShort(p) ? p.avg / (1 + v / 100) : p.avg * (1 + v / 100))) : ''; }
 function renderSheet() {
   if (!PS.open) return;
   const s = bySym(PS.code), p = A.pos[PS.code];
   if (!p) { closeSheet(); toast('보유 수량이 모두 매도돼서 창을 닫았어요.'); return; }
-  const av = availQ(p), pl = (s.price - p.avg) * p.qty, rr = s.price / p.avg - 1;
-  const posHtml = `<div><span>평균단가</span><b>${won(p.avg)}</b></div><div><span>현재가</span><b class="${cls(s.price - p.avg)}">${won(s.price)}</b></div><div><span>매도 가능</span><b>${won(av)}주</b></div><div><span>평가손익</span><b class="${cls(pl)}">${sgnWon(pl)} <small>${pctS(rr)}</small></b></div>`;
+  const av = availQ(p), pl = posPnl(p, s.price), rr = posRet(p, s.price), sh = isShort(p);
+  const posHtml = `<div><span>${sh ? '숏 평균가' : '평균단가'}</span><b>${won(p.avg)}</b></div><div><span>현재가</span><b class="${cls(pl)}">${won(s.price)}</b></div><div><span>정리 가능</span><b>${won(av)}주</b></div><div><span>평가손익</span><b class="${cls(pl)}">${sgnWon(pl)} <small>${pctS(rr)}</small></b></div>`;
   if ($('#psPos')._h !== posHtml) { $('#psPos').innerHTML = posHtml; $('#psPos')._h = posHtml; }
-  $('#psAvail').textContent = `매도 가능 ${won(av)}주`;
-  syncSlider($('#psSl'), av ? Math.min(100, psQty() / av * 100) : 0, 'sell');
+  $('#psAvail').textContent = `정리 가능 ${won(av)}주`;
+  syncSlider($('#psSl'), av ? Math.min(100, psQty() / av * 100) : 0, sh ? 'buy' : 'sell');
   const q = PS.view === 'tpsl' && PS.scope === 'full' ? av : Math.min(psQty(), av), ok = $('#psOk');
-  const est = (px, qq) => { const gross = px * qq, cost = gross * (FEE + TAX); return { gross, cost, pnl: gross - cost - p.avg * qq }; };
+  const est = (px, qq) => { const gross = px * qq; if (sh) { const cost = gross * FEE; return { gross, cost, pnl: (p.avg - px) * qq - cost }; } const cost = gross * (FEE + TAX); return { gross, cost, pnl: gross - cost - p.avg * qq }; };
   if (PS.view === 'tpsl') {
     for (const k of ['tp', 'sl']) {
       const v = numIn(psIds(k)[0]), el = $(k === 'tp' ? '#psTpEst' : '#psSlEst');
       if (!v) { el.textContent = ''; continue; }
-      const bad = k === 'tp' ? v <= s.price : v >= s.price, e = est(v, q);
-      el.innerHTML = bad ? `<span class="warn">${k === 'tp' ? '현재가보다 높아야 해요' : '현재가보다 낮아야 해요'}</span>` : `예상 <b class="${cls(e.pnl)}">${sgnWon(e.pnl)}원</b> · ${won(q)}주`;
+      const err = stopErr(p, k, v, s.price), e = est(v, q);
+      el.innerHTML = err ? `<span class="warn">${err}</span>` : `예상 <b class="${cls(e.pnl)}">${sgnWon(e.pnl)}원</b> · ${won(q)}주`;
     }
     $('#psEst').innerHTML = '';
     ok.textContent = PS.scope === 'full' ? '보유 전체에 설정' : `${won(q)}주에 부분 설정`;
@@ -1569,24 +1857,26 @@ function renderSheet() {
     const lh = list ? `<p class="ps-lab">걸려 있는 부분 익절·손절</p>${list}` : '';
     if (PS.listHtml !== lh) { $('#psList').innerHTML = lh; PS.listHtml = lh; }
   } else {
-    const px = PS.ctype === 'market' ? bidOf(s) : numIn('#psPx'), e = est(px, q);
-    const estHtml = `<div><span>${PS.ctype === 'market' ? '예상 체결가' : '매도 가격'}</span><b>${won(px)}원</b></div><div><span>체결금액</span><b>${won(e.gross)}원</b></div><div><span>수수료·세금</span><b>${won(e.cost)}원</b></div><div><span>예상 실현손익</span><b class="${cls(e.pnl)}">${sgnWon(e.pnl)}원</b></div>`;
+    const px = PS.ctype === 'market' ? (sh ? askOf(s) : bidOf(s)) : numIn('#psPx'), e = est(px, q), repay = !sh && p.debt ? p.debt * q / p.qty : 0, mret = sh && p.qty ? p.margin * q / p.qty : 0;
+    const estHtml = `<div><span>${PS.ctype === 'market' ? '예상 체결가' : sh ? '되살 가격' : '매도 가격'}</span><b>${won(px)}원</b></div><div><span>체결금액</span><b>${won(e.gross)}원</b></div><div><span>수수료·세금</span><b>${won(e.cost)}원</b></div><div><span>예상 실현손익</span><b class="${cls(e.pnl)}">${sgnWon(e.pnl)}원</b></div>` +
+      (repay ? `<div><span>대출 상환</span><b>${won(repay)}원</b></div><div><span>예수금으로 들어옴</span><b>${won(e.gross - e.cost - repay)}원</b></div>` : '') +
+      (sh ? `<div><span>증거금 반환</span><b>${won(mret)}원</b></div><div><span>예수금으로 들어옴</span><b>${won(Math.max(0, mret + e.pnl))}원</b></div>` : '');
     if ($('#psEst')._h !== estHtml) { $('#psEst').innerHTML = estHtml; $('#psEst')._h = estHtml; }
-    ok.textContent = PS.ctype === 'market' ? `시장가로 ${won(q)}주 매도` : `${won(px)}원에 ${won(q)}주 매도 주문`;
-    ok.className = 'ps-ok sell';
+    const vb = sh ? '되사기' : '매도';
+    ok.textContent = PS.ctype === 'market' ? `시장가로 ${won(q)}주 ${vb}` : `${won(px)}원에 ${won(q)}주 ${vb} 주문`;
+    ok.className = 'ps-ok ' + (sh ? 'buy' : 'sell');
   }
 }
 function confirmSheet() {
   const s = bySym(PS.code), p = A.pos[PS.code]; if (!p) return closeSheet();
   if (!canTrade()) return;
   if (PS.view === 'close') {
-    const q = Math.min(psQty(), availQ(p)); if (q <= 0) return toast('매도할 수량을 정해 주세요.');
-    const ok = PS.ctype === 'market' ? marketSell(s, q) : placeLimit(s, 'sell', roundTick(numIn('#psPx')), q);
+    const q = Math.min(psQty(), availQ(p)); if (q <= 0) return toast('정리할 수량을 정해 주세요.');
+    const ok = PS.ctype === 'market' ? marketClose(s, q) : placeLimit(s, isShort(p) ? 'buy' : 'sell', roundTick(numIn('#psPx')), q);
     if (ok) closeSheet(); dirty = true; return;
   }
   const tp = numIn('#psTp'), sl = numIn('#psSlv');
-  if (tp && tp <= s.price) return toast('익절가는 현재가보다 높아야 해요.');
-  if (sl && sl >= s.price) return toast('손절가는 현재가보다 낮아야 해요.');
+  { const e = (tp && stopErr(p, 'tp', tp, s.price)) || (sl && stopErr(p, 'sl', sl, s.price)); if (e) return toast(e); }
   if (PS.scope === 'full') {
     p.tp = tp ? roundTick(tp) : 0; p.sl = sl ? roundTick(sl) : 0;
     toast(`<b>익절·손절 설정</b> · ${s.name} 전체 ${won(p.qty)}주 · 익절 ${p.tp ? won(p.tp) : '없음'} / 손절 ${p.sl ? won(p.sl) : '없음'}`);
@@ -1609,14 +1899,104 @@ function removePartial(code, id) {
 function setPartial(s, id, price) {
   const p = A.pos[s.code], st = p && (p.ps || []).find(x => x.id === id); if (!st) return;
   price = roundTick(price);
-  if (st.kind === 'tp' && price <= s.price) return toast('익절가는 현재가보다 높아야 해요.');
-  if (st.kind === 'sl' && price >= s.price) return toast('손절가는 현재가보다 낮아야 해요.');
+  { const e = stopErr(p, st.kind, price, s.price); if (e) return toast(e); }
   st.price = price; toast(`부분 ${st.kind === 'tp' ? '익절' : '손절'} ${won(st.q)}주를 ${won(price)}원으로 옮겼어요.`); saveNow(); dirty = true;
 }
 
+/* ---------- 픽셀 자동차 (가상 브랜드) ---------- */
+// 차는 오른쪽을 본다. 48×22 픽셀 격자에 다각형·원을 직접 찍어서 계단 모양 픽셀아트를 만든다.
+const CAR_SHAPES = {
+  mini:   { r: 9,  f: 39, belt: 12,   hood: 13.5, trunk: 11.5, roof: 5,    c0: 10.5, c1: 32, rs: 1.5, ws: 6.5, wr: 3,   clr: 0,   wb: [14, 34] },
+  sedan:  { r: 3,  f: 45, belt: 12,   hood: 12.5, trunk: 12,   roof: 6.5,  c0: 13,   c1: 33, rs: 5.5, ws: 6.5, wr: 3.2, clr: 0,   wb: [10, 38] },
+  suv:    { r: 3,  f: 45, belt: 11,   hood: 11,   trunk: 10,   roof: 4,    c0: 5,    c1: 34, rs: 1.5, ws: 5.5, wr: 3.7, clr: 1,   wb: [10, 37] },
+  hatch:  { r: 5,  f: 43, belt: 12,   hood: 13.5, trunk: 11,   roof: 5.5,  c0: 6.5,  c1: 32, rs: 2.5, ws: 8,   wr: 3.1, clr: 0,   wb: [11, 37] },
+  luxe:   { r: 2,  f: 46, belt: 12,   hood: 12.5, trunk: 12,   roof: 6.5,  c0: 14,   c1: 34, rs: 6.5, ws: 6.5, wr: 3.3, clr: 0,   wb: [9, 39] },
+  coupe:  { r: 3,  f: 45, belt: 13,   hood: 13.5, trunk: 12.5, roof: 7.5,  c0: 14,   c1: 31, rs: 8.5, ws: 6.5, wr: 3.3, clr: 0,   wb: [10, 38] },
+  sports: { r: 3,  f: 45, belt: 12.5, hood: 14.5, trunk: 12,   roof: 8,    c0: 14,   c1: 31, rs: 7,   ws: 8,   wr: 3.1, clr: 0,   wb: [10, 38], wing: 1 },
+  track:  { r: 3,  f: 45, belt: 12.5, hood: 14.5, trunk: 12,   roof: 8,    c0: 14,   c1: 31, rs: 7,   ws: 8,   wr: 3.2, clr: 0,   wb: [10, 38], wing: 3, intake: 1 },
+  super:  { r: 2,  f: 46, belt: 13,   hood: 15.5, trunk: 12.5, roof: 8.5,  c0: 15,   c1: 32, rs: 8,   ws: 9.5, wr: 3.2, clr: 0,   wb: [9, 38],  wing: 2, intake: 1 },
+  limo:   { r: 1,  f: 47, belt: 11.5, hood: 12,   trunk: 11.5, roof: 5,    c0: 9.5,  c1: 35, rs: 3,   ws: 5,   wr: 3.4, clr: 0,   wb: [8, 40] },
+  hyper:  { r: 2,  f: 46, belt: 13,   hood: 16,   trunk: 12,   roof: 8.5,  c0: 16,   c1: 32, rs: 9,   ws: 10,  wr: 3.3, clr: 0,   wb: [9, 38],  wing: 3, intake: 1, fin: 1 },
+};
+// 가난 → 중산 → 갑부 → 재벌 → 개갑부. 비쌀수록 마을·서킷에서 빠르다.
+const CARS = [
+  { id: 'gn_lite',    brand: '가난',   model: '라이트',    tier: '국산',     price: 4000,    shape: 'mini',   col: '#9bd17a' },
+  { id: 'gn_plus',    brand: '가난',   model: '플러스',    tier: '국산',     price: 7000,    shape: 'sedan',  col: '#d9dde6' },
+  { id: 'gn_prime',   brand: '가난',   model: '프라임',    tier: '국산',     price: 10000,   shape: 'luxe',   col: '#3a4256', chrome: 1 },
+  { id: 'js_3',       brand: '중산',   model: '3호',       tier: '외제',     price: 15000,   shape: 'sedan',  col: '#3b6fdb' },
+  { id: 'js_5',       brand: '중산',   model: '5호',       tier: '외제',     price: 25000,   shape: 'luxe',   col: '#8a94a6', chrome: 1 },
+  { id: 'js_7',       brand: '중산',   model: '7호',       tier: '외제',     price: 40000,   shape: 'limo',   col: '#1c1f2b', chrome: 1 },
+  { id: 'gb_gx',      brand: '갑부',   model: 'GX',        tier: '프리미엄', price: 60000,  shape: 'coupe',  col: '#e9eef5', chrome: 1 },
+  { id: 'gb_gxs',     brand: '갑부',   model: 'GX 스포츠', tier: '프리미엄', price: 80000,  shape: 'sports', col: '#f2b544', stripe: '#1b1f27' },
+  { id: 'gb_gxt',     brand: '갑부',   model: 'GX 트랙',   tier: '프리미엄', price: 100000,  shape: 'track',  col: '#ff6b35', stripe: '#1b1f27' },
+  { id: 'jb_blaze',   brand: '재벌',   model: '블레이즈',  tier: '수퍼카',   price: 150000,  shape: 'super',  col: '#7ccf3a' },
+  { id: 'jb_thunder', brand: '재벌',   model: '썬더',      tier: '수퍼카',   price: 300000, shape: 'hyper',  col: '#e5383b', stripe: '#f1f3f8' },
+  { id: 'gg_emperor', brand: '개갑부', model: '엠페러',    tier: '끝판왕',   price: 500000, shape: 'limo',   col: '#15171f', top: '#d4af37', chrome: 1, gold: 1 },
+];
+// 예전 차를 산 사람은 같은 급의 새 차로 옮겨 준다
+const CAR_ALIAS = { dotori: 'gn_lite', saebyeok: 'gn_plus', baram: 'gn_prime', e1: 'js_3', elegance: 'js_5', ambassador: 'js_7', gtcoupe: 'gb_gx', blitz: 'gb_gxs', tornado: 'jb_blaze', rosa: 'jb_thunder', zenith: 'jb_thunder', goldmini: 'gg_emperor' };
+const carById = id => CARS.find(c => c.id === (CAR_ALIAS[id] || id));
+const carName = c => c ? c.brand + ' ' + c.model : '';
+// 걷기 1 기준 속도. 4천 코인(400만 원) 1.6배 → 50만 코인(5억) 4.2배 (가격의 로그에 비례)
+const carSpd = id => { const c = carById(id); return c ? 1.6 + 2.6 * Math.log(c.price / 4000) / Math.log(125) : 1; };
+function hexMix(h, t, k) { const a = parseInt(h.slice(1), 16), b = parseInt(t.slice(1), 16); const m = (x, y) => Math.round(x + (y - x) * k); const r = m(a >> 16, b >> 16), g = m((a >> 8) & 255, (b >> 8) & 255), bl = m(a & 255, b & 255); return '#' + ((1 << 24) | (r << 16) | (g << 8) | bl).toString(16).slice(1); }
+function carPixels(car) {
+  const W = 48, H = 22, S = CAR_SHAPES[car.shape], g = new Array(W * H).fill(null);
+  const inPoly = (x, y, P) => { let o = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) { const [xi, yi] = P[i], [xj, yj] = P[j]; if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) o = !o; } return o; };
+  const poly = (P, c) => { for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (inPoly(x + .5, y + .5, P)) g[y * W + x] = c; };
+  const disc = (cx, cy, r, c) => { for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if ((x + .5 - cx) ** 2 + (y + .5 - cy) ** 2 <= r * r) g[y * W + x] = c; };
+  const px = (x, y, c) => { x = Math.round(x); y = Math.round(y); if (x >= 0 && x < W && y >= 0 && y < H) g[y * W + x] = c; };
+  const ground = 20.5, bot = ground - S.wr * .4 - S.clr, body = car.col, dark = hexMix(body, '#000000', .35);
+  // 차체 아래쪽
+  poly([[S.r, bot], [S.r, S.trunk], [S.c0 - 1.5, S.belt], [S.c1 + 2, S.belt], [S.f - 1.2, S.hood], [S.f, S.hood + 1.2], [S.f, bot]], body);
+  // 지붕·필러
+  poly([[S.c0, S.belt + .2], [S.c0 + S.rs, S.roof], [S.c1 - S.ws, S.roof], [S.c1, S.belt + .2]], car.top || body);
+  // 유리창 (가운데 필러로 나눔)
+  const glass = '#8fc1e6', gx0 = S.c0 + 1.3, gx1 = S.c1 - 1.6, gy0 = S.roof + 1.1, gy1 = S.belt - .2;
+  poly([[gx0, gy1], [S.c0 + S.rs + .7, gy0], [S.c1 - S.ws - .2, gy0], [gx1, gy1]], glass);
+  const mid = Math.round((S.c0 + S.rs + S.c1 - S.ws) / 2);
+  for (let y = Math.ceil(gy0); y < gy1; y++) px(mid, y, car.top || body);
+  if (S.ws > 7) for (let y = Math.ceil(gy0); y < gy1; y++) px(mid + 1, y, car.top || body);
+  // 줄무늬·크롬·흡기구·날개
+  if (car.stripe) for (let x = S.r + 1; x < S.f - 1; x++) { const y = Math.round(S.belt + 1.2 + (x > S.c1 ? (x - S.c1) / (S.f - S.c1) * (S.hood - S.belt) : 0)); if (g[y * W + x]) px(x, y, car.stripe); }
+  if (car.chrome) for (let x = S.c0 - 1; x < S.c1 + 2; x++) px(x, S.belt + .2, '#cfd6e4');
+  if (S.intake) for (let x = S.c0 - 2; x < S.c0 + 3; x++) px(x, S.belt + 2.2, dark);
+  if (S.wing) { const wx = S.r + 2, wy = S.trunk - S.wing - 1; for (let x = wx - 1; x < wx + 5; x++) px(x, wy, dark); for (let y = wy; y < S.trunk; y++) px(wx + 2, y, dark); }
+  if (S.fin) for (let y = S.roof + 1; y < S.belt; y++) px(S.c0 + S.rs / 2 - (y - S.roof) * .6, y, dark);
+  if (car.ev) { px(S.f - 6, S.belt + 2, '#f1f3f8'); px(S.f - 5, S.belt + 3, '#f1f3f8'); }
+  // 불빛
+  px(S.f - .6, S.hood + .6, '#fff6c2'); px(S.f - 1.6, S.hood + .6, '#fff6c2');
+  px(S.r + .4, S.trunk + .6, '#ff4d5e'); px(S.r + .4, S.trunk + 1.6, '#ff4d5e');
+  // 바퀴
+  for (const wx of S.wb) { disc(wx, ground - S.wr, S.wr + .6, '#0e1118'); disc(wx, ground - S.wr, S.wr, '#1f2430'); disc(wx, ground - S.wr, S.wr * .48, car.gold ? '#fff1a8' : '#aab3c2'); px(wx - .5, ground - S.wr - .5, '#e8ecf4'); }
+  // 테두리와 윗면 하이라이트
+  const out = g.slice();
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const c = g[y * W + x]; if (!c) continue;
+    const empty = (xx, yy) => xx < 0 || yy < 0 || xx >= W || yy >= H || !g[yy * W + xx];
+    if (empty(x - 1, y) || empty(x + 1, y) || empty(x, y - 1) || empty(x, y + 1)) out[y * W + x] = hexMix(c, '#000000', .5);
+    else if (c === body && empty(x, y - 2)) out[y * W + x] = hexMix(c, '#ffffff', .35);
+    else if (c === body && y > S.belt + 3) out[y * W + x] = hexMix(c, '#000000', .18);
+  }
+  if (car.gold) for (const [x, y] of [[S.c0 + 4, S.roof - 2], [S.f - 3, S.hood - 2], [S.r + 3, S.trunk - 3]]) { px(x, y, '#fffbe0'); px(x - 1, y, '#fff1a8'); px(x + 1, y, '#fff1a8'); px(x, y - 1, '#fff1a8'); px(x, y + 1, '#fff1a8'); }
+  return { W, H, g: out };
+}
+const CAR_URL = {};
+function carURL(id) {
+  id = CAR_ALIAS[id] || id;
+  if (CAR_URL[id]) return CAR_URL[id];
+  const car = carById(id); if (!car) return '';
+  const { W, H, g } = carPixels(car), c = document.createElement('canvas'); c.width = W; c.height = H;
+  const x = c.getContext('2d'), img = x.createImageData(W, H);
+  g.forEach((col, i) => { if (!col) return; const n = parseInt(col.slice(1), 16); img.data.set([n >> 16, (n >> 8) & 255, n & 255, 255], i * 4); });
+  x.putImageData(img, 0, 0);
+  return (CAR_URL[id] = c.toDataURL());
+}
+const carImg = (id, cls = '') => id && carById(id) ? `<img class="pix ${cls}" src="${carURL(id)}" alt="${esc(carName(carById(id)))}">` : '';
+
 /* ---------- 마이페이지 · 랭킹 ---------- */
 const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const MY = { open: false, tab: 'asset', range: 'all', rk: 'all', drawnAt: 0 };
+const MY = { open: false, tab: 'asset', range: 'all', rk: 'all', drawnAt: 0, arm: null, hall: null, wins: null, hallAt: 0, hallErr: '' };
 const RK = { state: 'loading', db: null, user: null, uid: null, me: null, nick: '', rows: [], today: [], prof: {}, lastWrite: 0, lastEq: 0, writing: false, readOnly: false, want: false };
 try { RK.nick = localStorage.getItem('scalplab.nick') || ''; } catch (e) {}
 const PF_COLS = ['#f2b544', '#a08cff', '#35c9b4', '#f27ad6', '#22c7e0', '#ff9f45'];
@@ -1652,24 +2032,43 @@ async function sbSession() {
   sbKeep(await sbReq('/auth/v1/signup', { method: 'POST', body: JSON.stringify({ data: {} }) }));   // 익명 계정 자동 생성
   return SB.ses;
 }
-const sbRow = r => ({ id: r.user_id, nick: r.nick, eq: r.eq, ret: r.ret, today: r.today, trades: r.trades });
+const sbRow = r => ({ id: r.user_id, nick: r.nick, eq: r.eq, ret: r.ret, today: r.today, trades: r.trades, car: r.car || '' });
 async function sbLoadRanks() {
   if (RK.mode !== 'sb' || RK.loadingRanks) return;
   RK.loadingRanks = true;
   try {
-    const cols = 'select=user_id,nick,eq,ret,today,trades';
+    const cols = 'select=user_id,nick,eq,ret,today,trades' + (RK.noCar ? '' : ',car');
     const [all, td] = await Promise.all([
       sbReq(`/rest/v1/ranks?${cols}&order=ret.desc&limit=100`),
       sbReq(`/rest/v1/ranks?${cols}&day_key=eq.${TODAY_DAY}&order=today.desc&limit=100`),
     ]);
     RK.rows = all.map(sbRow); RK.today = td.map(sbRow); RK.loadedAt = Date.now(); RK.err = null;
-  } catch (e) { RK.err = e.message; }
+  } catch (e) { if (!RK.noCar && /car/.test(e.message)) { RK.noCar = true; RK.loadingRanks = false; return sbLoadRanks(); } RK.err = e.message; }
   finally { RK.loadingRanks = false; dirty = true; }
 }
 async function sbWrite(doc) {
   await sbSession();
   const row = { user_id: SB.ses.uid, nick: doc.nick, eq: Math.max(0, Math.min(1e9, doc.eq)), ret: Math.max(-1, Math.min(100, doc.ret)), today: Math.max(-1, Math.min(10, doc.today)), day_key: doc.dayKey, trades: doc.trades, sells: doc.sells, wins: doc.wins, realized: doc.realized };
-  await sbReq('/rest/v1/ranks?on_conflict=user_id', { method: 'POST', headers: { Prefer: 'resolution=merge-duplicates,return=minimal' }, body: JSON.stringify(row) }, true);
+  if (!RK.noCar) row.car = doc.car;
+  const up = (path, body) => sbReq(path, { method: 'POST', headers: { Prefer: 'resolution=merge-duplicates,return=minimal' }, body: JSON.stringify(body) }, true);
+  try { await up('/rest/v1/ranks?on_conflict=user_id', row); }
+  catch (e) { if (row.car !== undefined && e.status === 400 && /car/.test(e.message)) { RK.noCar = true; delete row.car; await up('/rest/v1/ranks?on_conflict=user_id', row); } else throw e; }
+  if (doc.todayTrades > 0 && !RK.noDaily) {                    // 명예의 전당용 오늘 기록
+    try { await up('/rest/v1/daily?on_conflict=user_id,day_key', { user_id: SB.ses.uid, day_key: doc.dayKey, nick: doc.nick, car: doc.car || '', eq: row.eq, today: row.today, trades: doc.todayTrades }); }
+    catch (e) { if (e.status === 404 || /daily|schema cache/.test(e.message)) RK.noDaily = true; }
+  }
+}
+async function sbLoadHall(force) {
+  if (RK.mode !== 'sb' || MY.hallLoading || (!force && Date.now() - MY.hallAt < 60e3)) return;
+  MY.hallLoading = true;
+  try {
+    const [h, w] = await Promise.all([
+      sbReq('/rest/v1/hall?select=day_key,rn,user_id,nick,car,today,eq&order=day_key.desc,rn.asc&limit=90'),
+      sbReq('/rest/v1/hall_wins?select=user_id,nick,car,wins,podiums&order=wins.desc,podiums.desc&limit=20'),
+    ]);
+    MY.hall = h; MY.wins = w; MY.hallErr = ''; MY.hallAt = Date.now();
+  } catch (e) { MY.hallErr = e.status === 404 || /hall|schema cache/.test(e.message) ? 'setup' : 'net'; }
+  finally { MY.hallLoading = false; dirty = true; }
 }
 async function initSbRank() {
   RK.mode = 'sb';
@@ -1715,7 +2114,8 @@ function rankDoc() {
   const eq = equity(), base = A.dayStartEq || SEED;
   return {
     nick: (RK.nick || '').slice(0, 12), eq: Math.round(eq), ret: eq / SEED - 1, today: eq / base - 1, dayKey: TODAY_DAY,
-    realized: Math.round(A.realized), trades: A.fills.length, sells: A.sells || 0, wins: A.wins || 0,
+    realized: Math.round(A.realized), trades: A.fills.length, sells: A.sells || 0, wins: A.wins || 0, car: A.car || '',
+    todayTrades: A.fills.filter(f => f.ts >= TODAY_DAY * 1440).length,
     since: Math.floor(A.since || nowSec()), updatedAt: Date.now(),
   };
 }
@@ -1747,7 +2147,7 @@ function syncMyButton() {
 }
 function openMy(tab) {
   MY.open = true; if (tab) MY.tab = tab;
-  $('#myBg').hidden = false; $('#nickIn').value = RK.nick || '';
+  $('#myBg').hidden = false; $('#nickIn').value = RK.nick || ''; $('#nickRow').hidden = true;
   syncMyTabs(); MY.drawnAt = 0; dirty = true;
   if (RK.state === 'on') { writeRank(true); if (RK.mode === 'sb') sbLoadRanks(); }
   setTimeout(() => $('#myClose').focus(), 0);
@@ -1755,36 +2155,42 @@ function openMy(tab) {
 function closeMy() { MY.open = false; $('#myBg').hidden = true; }
 function syncMyTabs() {
   document.querySelectorAll('#myTabs button').forEach(b => b.classList.toggle('on', b.dataset.my === MY.tab));
-  $('#myAsset').hidden = MY.tab !== 'asset'; $('#myPf').hidden = MY.tab !== 'pf'; $('#myRank').hidden = MY.tab !== 'rank';
+  $('#myAsset').hidden = MY.tab !== 'asset'; $('#myPf').hidden = MY.tab !== 'pf'; $('#myRank').hidden = MY.tab !== 'rank'; $('#myShop').hidden = MY.tab !== 'shop';
   document.querySelectorAll('#mRange button').forEach(b => b.classList.toggle('on', b.dataset.r === MY.range));
   document.querySelectorAll('#rkSeg button').forEach(b => b.classList.toggle('on', b.dataset.rk === MY.rk));
   MY.drawnAt = 0; dirty = true;
 }
 const setHtml = (el, h) => { if (el._h !== h) { el.innerHTML = h; el._h = h; } };
-function stockValue() { let v = 0; for (const c in A.pos) v += A.pos[c].qty * bySym(c).price; return v; }
+function stockValue() { let v = 0; for (const c in A.pos) v += posEq(A.pos[c], bySym(c).price); return v; }
+const totalDebt = () => Object.values(A.pos).reduce((a, p) => a + (p.debt || 0), 0);
 
 function renderMy() {
   if (!MY.open) return;
   const eq = equity(), pnl = eq - SEED, base = A.dayStartEq || SEED, tday = eq - base;
-  $('#myNickLine').textContent = RK.nick ? `${RK.nick} · 시드 1,000만 원` : '닉네임을 정하면 랭킹에 그 이름으로 나와요';
+  $('#myNickShow').textContent = RK.nick || '닉네임 없음';
+  $('#myNickShow').classList.toggle('none', !RK.nick);
+  $('#nickEdit').textContent = RK.nick ? '닉네임 바꾸기' : '닉네임 정하기';
+  setHtml($('#myCarSlot'), A.car && carById(A.car) ? carImg(A.car, 'head') : '<span class="my-nocar">차 없음</span>');
   const now = performance.now(), redraw = now - MY.drawnAt > 1000;
   if (MY.tab === 'asset') {
     $('#mEq').textContent = won(eq) + '원';
     setHtml($('#mRet'), `<span class="${cls(pnl)}">${sgnWon(pnl)}원 (${pctS(pnl / SEED)})</span><span class="muted">오늘 <b class="${cls(tday)}">${sgnWon(tday)}원 ${pctS(tday / base)}</b></span>`);
-    const sv = stockValue(), unreal = Object.keys(A.pos).reduce((a, c) => a + (bySym(c).price - A.pos[c].avg) * A.pos[c].qty, 0);
-    const reserve = A.orders.filter(o => o.side === 'buy').reduce((a, o) => a + o.reserve, 0);
+    const sv = stockValue(), unreal = Object.keys(A.pos).reduce((a, c) => a + posPnl(A.pos[c], bySym(c).price), 0);
+    const reserve = A.orders.reduce((a, o) => a + (o.reserve || 0), 0);
     const win = A.sells ? `${Math.round(A.wins / A.sells * 100)}%` : '—';
     const d = new Date((A.since || nowSec()) * 1000 + EPOCH_MS);
     const tiles = [
       ['주식 평가금액', won(sv) + '원', ''], ['예수금', won(A.cash) + '원', ''], ['주문 대기금', won(reserve) + '원', ''],
       ['평가손익', sgnWon(unreal) + '원', cls(unreal)], ['실현손익', sgnWon(A.realized) + '원', cls(A.realized)], ['수수료·세금', won(A.costs) + '원', ''],
-      ['체결 횟수', `${A.fills.length}회`, ''], ['승률', `${win}${A.sells ? ` <small>${A.wins}/${A.sells}</small>` : ''}`, ''], ['계좌 개설', `${d.getMonth() + 1}월 ${d.getDate()}일`, ''],
+      ['체결 횟수', `${A.fills.length}회`, ''], ['승률', `${win}${A.sells ? ` <small>${A.wins}/${A.sells}</small>` : ''}`, ''], ['신용 대출금', won(totalDebt()) + '원', totalDebt() ? 'lev' : ''],
+      ['보유 코인', won(A.coins || 0), 'coin'], ['보유 차량', `${(A.cars || []).length}대`, ''], ['계좌 개설', `${d.getMonth() + 1}월 ${d.getDate()}일`, ''],
     ];
     setHtml($('#mGrid'), tiles.map(([k, v, c]) => `<div><span>${k}</span><b class="num ${c}">${v}</b></div>`).join(''));
     if (redraw) { drawEqChart(); MY.drawnAt = now; }
   } else if (MY.tab === 'pf') {
     if (redraw) { drawPortfolio(); MY.drawnAt = now; }
-  } else renderRank();
+  } else if (MY.tab === 'shop') renderShop();
+  else renderRank();
 }
 function drawEqChart() {
   const c = $('#mEqChart'), r = c.getBoundingClientRect(), dpr = window.devicePixelRatio || 1; if (!r.width) return;
@@ -1808,8 +2214,8 @@ function drawEqChart() {
   x.fillText(fmtWhen(t0), P, H - 1); x.textAlign = 'right'; x.fillText('지금', W - P, H - 1);
 }
 function drawPortfolio() {
-  const items = Object.keys(A.pos).map(cd => { const p = A.pos[cd], s = bySym(cd); return { name: s.name, code: cd, v: p.qty * s.price, rr: s.price / p.avg - 1, qty: p.qty }; }).sort((a, b) => b.v - a.v);
-  const reserve = A.orders.filter(o => o.side === 'buy').reduce((a, o) => a + o.reserve, 0);
+  const items = Object.keys(A.pos).map(cd => { const p = A.pos[cd], s = bySym(cd); return { name: s.name, code: cd, v: Math.max(0, posEq(p, s.price)), rr: posRet(p, s.price), qty: p.qty, lev: (isShort(p) ? '숏 ' : '') + (isLev(p) ? levTxt(p) : '') }; }).sort((a, b) => b.v - a.v);
+  const reserve = A.orders.reduce((a, o) => a + (o.reserve || 0), 0);
   const all = items.map((it, i) => Object.assign(it, { col: PF_COLS[i % PF_COLS.length] }));
   all.push({ name: '예수금', v: A.cash, col: '#4a5468', cash: true });
   if (reserve > 0) all.push({ name: '주문 대기금', v: reserve, col: '#7d889d', cash: true });
@@ -1828,28 +2234,82 @@ function drawPortfolio() {
   }
   const sv = stockValue();
   setHtml($('#pfCenter'), `<span>주식 비중</span><b class="num">${(sv / tot * 100).toFixed(1)}%</b><small class="num">${won(tot)}원</small>`);
-  setHtml($('#pfList'), all.map(it => `<div class="pf-row"><i style="background:${it.col}"></i><div class="pf-n">${esc(it.name)}${it.cash ? '' : `<small class="num">${won(it.qty)}주</small>`}</div><div class="pf-v num"><b>${(it.v / tot * 100).toFixed(1)}%</b><span>${won(it.v)}원</span></div>${it.cash ? '<div class="pf-r"></div>' : `<div class="pf-r num ${cls(it.rr)}">${pctS(it.rr)}</div>`}</div>`).join('') +
+  setHtml($('#pfList'), all.map(it => `<div class="pf-row"><i style="background:${it.col}"></i><div class="pf-n">${esc(it.name)}${it.lev ? ` <span class="levtag">${it.lev}</span>` : ''}${it.cash ? '' : `<small class="num">${won(it.qty)}주${it.lev ? ' · 내 돈 기준' : ''}</small>`}</div><div class="pf-v num"><b>${(it.v / tot * 100).toFixed(1)}%</b><span>${won(it.v)}원</span></div>${it.cash ? '<div class="pf-r"></div>' : `<div class="pf-r num ${cls(it.rr)}">${pctS(it.rr)}</div>`}</div>`).join('') +
     (items.length ? '' : '<p class="muted pf-empty">아직 보유한 종목이 없어요. 매수하면 여기서 비중을 볼 수 있어요.</p>'));
 }
 function renderRank() {
   const msg = $('#rkMsg');
+  $('#rkList').hidden = $('#rkMe').hidden = MY.rk === 'hall'; $('#hallView').hidden = MY.rk !== 'hall';
+  if (MY.rk === 'hall') return renderHall();
   if (RK.state === 'off' || RK.state === 'noid' || RK.state === 'sberr') {
     setHtml(msg, RK.state === 'sberr' ? RK.err : RK.state === 'off' ? '랭킹 서버에 연결할 수 없는 환경이에요.' : '로그인한 상태에서 열어야 랭킹에 참가할 수 있어요.');
     setHtml($('#rkList'), ''); setHtml($('#rkMe'), ''); return;
   }
   if (RK.state === 'loading') { setHtml(msg, '랭킹을 불러오는 중이에요.'); return; }
   setHtml(msg, RK.readOnly ? '이 링크는 보기 권한이라 순위를 볼 수만 있어요. 참가하려면 게임 주인에게 편집 권한 초대를 받으세요.'
-    : !RK.nick ? '자산 탭에서 닉네임을 정하면 그 이름으로 랭킹에 나와요.' : '');
+    : !RK.nick ? '위쪽 "닉네임 정하기"를 누르면 그 이름으로 랭킹에 나와요.' : '');
   const rows = MY.rk === 'all' ? RK.rows : RK.today, key = MY.rk === 'all' ? 'ret' : 'today';
   const nameOf = r => r.nick || (RK.prof[r.id] && RK.prof[r.id].name) || '익명 트레이더';
   const avaOf = r => (RK.prof[r.id] && RK.prof[r.id].avatarUrl) || '';
   if (!rows.length) { setHtml($('#rkList'), `<li class="rk-empty">${MY.rk === 'all' ? '아직 랭킹에 오른 사람이 없어요. 첫 번째 주인공이 되어 보세요.' : '오늘 거래한 사람이 아직 없어요.'}</li>`); }
   else setHtml($('#rkList'), rows.map((r, i) => {
     const me = r.id === RK.uid, v = r[key] || 0, ava = avaOf(r);
-    return `<li class="rk-row${me ? ' me' : ''}${i < 3 ? ' top' + (i + 1) : ''}"><span class="rk-n num">${i + 1}</span>${ava ? `<img src="${esc(ava)}" alt="">` : '<i class="rk-ava"></i>'}<div class="rk-who"><b>${esc(nameOf(r))}${me ? ' <em>나</em>' : ''}</b><small class="num">${won(r.eq || 0)}원 · 체결 ${r.trades || 0}회</small></div><span class="rk-v num ${cls(v)}">${pctS(v)}</span></li>`;
+    return `<li class="rk-row${me ? ' me' : ''}${i < 3 ? ' top' + (i + 1) : ''}"><span class="rk-n num">${i + 1}</span>${r.car && carById(r.car) ? `<span class="rk-car">${carImg(r.car)}</span>` : ava ? `<img class="rk-face" src="${esc(ava)}" alt="">` : '<i class="rk-ava"></i>'}<div class="rk-who"><b>${esc(nameOf(r))}${me ? ' <em>나</em>' : ''}</b><small class="num">${won(r.eq || 0)}원 · 체결 ${r.trades || 0}회</small></div><span class="rk-v num ${cls(v)}">${pctS(v)}</span></li>`;
   }).join(''));
   const idx = rows.findIndex(r => r.id === RK.uid), d = rankDoc(), v = d[key];
   setHtml($('#rkMe'), RK.readOnly ? '' : `<span class="muted">내 순위</span><b class="num">${idx >= 0 ? idx + 1 + '위' : '집계 중'}</b><span class="num ${cls(v)}">${pctS(v)}</span>`);
+}
+
+function renderHall() {
+  const msg = $('#rkMsg'), v = $('#hallView');
+  if (RK.mode !== 'sb') { setHtml(msg, '명예의 전당은 공개 사이트에서 집계돼요.'); setHtml(v, ''); return; }
+  if (MY.hallErr === 'setup') { setHtml(msg, '명예의 전당을 쓰려면 서버 업데이트(SQL)를 한 번 실행해야 해요.'); setHtml(v, ''); return; }
+  if (!MY.hall) { setHtml(msg, MY.hallErr ? '명예의 전당을 불러오지 못했어요. 잠시 뒤 다시 열어 주세요.' : '명예의 전당을 불러오는 중이에요.'); setHtml(v, ''); return; }
+  setHtml(msg, '');
+  const nm = r => esc(r.nick || '익명 트레이더'), me = r => r.user_id === RK.uid ? ' <em>나</em>' : '';
+  const winsHtml = (MY.wins || []).length ? (MY.wins || []).map((r, i) => `<li class="hw-row${r.user_id === RK.uid ? ' me' : ''}"><span class="rk-n num">${i + 1}</span><span class="rk-car">${carImg(r.car) || '<i class="rk-ava"></i>'}</span><div class="rk-who"><b>${nm(r)}${me(r)}</b><small class="num">입상 ${r.podiums}회</small></div><span class="hw-w num">우승 ${r.wins}회</span></li>`).join('') : '';
+  const days = []; for (const r of MY.hall) { let d = days[days.length - 1]; if (!d || d.k !== r.day_key) days.push(d = { k: r.day_key, rows: [] }); d.rows.push(r); }
+  const WK = '일월화수목금토', dayHtml = days.map(d => { const x = dateOf(d.k); return `<section class="hd"><h4>${x.getMonth() + 1}월 ${x.getDate()}일 <span>${WK[x.getDay()]}요일</span></h4><ol>${d.rows.map(r => `<li class="hd-row m${r.rn}"><span class="medal num">${r.rn}</span><span class="rk-car">${carImg(r.car) || '<i class="rk-ava"></i>'}</span><b>${nm(r)}${me(r)}</b><span class="num ${cls(r.today)}">${pctS(r.today)}</span></li>`).join('')}</ol></section>`; }).join('');
+  setHtml(v, days.length ? `<h3 class="hall-h">역대 우승</h3><ol class="rk-list">${winsHtml}</ol><h3 class="hall-h">날짜별 TOP 3</h3>${dayHtml}`
+    : `<div class="hall-empty"><b>아직 마감된 날이 없어요</b><p>매일 자정(한국 시간)이 지나면 그날 수익률 1~3위가 여기에 영원히 기록돼요. 오늘의 주인공이 되어 보세요.</p></div>`);
+}
+function renderShop() {
+  const coins = A.coins || 0, owned = new Set(A.cars || []), mine = A.car && carById(A.car);
+  setHtml($('#shopTop'), `<div class="shop-me">${mine ? carImg(A.car, 'big') : '<div class="shop-none">아직 대표 차가 없어요</div>'}<div class="shop-me-t">${mine ? `<b>${esc(mine.brand)} ${esc(mine.model)}</b><span>내 대표 차 · 랭킹에 같이 보여요</span>` : '<b>첫 차를 골라 보세요</b><span>산 차는 랭킹과 명예의 전당에 내 이름 옆에 나와요</span>'}</div></div>
+    <div class="shop-coin"><span>보유 코인</span><b class="num">${won(coins)}</b><small>매도로 번 수익 1,000원당 1코인 · 매일 첫 접속 100코인</small></div>`);
+  const now = Date.now(), arm = MY.arm && now - MY.arm.t < 2600 ? MY.arm.id : null;
+  const tiers = []; for (const c of CARS) { let t = tiers[tiers.length - 1]; if (!t || t.name !== c.tier) tiers.push(t = { name: c.tier, cars: [] }); t.cars.push(c); }
+  setHtml($('#shopList'), tiers.map(t => `<h3 class="hall-h">${t.name}</h3><div class="shop-grid">${t.cars.map(c => {
+    const has = owned.has(c.id), use = A.car === c.id, lack = c.price - coins;
+    const btn = use ? '<button class="sbtn on" disabled>대표 차</button>' : has ? `<button class="sbtn" data-use="${c.id}">대표로 쓰기</button>`
+      : lack > 0 ? `<button class="sbtn" disabled>${won(lack)}코인 부족</button>` : `<button class="sbtn buy${arm === c.id ? ' arm' : ''}" data-buy="${c.id}">${arm === c.id ? '한 번 더 누르면 구매' : '구매'}</button>`;
+    return `<div class="scard${has ? ' own' : ''}${c.gold ? ' gold' : ''}">${carImg(c.id, 'mid')}<div class="sc-t"><b>${esc(c.brand)} ${esc(c.model)}</b><span class="num">${has ? '보유 중' : won(c.price) + ' 코인'}</span><small class="sc-won">${krwShort(c.price * 1000)}원</small><small class="sc-spd">속도 <i style="--w:${Math.round(carSpd(c.id) / 4.2 * 100)}%"></i> ${carSpd(c.id).toFixed(1)}배</small></div>${btn}</div>`;
+  }).join('')}</div>`).join(''));
+}
+function buyCar(id) {
+  const c = carById(id); if (!c || (A.cars || []).includes(id)) return;
+  if ((A.coins || 0) < c.price) return toast('코인이 부족해요.');
+  if (!(MY.arm && MY.arm.id === id && Date.now() - MY.arm.t < 2600)) { MY.arm = { id, t: Date.now() }; dirty = true; setTimeout(() => { dirty = true; }, 2700); return; }
+  MY.arm = null; A.coins -= c.price; A.cars = (A.cars || []).concat(id); A.car = id;
+  toast(`<b>${esc(c.brand)} ${esc(c.model)}</b> 출고 완료! 대표 차로 설정했어요.`, null, 3500);
+  RK.want = true; saveNow(); dirty = true;
+}
+function useCar(id) { if (!(A.cars || []).includes(id)) return; A.car = id; toast(`${esc(carName(carById(id)))}을(를) 대표 차로 정했어요.`); RK.want = true; saveNow(); dirty = true; }
+function setMkt(m) {
+  if (U.mkt === m) return; U.mkt = m; $('#inQty').value = ''; try { localStorage.setItem('scalplab.mkt', m); } catch (e) {}
+  fillStopsInputs(); dirty = true;
+}
+// 예전 버전의 레버리지·숏 포지션은 선물 계좌로 옮긴다
+function migrateMkt() {
+  for (const c of Object.keys(A.pos)) { if (/@F$/.test(c)) continue; const p = A.pos[c]; if (isLev(p)) { const k = c + '@F'; if (!A.pos[k]) { A.pos[k] = p; delete A.pos[c]; for (const o of A.orders) if (o.code === c && !o.reserve) o.code = k; } } }
+  for (const o of A.orders) if (!/@F$/.test(o.code) && o.reserve && (o.intent === 'S+' || (o.lev || 1) > 1)) o.code += '@F';
+}
+function attendance() {
+  migrateMkt();
+  if (A.coins == null) A.coins = 500;
+  if (!A.cars) A.cars = [];
+  A.cars = [...new Set(A.cars.map(id => CAR_ALIAS[id] || id))]; if (A.car) A.car = CAR_ALIAS[A.car] || A.car;
+  if (A.attendDay !== TODAY_DAY) { const first = A.attendDay == null; A.attendDay = TODAY_DAY; if (!first) { A.coins += 100; toast('<b>출석 보상</b> · <span class="coin">+100코인</span>', null, 3000); } saveNow(); }
 }
 
 /* ---------- toasts ---------- */
@@ -1941,7 +2401,10 @@ function renderBook() {
 }
 
 function renderTicket() {
-  const s = cur();
+  const s = curT(), fut = !!s.fut;
+  document.querySelectorAll('#mktSeg button').forEach(b => b.classList.toggle('on', b.dataset.mk === U.mkt));
+  const sb0 = document.querySelectorAll('.sides button'), sk = fut ? 'f' : 's';
+  if ($('.sides')._k !== sk) { $('.sides')._k = sk; sb0[0].innerHTML = fut ? '매수 <small>롱</small>' : '매수'; sb0[1].innerHTML = fut ? '매도 <small>숏</small>' : '매도'; $('#tkFine').textContent = fut ? '선물 · 롱(오르면 이득)과 숏(내리면 이득) 모두 가능 · 레버리지 최대 10배 · 손실이 증거금에 닿으면 반대매매' : '현물 · 산 주식만 팔 수 있어요 · 수수료 0.015% · 매도 시 거래세 0.18% (게임 설정)'; }
   if (U.follow) U.price = s.price;
   document.querySelectorAll('.sides button').forEach(b => b.classList.toggle('on', b.dataset.side === U.side));
   document.querySelectorAll('#typeSeg button').forEach(b => b.classList.toggle('on', b.dataset.type === U.type));
@@ -1949,18 +2412,35 @@ function renderTicket() {
   box.classList.toggle('dis', U.type === 'market');
   inP.disabled = U.type === 'market';
   if (document.activeElement !== inP) inP.value = U.type === 'market' ? '시장가' : won(U.price);
-  if (U.side === 'buy') { $('#availLabel').textContent = '주문가능'; $('#avail').textContent = won(A.cash) + '원'; }
-  else { const p = A.pos[s.code]; $('#availLabel').textContent = '매도가능'; $('#avail').textContent = won(p ? p.qty - p.locked : 0) + '주'; }
+  const it = intentOf(s, U.side), opening = it === 'L+' || it === 'S+', p0 = A.pos[s.code];
+  if (opening) { $('#availLabel').textContent = '주문가능'; $('#avail').textContent = won(A.cash) + '원'; }
+  else { $('#availLabel').textContent = it === 'S-' ? '되살 수 있는 숏' : '팔 수 있는 롱'; $('#avail').textContent = won(closable(p0)) + '주'; }
   const q = qtyVal(), px = priceVal(), mq = maxQty();
   $('#total').textContent = won(q * px) + '원';
+  const L = opening && fut ? U.lev : 1;
+  $('#levRow').hidden = !(opening && fut);
+  document.querySelectorAll('#levSeg button').forEach(b => b.classList.toggle('on', +b.dataset.l === U.lev));
+  $('#levRow').classList.toggle('hot', U.lev >= 5);
+  $('#levM').hidden = $('#levL').hidden = L === 1;
+  if (L > 1) {
+    $('#levMv').textContent = won(q * px * (1 / L + (it === 'L+' ? FEE : 0))) + '원';
+    let lq = 0;
+    if (q && it === 'L+') { const d = (p0 ? p0.debt || 0 : 0) + q * px * (1 - 1 / L), qq = (p0 ? p0.qty : 0) + q; lq = d / (qq * (1 - MMR)); }
+    else if (q) { const net = px * (1 - FEE - TAX), qq = (p0 ? p0.qty : 0) + q, avg = ((p0 ? p0.avg * p0.qty : 0) + net * q) / qq, m = (p0 ? p0.margin : 0) + px * q / L; lq = (m + avg * qq) / (qq * (1 + MMR)); }
+    $('#levLv').textContent = lq ? `${won(lq)}원 (${pctS(lq / px - 1)})` : '—';
+  }
+  if (!opening) $('#levM').hidden = $('#levL').hidden = true;
   syncSlider($('#tkSl'), mq ? Math.min(100, q / mq * 100) : 0, U.side);
   const sb = $('#submitBtn');
   const posT = A.pos[s.code];
-  if (U.side === 'buy') { $('#tpslWrap').hidden = false; $('#tpslChk').hidden = false; $('#tpslBox').hidden = !$('#tpslOn').checked; $('#tpslApply').hidden = true; }
+  const shortCtx = it === 'S+' || it === 'S-';
+  $('#tpslBox').classList.toggle('short', shortCtx);
+  if (!$('#tpslBox')._sh !== !shortCtx) { $('#tpslBox')._sh = shortCtx; $('#tpslBox').querySelectorAll('[data-tp]').forEach(b => b.textContent = (shortCtx ? '−' : '+') + b.dataset.tp + '%'); $('#tpslBox').querySelectorAll('[data-sl]').forEach(b => b.textContent = (shortCtx ? '+' : '−') + b.dataset.sl + '%'); }
+  if (opening) { $('#tpslWrap').hidden = false; $('#tpslChk').hidden = false; $('#tpslBox').hidden = !$('#tpslOn').checked; $('#tpslApply').hidden = true; }
   else if (posT) { $('#tpslWrap').hidden = false; $('#tpslChk').hidden = true; $('#tpslBox').hidden = false; $('#tpslApply').hidden = false; }
   else $('#tpslWrap').hidden = true;
   sb.className = 'submit ' + U.side;
-  sb.textContent = `${U.type === 'market' ? '시장가 ' : ''}${U.side === 'buy' ? '매수' : '매도'}`;
+  sb.textContent = `${U.type === 'market' ? '시장가 ' : ''}${fut ? { 'L+': '롱 진입', 'S+': '숏 진입', 'L-': '롱 정리', 'S-': '숏 정리' }[it] : it === 'L+' ? '매수' : '매도'}${opening && L > 1 ? ' x' + L : ''}`;
 }
 
 const fmtWhen = ts => { const d = Math.floor(ts / 1440); if (d === TODAY_DAY) return hhmm(ts); const x = dateOf(d); return `${x.getMonth() + 1}/${x.getDate()} ${hhmm(ts)}`; };
@@ -1977,49 +2457,50 @@ function renderAccount() {
   const mob = window.matchMedia('(max-width: 640px)').matches;
   let html, key;
   if (U.tab === 'pos') {
-    key = `pos|${mob}|${codes.join(',')}`;
+    key = `pos|${mob}|${codes.map(c => c + (isLev(A.pos[c]) ? 'L' : '') + (isShort(A.pos[c]) ? 'S' : '')).join(',')}`;
     if (!codes.length) html = '<div class="empty-state">보유 종목이 없어요.<br>호가창에서 가격을 눌러 고르고 매수해 보세요.</div>';
     else if (mob) html = '<div class="pcards">' + codes.map(c => {
-      const p = A.pos[c], s = bySym(c), val = p.qty * s.price, pl = val - p.avg * p.qty, rr = p.avg ? s.price / p.avg - 1 : 0, i = syms.indexOf(s);
+      const p = A.pos[c], s = bySym(c), val = posEq(p, s.price), pl = posPnl(p, s.price), rr = posRet(p, s.price), i = syms.indexOf(baseSym(s)), sh = isShort(p);
       return `<div class="pcard">
-        <button class="pc-name nm" data-sel="${i}">${s.name}<small>${s.code}</small></button>
+        <button class="pc-name nm" data-sel="${i}" data-mk="${s.fut ? 'fut' : 'spot'}">${s.name}<small>${baseSym(s).code}</small><span class="sidetag ${s.fut ? (sh ? 'short' : 'long') : 'spot'}">${s.fut ? '선물 ' + sideKo(p) : '현물'}</span>${isLev(p) ? `<span class="levtag">${levTxt(p)}</span>` : ''}</button>
         <div class="pc-pl num ${cls(pl)}" data-f>${sgnWon(pl)}원<small>${pctS(rr)}</small></div>
         <div class="pc-grid">
           <div><span>보유수량</span><b class="num" data-f>${won(p.qty)}주${p.locked ? ` <em>대기 ${won(p.locked)}</em>` : ''}</b></div>
-          <div><span>평균단가</span><b class="num" data-f>${won(p.avg)}</b></div>
+          <div><span>${sh ? '숏 평균가' : '평균단가'}</span><b class="num" data-f>${won(p.avg)}</b></div>
           <div><span>현재가</span><b class="num ${cls(s.price - s.prevClose)}" data-f>${won(s.price)}</b></div>
-          <div><span>평가금액</span><b class="num" data-f>${won(val)}</b></div>
+          <div><span>${isLev(p) ? '내 몫' : '평가금액'}</span><b class="num" data-f>${won(val)}</b></div>
           <div><span>익절</span><b class="num tpc" data-f>${p.tp ? won(p.tp) : '—'}${partN(p, 'tp')}</b></div>
           <div><span>손절</span><b class="num slc" data-f>${p.sl ? won(p.sl) : '—'}${partN(p, 'sl')}</b></div>
+          ${isLev(p) ? `<div><span>레버리지</span><b class="num lev" data-f>${levTxt(p)}</b></div><div><span>${sh ? '증거금' : '대출금'}</span><b class="num" data-f>${won(sh ? p.margin : p.debt)}</b></div><div><span>반대매매가</span><b class="num down" data-f>${won(liqOf(p))}</b></div>` : ''}
         </div>
-        <div class="pc-acts"><button class="mini" data-pstpsl="${c}">익절·손절</button><button class="mini" data-psclose="${c}">매도</button><button class="mini sell" data-sellall="${c}">시장가 전량</button></div>
+        <div class="pc-acts"><button class="mini" data-pstpsl="${c}">익절·손절</button><button class="mini" data-psclose="${c}">${sh ? '되사기' : '매도'}</button><button class="mini sell" data-sellall="${c}">시장가 전량</button></div>
       </div>`;
     }).join('') + '</div>';
-    else html = `<div class="tbl-wrap"><table><thead><tr><th>종목</th><th>보유수량</th><th>평균단가</th><th>현재가</th><th>평가손익</th><th>평가금액</th><th>익절 / 손절</th><th></th></tr></thead><tbody>` +
+    else html = `<div class="tbl-wrap"><table><thead><tr><th>종목</th><th>보유수량</th><th>평균단가</th><th>레버리지</th><th>현재가</th><th>평가손익</th><th>내 몫</th><th>익절 / 손절</th><th></th></tr></thead><tbody>` +
       codes.map(c => {
-        const p = A.pos[c], s = bySym(c), val = p.qty * s.price, pl = val - p.avg * p.qty, rr = p.avg ? s.price / p.avg - 1 : 0, i = syms.indexOf(s);
-        return `<tr><td><span class="nm" data-sel="${i}">${s.name}</span><span class="sub">${s.code}</span></td><td class="num" data-f>${won(p.qty)}${p.locked ? `<span class="sub">대기 ${won(p.locked)}</span>` : ''}</td><td class="num" data-f>${won(p.avg)}</td><td class="num ${cls(s.price - s.prevClose)}" data-f>${won(s.price)}</td><td class="num ${cls(pl)}" data-f>${sgnWon(pl)}<span class="sub ${cls(rr)}">${pctS(rr)}</span></td><td class="num" data-f>${won(val)}</td><td class="num" data-f><span class="tpc">${p.tp ? won(p.tp) : '—'}${partN(p, 'tp')}</span> / <span class="slc">${p.sl ? won(p.sl) : '—'}${partN(p, 'sl')}</span></td><td class="acts"><button class="mini" data-pstpsl="${c}">익절·손절</button><button class="mini" data-psclose="${c}">매도</button><button class="mini sell" data-sellall="${c}">시장가 전량</button></td></tr>`;
+        const p = A.pos[c], s = bySym(c), val = posEq(p, s.price), pl = posPnl(p, s.price), rr = posRet(p, s.price), i = syms.indexOf(baseSym(s)), sh = isShort(p);
+        return `<tr><td><span class="nm" data-sel="${i}" data-mk="${s.fut ? 'fut' : 'spot'}">${s.name}</span><span class="sidetag ${s.fut ? (sh ? 'short' : 'long') : 'spot'}">${s.fut ? '선물 ' + sideKo(p) : '현물'}</span><span class="sub">${baseSym(s).code}</span></td><td class="num" data-f>${won(p.qty)}${p.locked ? `<span class="sub">대기 ${won(p.locked)}</span>` : ''}</td><td class="num" data-f>${won(p.avg)}</td><td class="num" data-f>${isLev(p) ? `<b class="lev">${levTxt(p)}</b><span class="sub down">반대매매 ${won(liqOf(p))}</span>` : '<span class="muted">x1</span>'}</td><td class="num ${cls(s.price - s.prevClose)}" data-f>${won(s.price)}</td><td class="num ${cls(pl)}" data-f>${sgnWon(pl)}<span class="sub ${cls(rr)}">${pctS(rr)}</span></td><td class="num" data-f>${won(val)}${sh ? `<span class="sub">증거금 ${won(p.margin)}</span>` : p.debt > 0 ? `<span class="sub">대출 ${won(p.debt)}</span>` : ''}</td><td class="num" data-f><span class="tpc">${p.tp ? won(p.tp) : '—'}${partN(p, 'tp')}</span> / <span class="slc">${p.sl ? won(p.sl) : '—'}${partN(p, 'sl')}</span></td><td class="acts"><button class="mini" data-pstpsl="${c}">익절·손절</button><button class="mini" data-psclose="${c}">${sh ? '되사기' : '매도'}</button><button class="mini sell" data-sellall="${c}">시장가 전량</button></td></tr>`;
       }).join('') + '</tbody></table></div>';
   } else if (U.tab === 'ord') {
     const list = A.orders.slice().reverse();
     key = `ord|${mob}|${list.map(o => o.id).join(',')}`;
     if (!list.length) html = '<div class="empty-state">대기 중인 지정가 주문이 없어요.</div>';
     else if (mob) html = '<div class="olist">' + list.map(o => { const s = bySym(o.code); return `<div class="orow">
-        <div class="or-l"><b><span class="sbadge ${o.side}">${o.side === 'buy' ? '매수' : '매도'}</span> <span class="nm" data-sel="${syms.indexOf(s)}">${s.name}</span></b><span class="num">${won(o.price)}원 · ${won(o.q)}주 · ${fmtWhen(o.ts)}</span></div>
+        <div class="or-l"><b><span class="sbadge ${o.side}">${INTENT_KO[o.intent] || (o.side === 'buy' ? '매수' : '매도')}</span> <span class="nm" data-sel="${syms.indexOf(baseSym(s))}" data-mk="${s.fut ? 'fut' : 'spot'}">${nmOf(s)}</span></b><span class="num">${won(o.price)}원 · ${won(o.q)}주 · ${fmtWhen(o.ts)}</span></div>
         <div class="or-r"><span class="num muted" data-f>현재 ${won(s.price)}</span><button class="mini" data-cancel="${o.id}">취소</button></div>
       </div>`; }).join('') + '</div>';
     else html = `<div class="tbl-wrap"><table><thead><tr><th>종목</th><th>구분</th><th>주문가</th><th>현재가</th><th>수량</th><th>주문시각</th><th></th></tr></thead><tbody>` +
-      list.map(o => { const s = bySym(o.code); return `<tr><td><span class="nm" data-sel="${syms.indexOf(s)}">${s.name}</span></td><td><span class="sbadge ${o.side}">${o.side === 'buy' ? '매수' : '매도'}</span></td><td class="num">${won(o.price)}</td><td class="num" data-f>${won(s.price)}</td><td class="num">${won(o.q)}</td><td class="num">${fmtWhen(o.ts)}</td><td><button class="mini" data-cancel="${o.id}">취소</button></td></tr>`; }).join('') + '</tbody></table></div>';
+      list.map(o => { const s = bySym(o.code); return `<tr><td><span class="nm" data-sel="${syms.indexOf(baseSym(s))}" data-mk="${s.fut ? 'fut' : 'spot'}">${nmOf(s)}</span></td><td><span class="sbadge ${o.side}">${INTENT_KO[o.intent] || (o.side === 'buy' ? '매수' : '매도')}</span></td><td class="num">${won(o.price)}</td><td class="num" data-f>${won(s.price)}</td><td class="num">${won(o.q)}</td><td class="num">${fmtWhen(o.ts)}</td><td><button class="mini" data-cancel="${o.id}">취소</button></td></tr>`; }).join('') + '</tbody></table></div>';
   } else {
     const list = A.fills.slice(0, 50);
     key = `fill|${mob}|${A.fills.length}|${list[0] ? list[0].ts + list[0].px : ''}`;
     if (!list.length) html = '<div class="empty-state">아직 체결된 주문이 없어요.</div>';
     else if (mob) html = '<div class="olist">' + list.map(f => `<div class="orow">
-        <div class="or-l"><b><span class="sbadge ${f.side}">${f.side === 'buy' ? '매수' : '매도'}</span> ${f.name}</b><span class="num">${fmtWhen(f.ts)} · ${won(f.px)}원 × ${won(f.q)}주</span></div>
+        <div class="or-l"><b><span class="sbadge ${f.side}">${f.tag || (f.side === 'buy' ? '매수' : '매도')}</span> ${f.name}</b><span class="num">${fmtWhen(f.ts)} · ${won(f.px)}원 × ${won(f.q)}주</span></div>
         <div class="or-r num ${f.pnl == null ? 'muted' : cls(f.pnl)}">${f.pnl == null ? won(f.px * f.q) + '원' : sgnWon(f.pnl) + '원'}</div>
       </div>`).join('') + '</div>';
     else html = `<div class="tbl-wrap"><table><thead><tr><th>시각</th><th>종목</th><th>구분</th><th>체결가</th><th>수량</th><th>체결금액</th><th>실현손익</th></tr></thead><tbody>` +
-      list.map(f => `<tr><td class="num">${fmtWhen(f.ts)}</td><td style="text-align:right">${f.name}</td><td><span class="sbadge ${f.side}">${f.side === 'buy' ? '매수' : '매도'}</span></td><td class="num">${won(f.px)}</td><td class="num">${won(f.q)}</td><td class="num">${won(f.px * f.q)}</td><td class="num ${f.pnl == null ? 'muted' : cls(f.pnl)}">${f.pnl == null ? '—' : sgnWon(f.pnl)}</td></tr>`).join('') + '</tbody></table></div>';
+      list.map(f => `<tr><td class="num">${fmtWhen(f.ts)}</td><td style="text-align:right">${f.name}</td><td><span class="sbadge ${f.side}">${f.tag || (f.side === 'buy' ? '매수' : '매도')}</span></td><td class="num">${won(f.px)}</td><td class="num">${won(f.q)}</td><td class="num">${won(f.px * f.q)}</td><td class="num ${f.pnl == null ? 'muted' : cls(f.pnl)}">${f.pnl == null ? '—' : sgnWon(f.pnl)}</td></tr>`).join('') + '</tbody></table></div>';
   }
   patchBody($('#tabBody'), html, key);
 }
@@ -2489,7 +2970,7 @@ function drawChart() {
   }
   if (!isFinite(hi)) { hi = s.price * 1.01; lo = s.price * .99; }
   if (hi - lo < tickSize(lo) * 4) { hi += tickSize(lo) * 2; lo -= tickSize(lo) * 2; }
-  const pad = (hi - lo) * .08, mid = (hi + lo) / 2, half = (hi - lo + pad * 2) / 2 * U.yScale;
+  const pad = (hi - lo) * .08, half = (hi - lo + pad * 2) / 2 * U.yScale, mid = (hi + lo) / 2 + (U.yScale !== 1 ? U.yOff * half : 0);
   GEO.hi = mid + half; GEO.lo = Math.max(0, mid - half);
 
   // grid + price axis
@@ -2585,7 +3066,7 @@ function drawChart() {
 
   // 체결 표시
   for (const f of A.fills) {
-    if (f.code !== s.code) continue;
+    if (f.code !== s.code && f.code !== s.code + '@F') continue;
     const i = Math.floor(idxOfTs(ser, tf, f.ts) + 1e-6); if (i < i0 || i > i1) continue;
     const c = cs[i], x = X(i);
     ctx.fillStyle = f.side === 'buy' ? COL.up : COL.down; ctx.strokeStyle = COL.bg; ctx.lineWidth = 1; ctx.beginPath();
@@ -2603,39 +3084,45 @@ function drawChart() {
   let eT = 0, eB = 0;
   const yc = p => inView(p) ? Y(p) : p > GEO.hi ? PT + 10 + 19 * eT++ : PT + priceH - 10 - 19 * eB++, arw = p => inView(p) ? '' : p > GEO.hi ? ' ▲' : ' ▼';
   for (const o of A.orders) {
-    if (o.code !== s.code) continue;
+    if (o.code !== curT().code) continue;
     const dragging = LD && LD.kind === 'ord' && LD.id === o.id, price = dragging ? LD.price : o.price;
     const y = yc(price), col = o.side === 'buy' ? COL.up : COL.down;
     if (inView(price)) hline(y, alpha(col, dragging ? 1 : .8), [4, 3]);
-    linePill(6, y, `${o.side === 'buy' ? '매수' : '매도'} ${won(o.q)}주 · ${won(price)}${dragging ? ' 정정' : ''}${arw(price)}`, col, { close: true, hit: { act: 'ord', id: o.id }, closeHit: { act: 'ordx', id: o.id } });
+    linePill(6, y, `${INTENT_KO[o.intent] || (o.side === 'buy' ? '매수' : '매도')} ${won(o.q)}주 · ${won(price)}${dragging ? ' 정정' : ''}${arw(price)}`, col, { close: true, hit: { act: 'ord', id: o.id }, closeHit: { act: 'ordx', id: o.id } });
     tag(plotW + 1, y, won(price), col, '#fff');
   }
-  const pos = A.pos[s.code];
+  const pos = A.pos[curT().code];
   if (pos && pos.qty > 0) {
-    const y = Math.min(PT + priceH, Math.max(PT, Y(pos.avg))), rr = s.price / pos.avg - 1;
+    const y = Math.min(PT + priceH, Math.max(PT, Y(pos.avg))), rr = posRet(pos, s.price);
     hline(y, COL.gold, [6, 4]);
-    linePill(6, y, `평단 ${won(pos.avg)} · ${won(pos.qty)}주 · ${pctS(rr)}${pos.tp && pos.sl ? '' : '  ⇅ 익절·손절'}`, COL.gold, { hit: { act: 'avg' } });
+    linePill(6, y, `${sideKo(pos)} 평단 ${won(pos.avg)} · ${won(pos.qty)}주${isLev(pos) ? ' · ' + levTxt(pos) : ''} · ${pctS(rr)}${pos.tp && pos.sl ? '' : '  ⇅ 익절·손절'}`, COL.gold, { hit: { act: 'avg' } });
     tag(plotW + 1, y, won(pos.avg), COL.gold, '#1a1205');
+    if (isLev(pos)) {
+      const lq = liqOf(pos), ly2 = yc(lq), lcol = '#ff4d6d';
+      if (inView(lq)) hline(ly2, alpha(lcol, .9), [8, 3, 2, 3], 0, 1.4);
+      linePill(6, ly2, `반대매매 ${won(lq)} · ${pctS(lq / s.price - 1)}${arw(lq)}`, lcol, { solid: true });
+      tag(plotW + 1, ly2, won(lq), lcol, '#fff');
+    }
     for (const key of ['tp', 'sl']) {
       const dragging = LD && LD.kind === key, price = dragging ? LD.price : pos[key];
       if (!price) continue;
-      const col = key === 'tp' ? COL.tp : COL.sl, yy = yc(price), pnl = (price * (1 - FEE - TAX) - pos.avg) * pos.qty;
+      const col = key === 'tp' ? COL.tp : COL.sl, yy = yc(price), pnl = closePnl(pos, price, pos.qty);
       if (inView(price)) hline(yy, col, [5, 3]);
-      linePill(6, yy, `${key === 'tp' ? '익절' : '손절'} ${won(price)} · ${pctS(price / pos.avg - 1)} · ${sgnWon(pnl)}원${arw(price)}`, col, { solid: true, close: true, hit: { act: key }, closeHit: { act: key + 'x' } });
+      linePill(6, yy, `${key === 'tp' ? '익절' : '손절'} ${won(price)} · ${pctS(posRet(pos, price))} · ${sgnWon(pnl)}원${arw(price)}`, col, { solid: true, close: true, hit: { act: key }, closeHit: { act: key + 'x' } });
       tag(plotW + 1, yy, won(price), col, '#fff');
     }
   }
   if (pos && pos.ps) for (const st of pos.ps) {
     const dragging = LD && LD.kind === 'ps' && LD.id === st.id, price = dragging ? LD.price : st.price;
-    const col = st.kind === 'tp' ? COL.tp : COL.sl, yy = yc(price), pnl = (price * (1 - FEE - TAX) - pos.avg) * st.q;
+    const col = st.kind === 'tp' ? COL.tp : COL.sl, yy = yc(price), pnl = closePnl(pos, price, st.q);
     if (inView(price)) hline(yy, alpha(col, .85), [2, 3]);
     linePill(6, yy, `부분 ${st.kind === 'tp' ? '익절' : '손절'} ${won(st.q)}주 · ${won(price)} · ${sgnWon(pnl)}원${arw(price)}`, col, { close: true, hit: { act: 'ps', id: st.id }, closeHit: { act: 'psx', id: st.id } });
     tag(plotW + 1, yy, won(price), alpha(col, .85), '#fff');
   }
   if (LD && LD.kind === 'new' && pos) {
-    const key = LD.price >= s.price ? 'tp' : 'sl', col = key === 'tp' ? COL.tp : COL.sl, y = Y(LD.price);
+    const key = (LD.price >= s.price) !== isShort(pos) ? 'tp' : 'sl', col = key === 'tp' ? COL.tp : COL.sl, y = Y(LD.price);
     hline(y, col, [5, 3]);
-    linePill(6, y, `${key === 'tp' ? '익절' : '손절'} ${won(LD.price)} · ${pctS(LD.price / pos.avg - 1)} · 놓으면 설정`, col, { solid: true });
+    linePill(6, y, `${key === 'tp' ? '익절' : '손절'} ${won(LD.price)} · ${pctS(posRet(pos, LD.price))} · 놓으면 설정`, col, { solid: true });
     tag(plotW + 1, y, won(LD.price), col, '#fff');
   }
 
@@ -2673,6 +3160,7 @@ function drawChart() {
 
 /* ---------- loop ---------- */
 function frame() {
+  if (dirty && VIL.open) { dirty = false; renderSheet(); renderMy(); }
   if (dirty) {
     dirty = false;
     renderTop(); renderTickers(); renderQuote(); renderBook(); renderTicket(); renderAccount(); drawChart(); syncTools(); renderSheet(); renderMy();
@@ -2684,11 +3172,13 @@ function frame() {
 $('#briefStart').addEventListener('click', () => { $('#brief').hidden = true; try { localStorage.setItem('scalplab.briefed', '1'); } catch (e) {} });
 let resetArm = 0;
 function armReset(b) {
+  if (A.resetDay === TODAY_DAY) return toast('계좌 초기화는 하루에 한 번만 할 수 있어요. 내일 다시 시도해 주세요.');
   if (Date.now() - resetArm < 2500) {
-    Object.assign(A, freshAccount(), { lastSeen: nowSec(), dayKey: TODAY_DAY }); A.dayStartEq = SEED;
+    const keep = { coins: A.coins, cars: A.cars, car: A.car, attendDay: A.attendDay };
+    Object.assign(A, freshAccount(), keep, { lastSeen: nowSec(), dayKey: TODAY_DAY, resetDay: TODAY_DAY }); A.dayStartEq = SEED;
     for (const x of document.querySelectorAll('.reset')) { x.textContent = '계좌 초기화'; x.classList.remove('arm'); }
     resetArm = 0; saveNow(); fillStopsInputs(); RK.want = true; MY.drawnAt = 0;
-    toast('계좌를 1,000만 원으로 초기화했어요.'); dirty = true; return;
+    toast('계좌를 1,000만 원으로 초기화했어요. 코인과 차고는 그대로예요.'); dirty = true; return;
   }
   resetArm = Date.now(); b.textContent = '한 번 더 누르면 초기화'; b.classList.add('arm');
   setTimeout(() => { if (Date.now() - resetArm >= 2400) { b.textContent = '계좌 초기화'; b.classList.remove('arm'); } }, 2500);
@@ -2698,15 +3188,24 @@ $('#resetAcct2').addEventListener('click', e => armReset(e.currentTarget));
 $('#myBtn').addEventListener('click', () => openMy());
 $('#myClose').addEventListener('click', closeMy);
 $('#myBg').addEventListener('click', e => { if (e.target === $('#myBg')) closeMy(); });
-$('#myTabs').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; MY.tab = b.dataset.my; syncMyTabs(); if (MY.tab === 'rank' && RK.mode === 'sb') sbLoadRanks(); });
+$('#myTabs').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; MY.tab = b.dataset.my; syncMyTabs(); if (MY.tab === 'rank' && RK.mode === 'sb') { sbLoadRanks(); if (MY.rk === 'hall') sbLoadHall(); } });
 $('#mRange').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; MY.range = b.dataset.r; syncMyTabs(); });
-$('#rkSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; MY.rk = b.dataset.rk; syncMyTabs(); });
+$('#rkSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; MY.rk = b.dataset.rk; syncMyTabs(); if (MY.rk === 'hall') sbLoadHall(); });
 function saveNick() {
   const v = $('#nickIn').value.replace(/\s+/g, ' ').trim().slice(0, 12);
   RK.nick = v; try { localStorage.setItem('scalplab.nick', v); } catch (e) {}
-  toast(v ? `닉네임을 "${esc(v)}"(으)로 정했어요.` : '닉네임을 지웠어요.'); RK.want = true; dirty = true;
+  $('#nickIn').blur(); $('#nickRow').hidden = true;
+  toast(v ? `닉네임을 <b>${esc(v)}</b>(으)로 정했어요.` : '닉네임을 지웠어요.'); RK.want = true; RK.lastWrite = 0; dirty = true;
 }
-$('#nickSave').addEventListener('click', saveNick);
+// 키보드가 내려가며 화면이 밀려 버튼을 놓치지 않게, 손가락이 닿는 순간(pointerdown)에 처리한다
+$('#nickSave').addEventListener('pointerdown', e => { e.preventDefault(); saveNick(); });
+$('#nickSave').addEventListener('click', e => { if (e.detail === 0) saveNick(); });
+$('#nickCancel').addEventListener('pointerdown', e => { e.preventDefault(); $('#nickIn').blur(); $('#nickRow').hidden = true; });
+$('#nickEdit').addEventListener('click', () => { const r = $('#nickRow'); r.hidden = !r.hidden; if (!r.hidden) { $('#nickIn').value = RK.nick || ''; setTimeout(() => $('#nickIn').focus(), 30); } });
+$('#shopBtn').addEventListener('click', () => openMy('shop'));
+$('#rankBtn').addEventListener('click', () => openMy('rank'));
+$('#mktSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setMkt(b.dataset.mk); });
+$('#myShop').addEventListener('click', e => { const b = e.target.closest('[data-buy],[data-use]'); if (!b) return; if (b.dataset.buy) buyCar(b.dataset.buy); else useCar(b.dataset.use); });
 $('#nickIn').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); saveNick(); } });
 document.addEventListener('keydown', e => { if (MY.open && e.key === 'Escape') { e.stopPropagation(); closeMy(); } }, true);
 $('#tickers').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) selectSym(+b.dataset.i); });
@@ -2718,21 +3217,27 @@ const pickBook = e => {
 $('#bookAsk').addEventListener('pointerdown', pickBook);
 $('#bookBid').addEventListener('pointerdown', pickBook);
 document.querySelector('.sides').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; U.side = b.dataset.side; $('#inQty').value = ''; dirty = true; });
+$('#levSeg').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return; U.lev = +b.dataset.l; $('#inQty').value = '';
+  try { localStorage.setItem('scalplab.lev', U.lev); } catch (err) {}
+  if (U.lev >= 5) toast(`<b>${U.lev}배 레버리지</b> · 수익도 손실도 ${U.lev}배예요. 산 가격에서 약 ${(100 - (1 - 1 / U.lev) / (1 - MMR) * 100).toFixed(1)}% 떨어지면 반대매매돼요.`, null, 4000);
+  dirty = true;
+});
 $('#typeSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; U.type = b.dataset.type; dirty = true; });
 $('#pxUp').addEventListener('click', () => { if (U.type === 'market') return; U.follow = false; U.price = nextUp(U.price); dirty = true; });
 $('#pxDn').addEventListener('click', () => { if (U.type === 'market') return; U.follow = false; U.price = Math.max(1, nextDn(U.price)); dirty = true; });
 $('#inPrice').addEventListener('input', e => { const v = parseInt(e.target.value.replace(/[^0-9]/g, ''), 10); if (v) { U.price = v; U.follow = false; } dirty = true; });
 $('#inPrice').addEventListener('blur', () => { U.price = roundTick(U.price || cur().price); dirty = true; });
 $('#inQty').addEventListener('input', e => { const v = qtyVal(); e.target.value = v ? won(v) : ''; dirty = true; });
-function setTkPct(v) { const q = Math.floor(maxQty() * v / 100); $('#inQty').value = q ? won(q) : ''; if (v > 0 && !q) toast(U.side === 'buy' ? '주문가능 금액이 부족해요.' : '매도할 수 있는 보유 수량이 없어요.'); dirty = true; }
+function setTkPct(v) { const q = Math.floor(maxQty() * v / 100); $('#inQty').value = q ? won(q) : ''; if (v > 0 && !q) toast(['L+', 'S+'].includes(intentOf(curT(), U.side)) ? '주문가능 금액이 부족해요.' : '정리할 수 있는 수량이 없어요.'); dirty = true; }
 $('#tkSl input').addEventListener('input', e => setTkPct(+e.target.value));
 $('#tkSl .qs-marks').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; $('#tkSl input').value = b.dataset.p; setTkPct(+b.dataset.p); });
 $('#submitBtn').addEventListener('click', submit);
 $('#tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; U.tab = b.dataset.tab; dirty = true; });
 $('#tabBody').addEventListener('pointerdown', e => {
   const sel = e.target.closest('[data-sel]'), sa = e.target.closest('[data-sellall]'), cn = e.target.closest('[data-cancel]');
-  if (sel) selectSym(+sel.dataset.sel);
-  else if (sa) { if (!canTrade()) return; const s = bySym(sa.dataset.sellall), p = A.pos[s.code]; const q = p ? p.qty - p.locked : 0; if (q > 0) { marketSell(s, q); dirty = true; } else toast('대기 주문에 묶인 수량뿐이에요. 미체결에서 취소해 주세요.'); }
+  if (sel) { if (sel.dataset.mk) setMkt(sel.dataset.mk); selectSym(+sel.dataset.sel); }
+  else if (sa) { if (!canTrade()) return; const s = bySym(sa.dataset.sellall), p = A.pos[s.code]; const q = p ? p.qty - p.locked : 0; if (q > 0) { marketClose(s, q); dirty = true; } else toast('대기 주문에 묶인 수량뿐이에요. 미체결에서 취소해 주세요.'); }
   else if (cn) cancelOrder(+cn.dataset.cancel);
 });
 /* ----- 지표 메뉴 ----- */
@@ -2790,7 +3295,7 @@ function syncTools() {
   syncDrawBar();
 }
 function setTf(tf) {
-  U.tf = tf; U.off = 0; U.fit = true; U.yScale = 1; U.hover = null; U.draft = null;
+  U.tf = tf; U.off = 0; U.fit = true; U.yScale = 1; U.yOff = 0; U.hover = null; U.draft = null;
   document.querySelectorAll('#tfSeg button').forEach(b => b.classList.toggle('on', b.dataset.tf === tf));
   dirty = true;
 }
@@ -2916,7 +3421,7 @@ cv.addEventListener('dblclick', e => {
   const pt = local(e); if (!GEO) return;
   const d = hitTest(cur(), pt);
   if (d && d.type === 'text') { U.sel = d.id; openText(d, false); return; }
-  if (pt.x > GEO.plotW || U.yScale !== 1) { U.yScale = 1; dirty = true; }
+  if (pt.x > GEO.plotW || U.yScale !== 1) { U.yScale = 1; U.yOff = 0; dirty = true; }
 });
 cv.addEventListener('contextmenu', e => {
   e.preventDefault();
@@ -2941,13 +3446,13 @@ cv.addEventListener('pointerdown', e => {
     dirty = true; return;
   }
   // 가격축 끌기 = 세로 스케일
-  if (pt.x > GEO.plotW && pt.y < GEO.vTop) { drag = { mode: 'yscale', y0: pt.y, s0: U.yScale }; return; }
+  if (pt.x > GEO.plotW - (e.pointerType === 'mouse' ? 0 : 6) && pt.y < GEO.vTop) { drag = { mode: 'yscale', y0: pt.y, s0: U.yScale }; e.preventDefault(); return; }
   // 주문·평단·익절·손절 라벨
   const h = hitAt(pt);
   if (h) {
-    const pos = A.pos[s.code];
+    const tk = curT(), pos = A.pos[tk.code];
     if (h.act === 'ordx') { cancelOrder(h.id); return; }
-    if (h.act === 'psx') { removePartial(s.code, h.id); return; }
+    if (h.act === 'psx') { removePartial(tk.code, h.id); return; }
     if (h.act === 'ps' && pos) { const st = (pos.ps || []).find(x => x.id === h.id); if (st) { drag = { mode: 'line', y0: pt.y, moved: false }; U.lineDrag = { kind: 'ps', id: st.id, price: st.price }; } dirty = true; return; }
     if (h.act === 'tpx' || h.act === 'slx') { if (pos) { pos[h.act.slice(0, 2)] = 0; toast(`${h.act === 'tpx' ? '익절' : '손절'} 설정을 지웠어요.`); fillStopsInputs(); dirty = true; } return; }
     if (h.act === 'ord') { const o = A.orders.find(x => x.id === h.id); if (o) { drag = { mode: 'line', y0: pt.y, moved: false }; U.lineDrag = { kind: 'ord', id: o.id, price: o.price }; } dirty = true; return; }
@@ -2961,7 +3466,7 @@ cv.addEventListener('pointerdown', e => {
     U.sel = hit.id;
     if (!hit.lock) { drag = { mode: 'move', d: hit, start: pt, orig: JSON.parse(JSON.stringify(hit)), before: JSON.stringify(s.draw), moved: false }; dirty = true; return; }
   } else U.sel = null;
-  drag = { mode: 'pan', x0: pt.x, off0: U.off, moved: false, type: e.pointerType, pt };
+  drag = { mode: 'pan', x0: pt.x, y0: pt.y, off0: U.off, yo0: U.yOff, ppx: (GEO.hi - GEO.lo) / Math.max(40, GEO.priceH), half: (GEO.hi - GEO.lo) / 2, moved: false, type: e.pointerType, pt };
   if (e.pointerType === 'mouse') U.hover = pt;
   dirty = true;
 });
@@ -2975,7 +3480,7 @@ cv.addEventListener('pointermove', e => {
     if (drag && drag.mode === 'draft' && Math.hypot(pt.x - drag.start.x, pt.y - drag.start.y) > 10) drag.moved = true;
   }
   if (drag) {
-    if (drag.mode === 'pan') { const dx = pt.x - drag.x0; if (Math.abs(dx) > 5) drag.moved = true; if (drag.moved) U.off = drag.off0 + dx / GEO.cw; }
+    if (drag.mode === 'pan') { const dx = pt.x - drag.x0, dy = pt.y - drag.y0; if (Math.abs(dx) > 5 || (U.yScale !== 1 && Math.abs(dy) > 5)) drag.moved = true; if (drag.moved) { U.off = drag.off0 + dx / GEO.cw; if (U.yScale !== 1) U.yOff = drag.yo0 + dy * drag.ppx / drag.half; } }
     else if (drag.mode === 'yscale') U.yScale = Math.max(.2, Math.min(6, drag.s0 * Math.exp((pt.y - drag.y0) / 140)));
     else if (drag.mode === 'line') { if (Math.abs(pt.y - drag.y0) > 3) drag.moved = true; if (drag.moved) U.lineDrag.price = clampPx(cur(), PY(pt.y)); }
     else if (drag.mode === 'move') {
@@ -3002,10 +3507,10 @@ const ptrUp = e => {
     if (drag.mode === 'pan' && !drag.moved && drag.type !== 'mouse') U.hover = U.hover ? null : drag.pt;
     if ((drag.mode === 'move' || drag.mode === 'handle') && drag.moved) { const s = cur(); (s.undo || (s.undo = [])).push(drag.before); s.redo = []; }
     if (drag.mode === 'line') {
-      const L = U.lineDrag, s = cur();
+      const L = U.lineDrag, s = curT();
       if (drag.moved && L) {
         if (L.kind === 'ord') modifyOrder(L.id, L.price);
-        else if (L.kind === 'new') setStop(s, L.price >= s.price ? 'tp' : 'sl', L.price);
+        else if (L.kind === 'new') setStop(s, (L.price >= s.price) !== isShort(A.pos[s.code]) ? 'tp' : 'sl', L.price);
         else if (L.kind === 'ps') setPartial(s, L.id, L.price);
         else setStop(s, L.kind, L.price);
       } else if (L && L.kind === 'new') { openSheet(s.code, 'tpsl'); toast('평단 라벨을 위아래로 끌어도 익절·손절을 걸 수 있어요.'); }
@@ -3030,8 +3535,8 @@ document.addEventListener('keydown', e => {
 document.addEventListener('keydown', e => {
   if (e.target.matches('input,textarea') || e.metaKey || e.ctrlKey || e.altKey) return;
   const k = e.key.toLowerCase();
-  if (k === 'b') { if (!canTrade()) return; const q = qtyVal(); if (!q) return toast('수량 칸에 수량을 먼저 넣어 주세요.'); if (marketBuy(cur(), q)) dirty = true; }
-  else if (k === 's') { if (!canTrade()) return; const p = A.pos[cur().code], q = p ? p.qty - p.locked : 0; if (!q) return toast('매도할 수 있는 보유 수량이 없어요.'); marketSell(cur(), q); dirty = true; }
+  if (k === 'b') { if (!canTrade()) return; const q = qtyVal(); if (!q) return toast('수량 칸에 수량을 먼저 넣어 주세요.'); if (marketBuy(curT(), q, null, U.lev)) dirty = true; }
+  else if (k === 's') { if (!canTrade()) return; const p = A.pos[curT().code], q = p ? p.qty - p.locked : 0; if (!q) return toast('정리할 수 있는 포지션이 없어요.'); marketClose(curT(), q); dirty = true; }
   else if (k >= '1' && k <= '5') selectSym(+k - 1);
 });
 
@@ -3045,7 +3550,7 @@ $('#tpslOn').addEventListener('change', () => { dirty = true; });
 for (const id of ['#inTp', '#inSl']) $(id).addEventListener('input', e => { const v = parseInt(e.target.value.replace(/[^0-9]/g, ''), 10); e.target.value = v ? won(v) : ''; });
 $('#tpslBox').addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
-  const s = cur(), pos = A.pos[s.code];
+  const s = curT(), pos = A.pos[s.code];
   if (b.id === 'tpslApply') {
     if (!pos) return;
     const tp = numIn('#inTp'), sl = numIn('#inSl'); let ok = true;
@@ -3054,15 +3559,16 @@ $('#tpslBox').addEventListener('click', e => {
     if (ok) toast(`<b>익절·손절 적용</b> · ${s.name} ${pos.tp ? won(pos.tp) : '없음'} / ${pos.sl ? won(pos.sl) : '없음'}`);
     fillStopsInputs(); dirty = true; return;
   }
-  const base = U.side === 'buy' ? priceVal() : (pos ? pos.avg : s.price);
-  if (b.dataset.tp) $('#inTp').value = won(roundTick(base * (1 + b.dataset.tp / 100)));
-  if (b.dataset.sl) $('#inSl').value = won(roundTick(base * (1 - b.dataset.sl / 100)));
+  const it = intentOf(s, U.side), opening = it === 'L+' || it === 'S+', sh = it === 'S+' || it === 'S-', k = sh ? -1 : 1;
+  const base = opening ? priceVal() : (pos ? pos.avg : s.price);
+  if (b.dataset.tp) $('#inTp').value = won(roundTick(base * (1 + k * b.dataset.tp / 100)));
+  if (b.dataset.sl) $('#inSl').value = won(roundTick(base * (1 - k * b.dataset.sl / 100)));
 });
 document.querySelector('.sides').addEventListener('click', () => setTimeout(fillStopsInputs));
 $('#tabBody').addEventListener('pointerdown', e => {
   const b = e.target.closest('[data-sellhalf]'); if (!b || !canTrade()) return;
   const s = bySym(b.dataset.sellhalf), p = A.pos[s.code], q = p ? Math.floor((p.qty - p.locked) / 2) : 0;
-  if (q > 0) { marketSell(s, q); dirty = true; } else toast('매도할 수 있는 수량이 부족해요.');
+  if (q > 0) { marketClose(s, q); dirty = true; } else toast('정리할 수 있는 수량이 부족해요.');
 });
 
 $('#tabBody').addEventListener('click', e => {
@@ -3095,6 +3601,602 @@ $('#psList').addEventListener('click', e => { const b = e.target.closest('[data-
 $('#psOk').addEventListener('click', confirmSheet);
 document.addEventListener('keydown', e => { if (PS.open && e.key === 'Escape') { e.stopPropagation(); closeSheet(); } }, true);
 
+/* ---------- 개미 마을 · 서킷 (위에서 내려다본 픽셀 마을, 접속한 사람끼리만 보임) ---------- */
+const VT = 16, VW = 60, VH = 44;                       // 타일 16px, 마을 60×44칸
+const VIL = {
+  open: false, map: 'village', id: '', peers: new Map(), keys: {}, pad: {}, chat: [], last: 0, raf: 0,
+  me: null, cam: { x: 0, y: 0 }, S: 2, sendT: 0, sentKey: '', near: null, net: 'off', lap: null, picker: false,
+};
+const vRand = seed => { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
+const vHash = s => { let h = 2166136261; for (const ch of String(s)) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return h >>> 0; };
+const vClean = (t, n) => String(t == null ? '' : t).replace(/[\u0000-\u001f\u007f­​-‏‪-‮⁠-⁩﻿]/g, '').trim().slice(0, n);
+
+/* ---- 마을 지도 ---- */
+// 0 잔디 · 1 도로 · 2 보도 · 3 물 · 4 건물(막힘) · 5 나무(막힘) · 6 꽃밭 · 7 울타리(막힘)
+const VSOLID = new Set([3, 4, 5, 7]);
+const VROADS_R = [8, 21, 34], VROADS_C = [8, 30, 51];
+const VB = [
+  { kind: 'exchange', name: '스캘프 거래소', x: 12, y: 11, w: 15, h: 7, roof: '#2c3550', wall: '#1b2133', trim: '#f2b544' },
+  { kind: 'shop', name: '모터스 전시장', x: 35, y: 24, w: 12, h: 6, roof: '#3a4f6e', wall: '#cfe3f2', trim: '#3b8cff', glass: 1 },
+  { kind: 'hall', name: '명예의 전당', x: 12, y: 24, w: 8, h: 7, roof: '#d9cfb8', wall: '#efe7d4', trim: '#f2c94c' },
+  { kind: 'circuit', name: '서킷 입구', x: 37, y: 36, w: 10, h: 4, roof: '#1b1f27', wall: '#f1f3f8', trim: '#e5383b', flag: 1 },
+];
+const VHOUSE_ROOFS = ['#c8553d', '#5b8e7d', '#8e5572', '#d9a441', '#4f6d7a', '#a05c3b', '#6d6875', '#3d7068'];
+function vilBuild() {
+  const g = new Uint8Array(VW * VH), R = vRand(20251013);
+  const set = (x, y, v) => { if (x >= 0 && y >= 0 && x < VW && y < VH) g[y * VW + x] = v; };
+  const get = (x, y) => x < 0 || y < 0 || x >= VW || y >= VH ? 5 : g[y * VW + x];
+  const rect = (x, y, w, h, v) => { for (let j = y; j < y + h; j++) for (let i = x; i < x + w; i++) set(i, j, v); };
+  for (const r of VROADS_R) rect(2, r, VW - 4, 2, 1);
+  for (const c of VROADS_C) rect(c, 2, 2, VH - 4, 1);
+  for (let y = 0; y < VH; y++) for (let x = 0; x < VW; x++) {                       // 도로 양옆은 보도
+    if (g[y * VW + x]) continue;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]]) if (get(x + dx, y + dy) === 1) { g[y * VW + x] = 2; break; }
+  }
+  rect(33, 11, 17, 9, 2);                                                              // 광장
+  rect(40, 14, 3, 3, 3);                                                               // 분수
+  rect(22, 25, 6, 5, 3); set(22, 25, 0); set(27, 25, 0); set(22, 29, 0); set(27, 29, 0); // 연못
+  const bs = VB.slice();
+  // 집: 남은 블록에 4×3 집을 자동으로 배치
+  const blocksX = [[3, 7], [10, 29], [32, 50], [53, 57]], blocksY = [[3, 7], [10, 20], [23, 33], [36, 41]];
+  const taken = (x, y, w, h) => { for (let j = y - 1; j < y + h + 1; j++) for (let i = x - 1; i < x + w + 1; i++) { const v = get(i, j); if (v === 3 || v === 4 || v === 1) return true; if (j >= y && j < y + h && i >= x && i < x + w && v === 2) return true; } return bs.some(b => x < b.x + b.w + 1 && x + w + 1 > b.x && y < b.y + b.h + 2 && y + h + 1 > b.y); };
+  for (const [x0, x1] of blocksX) for (const [y0, y1] of blocksY) {
+    for (let y = y0; y + 3 <= y1 + 1; y += 4) for (let x = x0; x + 4 <= x1 + 1; x += 5) {
+      if (R() < .35 || taken(x, y, 4, 3)) continue;
+      bs.push({ kind: 'home', x, y, w: 4, h: 3, roof: VHOUSE_ROOFS[Math.floor(R() * VHOUSE_ROOFS.length)], wall: '#e9e2d0', trim: '#5a4636' });
+    }
+  }
+  for (const b of bs) { rect(b.x, b.y, b.w, b.h, 4); b.door = { x: (b.x + b.w / 2) * VT, y: (b.y + b.h) * VT + 6 }; }
+  for (let x = 0; x < VW; x++) { set(x, 0, 5); set(x, 1, 5); set(x, VH - 1, 5); set(x, VH - 2, 5); }   // 테두리 숲
+  for (let y = 0; y < VH; y++) { set(0, y, 5); set(1, y, 5); set(VW - 1, y, 5); set(VW - 2, y, 5); }
+  for (let i = 0; i < 520; i++) {                                                     // 나무와 꽃
+    const x = 2 + Math.floor(R() * (VW - 4)), y = 2 + Math.floor(R() * (VH - 4));
+    if (g[y * VW + x] !== 0) continue;
+    let ok = true; for (let j = -1; j <= 1 && ok; j++) for (let k = -1; k <= 1; k++) { const v = get(x + k, y + j); if (v === 1 || v === 3 || v === 4) { ok = false; break; } }
+    if (!ok) continue;
+    g[y * VW + x] = R() < .62 ? 5 : 6;
+  }
+  for (let x = 33; x < 50; x++) { if (x < 40 || x > 42) { set(x, 10, 7); } }          // 광장 화단 울타리
+  return { g, bs };
+}
+
+/* ---- 서킷 ---- */
+const VC_W = 1440, VC_H = 960, VC_HW = 30;
+const VC_CTRL = [[220, 760], [190, 520], [230, 300], [360, 180], [560, 170], [690, 270], [760, 430], [880, 470], [1000, 380], [1060, 230], [1200, 170], [1320, 270], [1320, 470], [1220, 600], [1260, 760], [1120, 850], [860, 830], [640, 700], [460, 800], [320, 850]];
+function vcTrack() {
+  const P = VC_CTRL, n = P.length, pts = [];
+  for (let i = 0; i < n; i++) {
+    const p0 = P[(i - 1 + n) % n], p1 = P[i], p2 = P[(i + 1) % n], p3 = P[(i + 2) % n];
+    for (let k = 0; k < 24; k++) {
+      const t = k / 24, t2 = t * t, t3 = t2 * t;
+      pts.push([.5 * (2 * p1[0] + (-p0[0] + p2[0]) * t + (2 * p0[0] - 5 * p1[0] + 4 * p2[0] - p3[0]) * t2 + (-p0[0] + 3 * p1[0] - 3 * p2[0] + p3[0]) * t3),
+                .5 * (2 * p1[1] + (-p0[1] + p2[1]) * t + (2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1]) * t2 + (-p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]) * t3)]);
+    }
+  }
+  return pts;
+}
+
+/* ---- 그리기 준비 ---- */
+let VMAP = null, VTRACK = null, VBG = {}, VSPR = {};
+function vilTileAt(px, py) { const x = Math.floor(px / VT), y = Math.floor(py / VT); return x < 0 || y < 0 || x >= VW || y >= VH ? 5 : VMAP.g[y * VW + x]; }
+function vilPrerender() {
+  VMAP = vilBuild();
+  const c = document.createElement('canvas'); c.width = VW * VT; c.height = VH * VT;
+  const x = c.getContext('2d'), R = vRand(77), g = VMAP.g;
+  const px = (X, Y, col, w = 1, h = 1) => { x.fillStyle = col; x.fillRect(X, Y, w, h); };
+  for (let ty = 0; ty < VH; ty++) for (let tx = 0; tx < VW; tx++) {
+    const v = g[ty * VW + tx], X = tx * VT, Y = ty * VT;
+    const grass = () => { px(X, Y, (tx + ty) % 2 ? '#3f7d3a' : '#428240', VT, VT); for (let i = 0; i < 6; i++) px(X + Math.floor(R() * 16), Y + Math.floor(R() * 16), R() < .5 ? '#4f9a49' : '#376e33'); };
+    if (v === 0) grass();
+    else if (v === 1) {
+      px(X, Y, '#2e3340', VT, VT); for (let i = 0; i < 5; i++) px(X + Math.floor(R() * 16), Y + Math.floor(R() * 16), '#363c4a');
+      const hz = VROADS_R.includes(ty) && !VROADS_C.some(c0 => tx === c0 || tx === c0 + 1), vt = VROADS_C.includes(tx) && !VROADS_R.some(r0 => ty === r0 || ty === r0 + 1);
+      if (hz && tx % 2 === 0) px(X + 2, Y + VT - 1, '#e8c547', 10, 2);                  // 가운데 노란 점선
+      if (vt && ty % 2 === 0) px(X + VT - 1, Y + 2, '#e8c547', 2, 10);
+      const cross = VROADS_C.some(c0 => tx === c0 - 1 || tx === c0 + 2) && VROADS_R.some(r0 => ty === r0 || ty === r0 + 1);
+      if (cross) for (let k = 0; k < 4; k++) px(X + 3, Y + 1 + k * 4, '#d9dde6', 10, 2);  // 횡단보도
+    }
+    else if (v === 2) { px(X, Y, '#9aa0ab', VT, VT); px(X, Y, '#a9afba', VT - 1, VT - 1); px(X + 7, Y, '#8e94a0', 1, VT); px(X, Y + 7, '#8e94a0', VT, 1); }
+    else if (v === 3) { px(X, Y, '#2f6fb0', VT, VT); for (let i = 0; i < 4; i++) px(X + Math.floor(R() * 12), Y + Math.floor(R() * 14), '#5b9bd5', 4, 1); }
+    else if (v === 5) { grass(); px(X + 6, Y + 10, '#5a3b22', 4, 5); x.fillStyle = '#1f5a2a'; x.beginPath(); x.arc(X + 8, Y + 7, 7, 0, 7); x.fill(); x.fillStyle = '#2f7a3a'; x.beginPath(); x.arc(X + 7, Y + 6, 5, 0, 7); x.fill(); px(X + 5, Y + 3, '#4a9a4f', 2, 2); }
+    else if (v === 6) { grass(); for (let i = 0; i < 5; i++) px(X + 2 + Math.floor(R() * 12), Y + 2 + Math.floor(R() * 12), ['#f25f8a', '#f2c94c', '#ffffff', '#b38cff'][Math.floor(R() * 4)], 2, 2); }
+    else if (v === 7) { px(X, Y, '#9aa0ab', VT, VT); px(X, Y + 5, '#6b4a2f', VT, 2); px(X, Y + 10, '#6b4a2f', VT, 2); px(X + 2, Y + 3, '#7d5838', 2, 10); px(X + 11, Y + 3, '#7d5838', 2, 10); }
+  }
+  // 분수 물줄기 자리
+  px(41 * VT + 4, 15 * VT + 4, '#d9eefc', 8, 8);
+  for (const b of VMAP.bs) {
+    const X = b.x * VT, Y = b.y * VT, W = b.w * VT, H = b.h * VT, face = VT + 4;
+    px(X + 3, Y + 4, 'rgba(0,0,0,.28)', W, H);                                       // 그림자
+    px(X, Y, b.roof, W, H - face);
+    for (let i = 0; i < W; i += 4) px(X + i, Y, hexMix(b.roof, '#ffffff', .12), 2, H - face);
+    px(X, Y, hexMix(b.roof, '#ffffff', .25), W, 2); px(X, Y + H - face - 2, hexMix(b.roof, '#000000', .3), W, 2);
+    px(X, Y + H - face, b.wall, W, face);
+    px(X, Y + H - face, b.trim, W, 2);
+    const doorX = X + W / 2 - 5;
+    if (b.glass) { for (let i = 4; i < W - 4; i += 12) px(X + i, Y + H - face + 5, '#7fb8e6', 10, face - 7); }
+    else for (let i = 5; i < W - 8; i += 9) if (Math.abs(X + i - doorX) > 10) { px(X + i, Y + H - face + 6, '#7fb8e6', 5, 6); px(X + i, Y + H - face + 6, '#a9d3f2', 5, 2); }
+    px(doorX, Y + H - 12, hexMix(b.trim, '#000000', .35), 10, 12); px(doorX + 1, Y + H - 11, hexMix(b.wall, '#000000', .25), 8, 11);
+    if (b.kind === 'exchange') { px(X + 10, Y + 8, '#05070b', W - 20, 22); px(X + 10, Y + 8, b.trim, W - 20, 1); px(X + 10, Y + 29, b.trim, W - 20, 1); }
+    if (b.kind === 'hall') { for (let i = 6; i < W - 4; i += 10) px(X + i, Y + H - face + 2, '#ffffff', 3, face - 2); px(X + W / 2 - 4, Y + 10, '#f2c94c', 8, 8); px(X + W / 2 - 2, Y + 18, '#f2c94c', 4, 6); }
+    if (b.kind === 'circuit') { for (let i = 0; i < W; i += 4) for (let j = 0; j < 8; j += 4) px(X + i, Y + 4 + j, ((i + j) / 4) % 2 ? '#ffffff' : '#111111', 4, 4); }
+    if (b.kind === 'shop') { px(X + 8, Y + 8, '#f2b544', W - 16, 3); }
+  }
+  // 전시장 앞 주차된 차들
+  VMAP.parked = [{ id: 'gb_gxs', x: 37 * VT, y: 31 * VT + 8, h: 0 }, { id: 'jb_thunder', x: 41 * VT + 8, y: 31 * VT + 8, h: 0 }, { id: 'gg_emperor', x: 46 * VT, y: 31 * VT + 8, h: Math.PI }];
+  VBG.village = c;
+  // 서킷
+  VTRACK = vcTrack();
+  const k = document.createElement('canvas'); k.width = VC_W; k.height = VC_H;
+  const y = k.getContext('2d');
+  y.fillStyle = '#3d7a37'; y.fillRect(0, 0, VC_W, VC_H);
+  for (let i = 0; i < VC_W; i += 32) { y.fillStyle = (i / 32) % 2 ? '#3a7434' : '#40803a'; y.fillRect(i, 0, 32, VC_H); }
+  const path = () => { y.beginPath(); VTRACK.forEach((p, i) => i ? y.lineTo(p[0], p[1]) : y.moveTo(p[0], p[1])); y.closePath(); };
+  y.lineJoin = 'round'; y.lineCap = 'round';
+  path(); y.strokeStyle = '#d8c690'; y.lineWidth = VC_HW * 2 + 34; y.stroke();          // 모래
+  path(); y.strokeStyle = '#f1f3f8'; y.lineWidth = VC_HW * 2 + 8; y.stroke();          // 연석
+  path(); y.setLineDash([12, 12]); y.strokeStyle = '#e5383b'; y.stroke(); y.setLineDash([]);
+  path(); y.strokeStyle = '#2b2f3a'; y.lineWidth = VC_HW * 2; y.stroke();             // 아스팔트
+  path(); y.setLineDash([14, 18]); y.strokeStyle = 'rgba(241,243,248,.35)'; y.lineWidth = 2; y.stroke(); y.setLineDash([]);
+  // 출발선 (체크무늬)
+  const p0 = VTRACK[0], p1 = VTRACK[1], ang = Math.atan2(p1[1] - p0[1], p1[0] - p0[0]);
+  y.save(); y.translate(p0[0], p0[1]); y.rotate(ang);
+  for (let i = -VC_HW; i < VC_HW; i += 6) for (let j = 0; j < 12; j += 6) { y.fillStyle = ((i + j) / 6) % 2 ? '#ffffff' : '#111111'; y.fillRect(j - 6, i, 6, 6); }
+  y.restore();
+  // 관중석과 나무
+  const R2 = vRand(9);
+  for (const [gx, gy, gw, gh] of [[60, 380, 70, 260], [420, 40, 300, 50], [1180, 40, 200, 50], [700, 900, 340, 44]]) { y.fillStyle = '#5b6170'; y.fillRect(gx, gy, gw, gh); for (let i = 0; i < gw * gh / 18; i++) { y.fillStyle = ['#f25f8a', '#f2c94c', '#3b8cff', '#ffffff', '#e5383b'][Math.floor(R2() * 5)]; y.fillRect(gx + 2 + Math.floor(R2() * (gw - 4)), gy + 2 + Math.floor(R2() * (gh - 4)), 2, 2); } }
+  for (let i = 0; i < 160; i++) {
+    const tx = R2() * VC_W, ty = R2() * VC_H; if (vcNear(tx, ty, 0).d < VC_HW + 50 || [[60, 380, 70, 260], [420, 40, 300, 50], [1180, 40, 200, 50], [700, 900, 340, 44]].some(([a, b, w, h]) => tx > a - 12 && tx < a + w + 12 && ty > b - 12 && ty < b + h + 12)) continue;
+    y.fillStyle = '#1f5a2a'; y.beginPath(); y.arc(tx, ty, 9, 0, 7); y.fill(); y.fillStyle = '#2f7a3a'; y.beginPath(); y.arc(tx - 2, ty - 2, 6, 0, 7); y.fill();
+  }
+  VBG.circuit = k;
+}
+// 트랙 중심선에서 가장 가까운 점 (hint 주변만 찾고, 없으면 전체)
+function vcNear(x, y, hint) {
+  const n = VTRACK.length; let best = 1e18, bi = 0;
+  const scan = (a, b) => { for (let k = a; k <= b; k++) { const i = ((k % n) + n) % n, p = VTRACK[i], d = (p[0] - x) ** 2 + (p[1] - y) ** 2; if (d < best) { best = d; bi = i; } } };
+  if (hint == null) scan(0, n - 1); else { scan(hint - 30, hint + 30); if (best > (VC_HW * 3) ** 2) scan(0, n - 1); }
+  return { i: bi, d: Math.sqrt(best) };
+}
+
+/* ---- 위에서 본 픽셀 차 ---- */
+const TOP_DIM = { mini: [14, 8, .2, .75], sedan: [18, 9, .3, .7], suv: [18, 10, .14, .72], hatch: [16, 9, .16, .7], luxe: [19, 9, .3, .7], coupe: [17, 9, .32, .66], sports: [17, 9, .35, .65], track: [17, 10, .35, .64], super: [18, 10, .38, .62], limo: [22, 9, .24, .74], hyper: [18, 10, .38, .62], kart: [11, 8, .3, .6] };
+const KART = { id: 'kart', brand: '연습용', model: '카트', price: 0, shape: 'kart', col: '#9aa0ab' };
+function carTop(id) {
+  if (VSPR[id]) return VSPR[id];
+  const car = id === 'kart' ? KART : carById(id); if (!car) return null;
+  const [L, Wd, c0, c1] = TOP_DIM[car.shape] || TOP_DIM.sedan, S = CAR_SHAPES[car.shape] || {};
+  const W = Wd + 2, g = new Array(L * W).fill(null), body = car.col, dark = hexMix(body, '#000000', .45);
+  const set = (x, y, c) => { x = Math.round(x); y = Math.round(y); if (x >= 0 && y >= 0 && x < L && y < W) g[y * L + x] = c; };
+  const taper = car.shape === 'sports' || car.shape === 'super' || car.shape === 'hyper' || car.shape === 'track' ? 2 : 1;
+  for (let x = 0; x < L; x++) for (let y = 1; y <= Wd; y++) {
+    const fromF = L - 1 - x, edge = Math.min(y - 1, Wd - y);
+    if (x === 0 && edge < 1) continue; if (fromF < taper && edge < taper - fromF) continue;
+    set(x, y, body);
+  }
+  const a = Math.round(L * c0), b = Math.round(L * c1), glass = '#8fc1e6', roof = car.top || hexMix(body, '#ffffff', .12);
+  for (let x = a; x < b; x++) for (let y = 2; y < Wd; y++) set(x, y, x >= b - 2 ? glass : x < a + 1 ? glass : roof);
+  if (car.stripe) for (let x = 0; x < L; x++) if (x < a || x >= b) { set(x, Math.floor(W / 2) - 1, car.stripe); set(x, Math.floor(W / 2), car.stripe); }
+  if (car.chrome) { set(b, 1, '#cfd6e4'); set(b, Wd, '#cfd6e4'); }
+  if (S.wing) for (let y = 0; y < W; y++) set(0, y, '#1b1f27');
+  set(L - 1, 2, '#fff6c2'); set(L - 1, Wd - 1, '#fff6c2');
+  set(0, 2, '#ff4d5e'); set(0, Wd - 1, '#ff4d5e');
+  for (const wx of [2, L - 5]) for (let k = 0; k < 3; k++) { set(wx + k, 0, '#0e1118'); set(wx + k, W - 1, '#0e1118'); }
+  const out = g.slice();
+  for (let y = 0; y < W; y++) for (let x = 0; x < L; x++) {
+    const c = g[y * L + x]; if (!c || c === '#0e1118') continue;
+    const em = (xx, yy) => xx < 0 || yy < 0 || xx >= L || yy >= W || !g[yy * L + xx] || g[yy * L + xx] === '#0e1118';
+    if (em(x - 1, y) || em(x + 1, y) || em(x, y - 1) || em(x, y + 1)) out[y * L + x] = c === body ? dark : hexMix(c, '#000000', .25);
+    else if (c === body && y === 2) out[y * L + x] = hexMix(c, '#ffffff', .3);
+  }
+  if (car.gold) for (const [x, y] of [[3, 3], [L - 4, Wd - 2], [Math.round(L / 2), 1]]) set(x, y, '#fff1a8');
+  const cv = document.createElement('canvas'); cv.width = L; cv.height = W;
+  const cx = cv.getContext('2d'), img = cx.createImageData(L, W);
+  out.forEach((col, i) => { if (!col) return; const n = parseInt(col.slice(1), 16); img.data.set([n >> 16, (n >> 8) & 255, n & 255, 255], i * 4); });
+  if (car.gold) for (const [x, y] of [[3, 3], [L - 4, Wd - 2]]) img.data.set([255, 241, 168, 255], (y * L + x) * 4);
+  cx.putImageData(img, 0, 0);
+  return (VSPR[id] = cv);
+}
+
+/* ---- 내 캐릭터 ---- */
+const vNick = () => vClean(RK.nick, 12) || '익명 개미';
+function vMyCar() { return A.car && carById(A.car) ? (CAR_ALIAS[A.car] || A.car) : ''; }
+function vRideId() { return VIL.map === 'circuit' ? (vMyCar() || 'kart') : vMyCar(); }
+function vSpawn() {
+  const me = VIL.me || (VIL.me = { x: 0, y: 0, h: 0, v: 0, ci: 0 });
+  if (VIL.map === 'village') { const b = VMAP.bs.find(x => x.kind === 'circuit'); me.x = 41.5 * VT + (Math.random() - .5) * 40; me.y = 22 * VT; me.h = -Math.PI / 2; }
+  else { const n = VTRACK.length, p = VTRACK[n - 4], q = VTRACK[n - 3]; me.x = p[0]; me.y = p[1]; me.h = Math.atan2(q[1] - p[1], q[0] - p[0]); me.ci = n - 4; }
+  me.v = 0; VIL.lap = null; VIL.sentKey = '';
+}
+const vBest = () => { const t = (A.laps || {})[vRideId()]; return t || 0; };
+
+/* ---- 네트워크: 사이트에선 Supabase Realtime, Claude 미리보기에선 room ---- */
+const RT = { ws: null, ref: 1, jref: null, topic: 'realtime:scalplab-village-v1', ok: false, hb: 0, tk: 0, retry: 0, room: null, unsub: [] };
+function netStatus(s) { VIL.net = s; vilTopUI(); }
+async function netOpen() {
+  if (RT.ws || RT.room) return;
+  const C = window.claude;
+  if (C && typeof C.use === 'function') {
+    try {
+      const room = await C.use('room'); if (!room) return netStatus('solo');
+      RT.room = room; netStatus('on');
+      RT.unsub.push(room.onPeers(ch => { for (const p of ch.left) vPeerLeave(p.peer); for (const p of ch.peers) { if (p.sameTab) continue; const s = p.presence || {}; if (s.m) vOnNet('pos', Object.assign({ id: p.peer }, s)); } }));
+      RT.unsub.push(room.on('chat', m => { if (!m.sameTab) vOnNet('chat', Object.assign({}, m.data, { id: m.peer })); }));
+      RT.unsub.push(room.on('lap', m => { if (!m.sameTab) vOnNet('lap', Object.assign({}, m.data, { id: m.peer })); }));
+    } catch (e) { netStatus('solo'); }
+    return;
+  }
+  if (RK.mode !== 'sb') return netStatus('solo');
+  try { await sbSession(); } catch (e) { return netStatus('err'); }
+  if (!VIL.open) return;
+  netStatus('wait');
+  const ws = new WebSocket(SB.url.replace(/^http/, 'ws') + '/realtime/v1/websocket?apikey=' + encodeURIComponent(SB.key) + '&vsn=1.0.0');
+  RT.ws = ws;
+  ws.onopen = () => {
+    RT.jref = String(RT.ref++);
+    rtSend({ topic: RT.topic, event: 'phx_join', ref: RT.jref, join_ref: RT.jref, payload: { config: { broadcast: { self: false, ack: false }, presence: { key: VIL.id }, private: false }, access_token: SB.ses.access_token } });
+    RT.hb = setInterval(() => rtSend({ topic: 'phoenix', event: 'heartbeat', payload: {}, ref: String(RT.ref++) }), 25000);
+    RT.tk = setInterval(async () => { try { await sbSession(); rtSend({ topic: RT.topic, event: 'access_token', payload: { access_token: SB.ses.access_token }, ref: String(RT.ref++) }); } catch (e) {} }, 20 * 60e3);
+  };
+  ws.onmessage = e => { let m; try { m = JSON.parse(e.data); } catch (x) { return; } rtOnMsg(m); };
+  ws.onerror = () => {};
+  ws.onclose = () => {
+    clearInterval(RT.hb); clearInterval(RT.tk); RT.ok = false; RT.ws = null; VIL.peers.clear();
+    if (VIL.open) { netStatus('wait'); setTimeout(() => { if (VIL.open) netOpen(); }, Math.min(15000, 1000 * 2 ** RT.retry++)); }
+  };
+}
+function netClose() {
+  if (RT.ws) { const w = RT.ws; RT.ws = null; w.onclose = null; try { rtSend({ topic: RT.topic, event: 'phx_leave', payload: {}, ref: String(RT.ref++) }, w); w.close(); } catch (e) {} clearInterval(RT.hb); clearInterval(RT.tk); }
+  if (RT.room) { for (const u of RT.unsub) try { u(); } catch (e) {} RT.unsub = []; try { RT.room.presence({ m: null, x: null, y: null, h: null }); } catch (e) {} RT.room = null; }
+  RT.ok = false; VIL.peers.clear(); VIL.net = 'off';
+}
+function rtSend(m, w = RT.ws) { if (w && w.readyState === 1) w.send(JSON.stringify(m)); }
+function rtOnMsg(m) {
+  if (m.topic !== RT.topic) return;
+  const pl = m.payload || {};
+  if (m.event === 'phx_reply' && m.ref === RT.jref) {
+    if (pl.status === 'ok') { RT.ok = true; RT.retry = 0; netStatus('on'); rtTrack(); vSendPos(true); }
+    else { netStatus('err'); try { RT.ws.close(); } catch (e) {} }
+  } else if (m.event === 'broadcast') vOnNet(pl.event, pl.payload || {});
+  else if (m.event === 'presence_state') { for (const k in pl) vPresJoin(k, (pl[k].metas || [])[0]); }
+  else if (m.event === 'presence_diff') { for (const k in pl.leaves || {}) if (!(pl.joins || {})[k]) vPeerLeave(k); for (const k in pl.joins || {}) vPresJoin(k, (pl.joins[k].metas || [])[0]); }
+  else if (m.event === 'phx_error' || m.event === 'phx_close') { try { RT.ws.close(); } catch (e) {} }
+}
+function rtTrack() { rtSend({ topic: RT.topic, event: 'presence', ref: String(RT.ref++), payload: { type: 'presence', event: 'track', payload: { n: vNick(), c: vRideId(), m: VIL.map } } }); }
+function netEmit(event, payload) {
+  if (RT.room) { if (event === 'pos') RT.room.presence(payload).catch(() => {}); else RT.room.emit(event, payload).catch(() => {}); return; }
+  if (RT.ok) rtSend({ topic: RT.topic, event: 'broadcast', ref: String(RT.ref++), payload: { type: 'broadcast', event, payload: Object.assign({ id: VIL.id }, payload) } });
+}
+function vPresJoin(k, meta) {
+  if (!k || k === VIL.id || !meta) return;
+  const p = VIL.peers.get(k) || { id: k, x: 0, y: 0, h: 0, tx: 0, ty: 0, th: 0, seen: 0, placed: false };
+  p.n = vClean(meta.n, 12) || '익명 개미'; p.c = CAR_ALIAS[meta.c] || meta.c || ''; p.m = meta.m === 'circuit' ? 'circuit' : 'village';
+  VIL.peers.set(k, p); vSendPos(true); vilTopUI();
+}
+function vPeerLeave(k) { if (VIL.peers.delete(k)) vilTopUI(); }
+function vOnNet(ev, d) {
+  const id = vClean(d.id, 40); if (!id || id === VIL.id) return;
+  let p = VIL.peers.get(id);
+  if (ev === 'pos') {
+    const fresh = !p;
+    if (!p) { p = { id, placed: false }; VIL.peers.set(id, p); }
+    const num = v => Number.isFinite(+v) ? +v : 0;
+    p.n = vClean(d.n, 12) || p.n || '익명 개미'; p.c = carById(d.c) || d.c === 'kart' ? (CAR_ALIAS[d.c] || d.c) : '';
+    const m = d.m === 'circuit' ? 'circuit' : 'village';
+    p.tx = num(d.x); p.ty = num(d.y); p.th = num(d.h); p.b = Math.max(0, num(d.b)); p.seen = performance.now();
+    if (!p.placed || p.m !== m) { p.x = p.tx; p.y = p.ty; p.h = p.th; p.placed = true; }
+    p.m = m;
+    if (fresh) vilTopUI();
+  } else if (ev === 'chat') {
+    const t = vClean(d.t, 60); if (!t) return;
+    const n = vClean(d.n, 12) || (p && p.n) || '익명 개미';
+    if (p) { p.say = t; p.sayT = performance.now(); }
+    vChatPush(n, t, false);
+  } else if (ev === 'lap') {
+    const ms = Math.round(+d.ms); if (!(ms > 3000 && ms < 600000)) return;
+    const n = vClean(d.n, 12) || '익명 개미', c = carById(d.c);
+    if (p) p.b = p.b ? Math.min(p.b, ms) : ms;
+    vChatPush('서킷', `${n}님이 ${c ? carName(c) : '카트'}로 ${vFmtLap(ms)} 랩을 찍었어요`, false, true);
+  }
+}
+function vSendPos(force) {
+  const me = VIL.me; if (!me || VIL.net !== 'on') return;
+  const now = performance.now();
+  const d = { x: Math.round(me.x), y: Math.round(me.y), h: Math.round(me.h * 100) / 100, m: VIL.map, n: vNick(), c: vRideId(), b: vBest() };
+  const key = `${d.x},${d.y},${d.h},${d.m},${d.c}`;
+  const moving = key !== VIL.sentKey;
+  if (!force && !(moving && now - VIL.sendT > (RT.room ? 60 : 160)) && now - VIL.sendT < 2500) return;
+  VIL.sendT = now; VIL.sentKey = key;
+  netEmit('pos', d);
+}
+
+/* ---- 채팅 ---- */
+function vChatPush(n, t, mine, sys) {
+  VIL.chat.push({ n, t, mine, sys, at: performance.now() }); if (VIL.chat.length > 40) VIL.chat.shift();
+  const log = $('#vilLog'); if (!log) return;
+  const row = document.createElement('div'); row.className = 'vl-row' + (mine ? ' mine' : '') + (sys ? ' sys' : '');
+  const b = document.createElement('b'); b.textContent = n; const s = document.createElement('span'); s.textContent = t;
+  row.append(b, s); log.appendChild(row);
+  while (log.children.length > 7) log.removeChild(log.firstChild);
+  setTimeout(() => row.classList.add('old'), 14000);
+}
+let vChatT = 0;
+function vSendChat() {
+  const inp = $('#vilIn'), t = vClean(inp.value, 60); if (!t) return;
+  const now = Date.now(); if (now - vChatT < 1500) return toast('채팅은 1.5초에 한 번만 보낼 수 있어요.');
+  vChatT = now; inp.value = '';
+  VIL.me.say = t; VIL.me.sayT = performance.now();
+  vChatPush(vNick(), t, true);
+  netEmit('chat', { t, n: vNick() });
+}
+
+/* ---- 열기 · 닫기 ---- */
+function openVillage(map) {
+  if (!VBG.village) vilPrerender();
+  if (!VIL.id) VIL.id = ((RK.uid || 'guest').replace(/[^a-z0-9]/gi, '').slice(0, 8) || 'g') + '-' + Math.random().toString(36).slice(2, 7);
+  VIL.open = true; VIL.map = map || VIL.map || 'village'; VIL.keys = {}; VIL.pad = {};
+  $('#vil').hidden = false; document.body.classList.add('vil-on');
+  vSpawn(); vilSyncMap(); vilResize();
+  if (!VIL.chat.length) vChatPush('안내', '접속해 있는 사람끼리만 보이고, 채팅은 저장되지 않아요. 방향 버튼이나 방향키로 움직여요.', false, true);
+  netOpen(); VIL.last = performance.now();
+  cancelAnimationFrame(VIL.raf); VIL.raf = requestAnimationFrame(vilFrame);
+}
+function closeVillage() {
+  VIL.open = false; $('#vil').hidden = true; document.body.classList.remove('vil-on');
+  cancelAnimationFrame(VIL.raf); netClose(); dirty = true;
+}
+function vilSetMap(m) {
+  if (VIL.map === m) return;
+  VIL.map = m; vSpawn(); vilSyncMap(); vilResize();
+  VIL.near = null; $('#vilAct').hidden = true; VIL.picker = false; if (RT.ok) rtTrack(); vSendPos(true);
+}
+function vilSyncMap() {
+  document.querySelectorAll('#vilSeg button').forEach(b => b.classList.toggle('on', b.dataset.m === VIL.map));
+  $('#vilHud').hidden = VIL.map !== 'circuit'; $('#vilBoard').hidden = VIL.map !== 'circuit';
+  $('#vil').classList.toggle('circ', VIL.map === 'circuit');
+  $('#vilPad').setAttribute('aria-label', VIL.map === 'circuit' ? '가속·브레이크·핸들' : '방향 버튼');
+  vilCarUI(); vilTopUI();
+}
+function vilTopUI() {
+  if (!VIL.open) return;
+  const here = [...VIL.peers.values()].filter(p => p.m === VIL.map).length, all = VIL.peers.size + 1;
+  const st = { on: `접속 ${all}명${VIL.map === 'circuit' ? ` · 서킷 ${here + 1}명` : ''}`, wait: '연결 중…', err: '연결 안 됨 · 혼자 둘러보는 중', solo: '혼자 둘러보는 중', off: '' }[VIL.net] || '';
+  $('#vilOn').textContent = st; $('#vilOn').className = 'vil-on ' + VIL.net;
+}
+function vilCarUI() {
+  const id = vRideId(), c = id === 'kart' ? KART : carById(id);
+  const owned = (A.cars || []).map(x => CAR_ALIAS[x] || x).filter(x => carById(x));
+  $('#vilCar').innerHTML = `${c && id !== 'kart' ? carImg(id, 'mid') : `<span class="vc-walk">${id === 'kart' ? '🏁' : '🐜'}</span>`}<div><b>${c ? esc(carName(c)) : '걸어서 다니는 중'}</b><small>속도 ${(id === 'kart' ? 1.3 : carSpd(id)).toFixed(1)}배${id === 'kart' ? ' · 차를 사면 더 빨라요' : ''}</small></div><span class="vc-chg">${owned.length ? '바꾸기' : '차 사러 가기'}</span>`;
+  const pk = $('#vilPick');
+  pk.hidden = !VIL.picker;
+  if (VIL.picker) pk.innerHTML = `<p>탈 차 고르기 <small>대표 차도 같이 바뀌어요</small></p>` + (VIL.map === 'village' ? `<button data-ride=""${!vMyCar() ? ' class="on"' : ''}><span class="vc-walk">🐜</span>걸어 다니기</button>` : '') +
+    owned.map(x => `<button data-ride="${x}"${vMyCar() === x ? ' class="on"' : ''}>${carImg(x)}<span>${esc(carName(carById(x)))}</span><small>${carSpd(x).toFixed(1)}배</small></button>`).join('') + `<button data-ride="@shop" class="shop">상점 가기</button>`;
+}
+function vilResize() {
+  const cv = $('#vilCv'), r = cv.getBoundingClientRect(), d = window.devicePixelRatio || 1;
+  cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d);
+  const tiles = (r.width < 700 ? 13 : r.width < 1100 ? 20 : 26) * (VIL.map === 'circuit' ? 1.7 : 1);
+  VIL.S = Math.max(VIL.map === 'circuit' ? 1 : 2, Math.round(d * r.width / (VT * tiles))) / d;
+  VIL.cw = r.width; VIL.ch = r.height;
+}
+
+/* ---- 매 프레임 ---- */
+function vDir() {
+  const k = VIL.keys, p = VIL.pad;
+  return { x: (k.right || p.right ? 1 : 0) - (k.left || p.left ? 1 : 0), y: (k.down || p.down ? 1 : 0) - (k.up || p.up ? 1 : 0) };
+}
+function vBlocked(x, y, r) {
+  if (VIL.map !== 'village') return x < 8 || y < 8 || x > VC_W - 8 || y > VC_H - 8;
+  for (const [dx, dy] of [[-r, -r], [r, -r], [-r, r], [r, r], [0, -r], [0, r], [-r, 0], [r, 0]]) if (VSOLID.has(vilTileAt(x + dx, y + dy))) return true;
+  return false;
+}
+function vStepVillage(me, dt) {
+  const d = vDir(), ride = vMyCar(), spd = carSpd(ride), r = ride ? 5 : 3.5;
+  const onGrass = ![1, 2].includes(vilTileAt(me.x, me.y));
+  const top = 50 * spd * (ride && onGrass ? .5 : 1);
+  if (d.x || d.y) {
+    const want = Math.atan2(d.y, d.x); let dh = ((want - me.h + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
+    const tr = (ride ? 9 : 18) * dt; me.h += Math.max(-tr, Math.min(tr, dh));
+    me.v = Math.min(top, me.v + (ride ? 160 * spd : 600) * dt);
+    if (Math.abs(dh) > 2.2 && ride) me.v *= .9;
+  } else me.v = Math.max(0, me.v - (ride ? 260 : 900) * dt);
+  if (me.v > top) me.v = Math.max(top, me.v - 300 * dt);
+  const vx = Math.cos(me.h) * me.v * dt, vy = Math.sin(me.h) * me.v * dt;
+  if (!vBlocked(me.x + vx, me.y + vy, r)) { me.x += vx; me.y += vy; }
+  else if (!vBlocked(me.x + vx, me.y, r)) { me.x += vx; me.v *= .85; }
+  else if (!vBlocked(me.x, me.y + vy, r)) { me.y += vy; me.v *= .85; }
+  else me.v *= .3;
+  // 건물 문 앞이면 들어가기 버튼
+  let near = null;
+  for (const b of VMAP.bs) if (b.kind !== 'home' && Math.hypot(b.door.x - me.x, b.door.y - me.y) < 26) near = b;
+  if (near !== VIL.near) {
+    VIL.near = near; const a = $('#vilAct');
+    a.hidden = !near; if (near) a.textContent = { exchange: '거래소로 돌아가기', shop: '전시장 들어가기 (상점)', hall: '명예의 전당 보기', circuit: '서킷 들어가기' }[near.kind];
+  }
+}
+function vStepCircuit(me, dt) {
+  const k = VIL.keys, p = VIL.pad, ride = vRideId(), spd = ride === 'kart' ? 1.3 : carSpd(ride);
+  const gas = k.up || p.up, brk = k.down || p.down, steer = (k.right || p.right ? 1 : 0) - (k.left || p.left ? 1 : 0);
+  const vmax = 72 * spd, near = vcNear(me.x, me.y, me.ci), off = near.d > VC_HW + 3;
+  if (gas) me.v = Math.min(vmax, me.v + (60 + 55 * spd) * (1 - Math.max(0, me.v) / vmax * .6) * dt);
+  else if (brk) me.v = me.v > 0 ? Math.max(0, me.v - 320 * dt) : Math.max(-40, me.v - 80 * dt);
+  else me.v *= Math.max(0, 1 - .7 * dt);
+  const cap = off ? vmax * .38 : vmax; if (me.v > cap) me.v = Math.max(cap, me.v - 380 * dt);
+  const av = Math.abs(me.v), tr = 2.9 * Math.min(1, av / 45) * (1 - .42 * Math.min(1, av / 320));
+  me.h += steer * tr * dt * Math.sign(me.v || 1);
+  const nx = me.x + Math.cos(me.h) * me.v * dt, ny = me.y + Math.sin(me.h) * me.v * dt;
+  if (!vBlocked(nx, ny, 6)) { me.x = nx; me.y = ny; } else me.v *= -.3;
+  // 랩: 4구간 체크포인트를 차례로 지나고 출발선을 넘으면 1랩
+  const n = VTRACK.length, prev = me.ci; me.ci = near.i;
+  const L = VIL.lap || (VIL.lap = { cp: 0, t0: 0, last: 0, n: 0 });
+  const q = Math.floor(n / 4);
+  if (!off) {
+    if (L.cp >= 1 && L.cp < 4 && near.i >= q * L.cp && near.i < q * L.cp + 30) L.cp++;
+    if (prev > n - 40 && near.i < 40) {                                     // 출발선 통과
+      const now = performance.now();
+      if (L.t0 && L.cp >= 4) {
+        const ms = Math.round(now - L.t0); L.last = ms; L.n++;
+        A.laps = A.laps || {}; const old = A.laps[ride];
+        if (!old || ms < old) { A.laps[ride] = ms; saveNow(); toast(`<b>새 기록!</b> ${vFmtLap(ms)} · ${ride === 'kart' ? '연습용 카트' : esc(carName(carById(ride)))}`, 'buy', 3000); }
+        netEmit('lap', { ms, c: ride, n: vNick() }); vSendPos(true);
+        vChatPush('서킷', `내 랩 ${vFmtLap(ms)}${old && ms >= old ? ` (최고 ${vFmtLap(old)})` : ''}`, true, true);
+      }
+      L.t0 = now; L.cp = 1;
+    }
+  }
+}
+const vFmtLap = ms => { const s = ms / 1000; return s >= 60 ? `${Math.floor(s / 60)}:${(s % 60).toFixed(2).padStart(5, '0')}` : `${s.toFixed(2)}초`; };
+function vilFrame(t) {
+  if (!VIL.open) return;
+  const dt = Math.min(.05, (t - VIL.last) / 1000 || 0); VIL.last = t;
+  const me = VIL.me;
+  if (VIL.map === 'village') vStepVillage(me, dt); else vStepCircuit(me, dt);
+  for (const p of VIL.peers.values()) {                                     // 다른 사람은 부드럽게 따라가기
+    if (!p.placed) continue;
+    const k = Math.min(1, dt * 10); p.x += (p.tx - p.x) * k; p.y += (p.ty - p.y) * k;
+    let dh = ((p.th - p.h + Math.PI * 3) % (Math.PI * 2)) - Math.PI; p.h += dh * k;
+    if (RT.ws && performance.now() - p.seen > 30000) VIL.peers.delete(p.id);
+  }
+  vSendPos(false);
+  vilDraw(t);
+  if (VIL.map === 'circuit') vilHud();
+  VIL.raf = requestAnimationFrame(vilFrame);
+}
+function vilHud() {
+  const L = VIL.lap || {}, me = VIL.me, now = performance.now();
+  const h = `<div><span>현재 랩</span><b class="num">${L.t0 ? vFmtLap(now - L.t0) : '출발선을 지나면 시작'}</b></div><div><span>지난 랩</span><b class="num">${L.last ? vFmtLap(L.last) : '—'}</b></div><div><span>내 최고</span><b class="num gold">${vBest() ? vFmtLap(vBest()) : '—'}</b></div><div><span>속도</span><b class="num">${Math.round(Math.abs(me.v) * 0.9)} km/h</b></div>`;
+  setHtml($('#vilHud'), h);
+  const rows = [{ n: vNick() + ' (나)', c: vRideId(), b: vBest(), me: 1 }].concat([...VIL.peers.values()].filter(p => p.m === 'circuit').map(p => ({ n: p.n, c: p.c, b: p.b || 0 })));
+  rows.sort((a, b) => (a.b || 9e9) - (b.b || 9e9));
+  setHtml($('#vilBoard'), `<p>지금 서킷에 있는 사람</p>` + rows.slice(0, 8).map((r, i) => `<div class="${r.me ? 'me' : ''}"><i>${i + 1}</i><span>${esc(r.n)}</span><small>${r.c === 'kart' ? '카트' : esc(carName(carById(r.c)) || '')}</small><b class="num">${r.b ? vFmtLap(r.b) : '—'}</b></div>`).join(''));
+}
+function vilDraw(t) {
+  const cv = $('#vilCv'), x = cv.getContext('2d'), d = window.devicePixelRatio || 1, S = VIL.S, me = VIL.me;
+  const vw = VIL.cw / S, vh = VIL.ch / S, bg = VBG[VIL.map], MW = bg.width, MH = bg.height;
+  const cx = Math.max(0, Math.min(MW - vw, me.x - vw / 2)), cy = Math.max(0, Math.min(MH - vh, me.y - vh / 2));
+  const ox = Math.round((vw > MW ? (MW - vw) / 2 : cx) * S * d) / (S * d), oy = Math.round((vh > MH ? (MH - vh) / 2 : cy) * S * d) / (S * d);
+  x.setTransform(d, 0, 0, d, 0, 0); x.fillStyle = '#0b0f17'; x.fillRect(0, 0, VIL.cw, VIL.ch);
+  x.imageSmoothingEnabled = false;
+  x.save(); x.scale(S, S); x.translate(-ox, -oy);
+  const sx = Math.max(0, Math.floor(ox)), sy = Math.max(0, Math.floor(oy)), sw = Math.min(MW - sx, Math.ceil(vw) + 2), sh = Math.min(MH - sy, Math.ceil(vh) + 2);
+  x.drawImage(bg, sx, sy, sw, sh, sx, sy, sw, sh);
+  const ents = [];
+  if (VIL.map === 'village') {
+    const f = (Math.sin(t / 180) + 1) / 2;                                    // 분수
+    x.fillStyle = `rgba(217,238,252,${.55 + f * .4})`; x.fillRect(41 * VT + 6 - f * 2, 15 * VT + 2 - f * 3, 4 + f * 4, 10 + f * 3);
+    for (const p of VMAP.parked) ents.push({ x: p.x, y: p.y, h: p.h, c: p.id, parked: 1 });
+  }
+  for (const p of VIL.peers.values()) if (p.placed && p.m === VIL.map) ents.push({ x: p.x, y: p.y, h: p.h, c: VIL.map === 'circuit' ? (p.c || 'kart') : p.c, n: p.n, say: p.say, sayT: p.sayT, ghost: VIL.map === 'circuit' });
+  ents.push({ x: me.x, y: me.y, h: me.h, c: vRideId(), n: vNick(), me: 1, say: me.say, sayT: me.sayT });
+  ents.sort((a, b) => a.y - b.y);
+  for (const e of ents) {
+    const spr = e.c ? carTop(e.c) : null;
+    x.save(); x.translate(e.x, e.y);
+    if (e.ghost) x.globalAlpha = .6;
+    x.fillStyle = 'rgba(0,0,0,.3)'; x.beginPath(); x.ellipse(1, 2, spr ? spr.width / 2 : 4, spr ? spr.height / 2 : 3, 0, 0, 7); x.fill();
+    if (spr) { x.rotate(e.h); x.drawImage(spr, -Math.round(spr.width / 2), -Math.round(spr.height / 2)); }
+    else {                                                                   // 걷는 개미
+      const step = Math.sin(t / 70) * (e.me && me.v > 5 ? 1 : 0), col = e.me ? '#f2b544' : ['#e5383b', '#3b8cff', '#7ccf3a', '#b38cff', '#ff9f45'][vHash(e.n) % 5];
+      x.rotate(e.h);
+      x.fillStyle = '#2a1d14'; x.fillRect(-4, -1 + step, 2, 1); x.fillRect(-4, 1 - step, 2, 1);
+      x.fillStyle = col; x.fillRect(-4, -2, 5, 5);
+      x.fillStyle = '#f1c27d'; x.fillRect(1, -2, 4, 4); x.fillStyle = '#2a1d14'; x.fillRect(1, -2, 2, 4); x.fillRect(4, -3, 1, 1); x.fillRect(4, 2, 1, 1);
+    }
+    x.restore();
+  }
+  x.restore();
+  // 화면 글씨 (선명하게, 확대 없이)
+  const sp = (wx, wy) => [(wx - ox) * S, (wy - oy) * S];
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  if (VIL.map === 'village') {
+    for (const b of VMAP.bs) {
+      if (!b.name) continue;
+      const [lx, ly] = sp((b.x + b.w / 2) * VT, (b.y + b.h) * VT + 13);
+      if (lx < -80 || lx > VIL.cw + 80 || ly < -20 || ly > VIL.ch + 30) continue;
+      x.font = '700 11px "IBM Plex Sans KR", sans-serif'; const w = x.measureText(b.name).width + 12;
+      x.fillStyle = 'rgba(9,12,18,.82)'; x.fillRect(lx - w / 2, ly - 8, w, 16); x.fillStyle = b.trim; x.fillRect(lx - w / 2, ly - 8, 2, 16);
+      x.fillStyle = '#f1f3f8'; x.fillText(b.name, lx, ly);
+      if (b.kind === 'exchange' && syms.length) {                               // 거래소 전광판
+        const [bx, by] = sp(b.x * VT + 10, b.y * VT + 8), bw = (b.w * VT - 20) * S, bh = 22 * S;
+        x.save(); x.beginPath(); x.rect(bx, by, bw, bh); x.clip();
+        x.font = `700 ${Math.round(9 * S)}px "JetBrains Mono", monospace`; x.textAlign = 'left';
+        const items = syms.map(s => [s.name + ' ' + won(s.price), (s.price / s.prevClose - 1)]);
+        let tx = bx - ((t / 22) % (items.length * 150 * S / 2));
+        for (let rep = 0; rep < 3; rep++) for (const [txt, ch] of items) { x.fillStyle = ch >= 0 ? '#f5465d' : '#3b8cff'; x.fillText(txt + (ch >= 0 ? ' ▲' : ' ▼') + Math.abs(ch * 100).toFixed(1) + '%', tx, by + bh / 2); tx += x.measureText(txt).width + 60 * S / 2; }
+        x.restore(); x.textAlign = 'center';
+      }
+    }
+  }
+  const now = performance.now();
+  for (const e of ents) {
+    if (e.parked) continue;
+    const [lx, ly] = sp(e.x, e.y);
+    if (lx < -60 || lx > VIL.cw + 60 || ly < -60 || ly > VIL.ch + 60) continue;
+    x.font = '700 10.5px "IBM Plex Sans KR", sans-serif';
+    const nw = x.measureText(e.n).width + 10, ny = ly - 12 * S - 6;
+    x.fillStyle = e.me ? 'rgba(242,181,68,.92)' : 'rgba(9,12,18,.75)'; x.fillRect(lx - nw / 2, ny - 7, nw, 14);
+    x.fillStyle = e.me ? '#1a1205' : '#f1f3f8'; x.fillText(e.n, lx, ny);
+    if (e.say && now - e.sayT < 6000) {
+      x.font = '600 12px "IBM Plex Sans KR", sans-serif';
+      const lines = []; let line = ''; for (const ch of e.say) { if (x.measureText(line + ch).width > 150) { lines.push(line); line = ch; } else line += ch; } lines.push(line);
+      const bw = Math.max(...lines.map(l => x.measureText(l).width)) + 16, bh = lines.length * 15 + 8, by = ny - 12 - bh;
+      x.globalAlpha = Math.min(1, (6000 - (now - e.sayT)) / 600);
+      x.fillStyle = '#f1f3f8'; x.beginPath(); x.roundRect ? x.roundRect(lx - bw / 2, by, bw, bh, 7) : x.rect(lx - bw / 2, by, bw, bh); x.fill();
+      x.beginPath(); x.moveTo(lx - 5, by + bh); x.lineTo(lx + 5, by + bh); x.lineTo(lx, by + bh + 6); x.fill();
+      x.fillStyle = '#10141c'; lines.forEach((l, i) => x.fillText(l, lx, by + 11 + i * 15));
+      x.globalAlpha = 1;
+    }
+  }
+  // 미니맵 (서킷)
+  if (VIL.map === 'circuit') {
+    const mw = Math.min(150, VIL.cw * .3), k = mw / VC_W, mh = VC_H * k, mx = 14, my = ($('#vilCar').offsetHeight || 50) + 22;
+    x.fillStyle = 'rgba(9,12,18,.7)'; x.fillRect(mx - 4, my - 4, mw + 8, mh + 8);
+    x.beginPath(); VTRACK.forEach((p, i) => i ? x.lineTo(mx + p[0] * k, my + p[1] * k) : x.moveTo(mx + p[0] * k, my + p[1] * k)); x.closePath();
+    x.strokeStyle = '#5b6170'; x.lineWidth = 3; x.stroke();
+    for (const e of ents) { x.fillStyle = e.me ? '#f2b544' : '#f1f3f8'; x.beginPath(); x.arc(mx + e.x * k, my + e.y * k, e.me ? 3.5 : 2.5, 0, 7); x.fill(); }
+  }
+}
+
+/* ---- 조작 ---- */
+const VKEY = { arrowup: 'up', w: 'up', arrowdown: 'down', s: 'down', arrowleft: 'left', a: 'left', arrowright: 'right', d: 'right' };
+document.addEventListener('keydown', e => {
+  if (!VIL.open || MY.open || PS.open) return;
+  if (e.target.matches('input,textarea')) { if (e.key === 'Escape') e.target.blur(); e.stopPropagation(); return; }
+  const k = VKEY[e.key.toLowerCase()];
+  if (k) { VIL.keys[k] = true; e.preventDefault(); }
+  else if (e.key === 'Enter') { e.preventDefault(); $('#vilIn').focus(); }
+  else if (e.key === 'Escape') closeVillage();
+  else if ((e.key === ' ' || e.key === 'e') && VIL.near) { e.preventDefault(); $('#vilAct').click(); }
+  e.stopPropagation();
+}, true);
+document.addEventListener('keyup', e => { const k = VKEY[e.key.toLowerCase()]; if (k) VIL.keys[k] = false; });
+window.addEventListener('blur', () => { VIL.keys = {}; VIL.pad = {}; });
+$('#vilPad').querySelectorAll('button').forEach(b => {
+  const k = b.dataset.k, on = e => { e.preventDefault(); VIL.pad[k] = true; b.classList.add('on'); try { b.setPointerCapture(e.pointerId); } catch (x) {} }, off = () => { VIL.pad[k] = false; b.classList.remove('on'); };
+  b.addEventListener('pointerdown', on); b.addEventListener('pointerup', off); b.addEventListener('pointercancel', off); b.addEventListener('lostpointercapture', off);
+  b.addEventListener('contextmenu', e => e.preventDefault());
+});
+$('#vilBack').addEventListener('click', closeVillage);
+$('#vilSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (b) vilSetMap(b.dataset.m); });
+$('#vilChat').addEventListener('submit', e => { e.preventDefault(); vSendChat(); });
+$('#vilAct').addEventListener('click', () => {
+  const b = VIL.near; if (!b) return;
+  if (b.kind === 'exchange') closeVillage();
+  else if (b.kind === 'shop') openMy('shop');
+  else if (b.kind === 'hall') { MY.rk = 'hall'; openMy('rank'); }
+  else if (b.kind === 'circuit') vilSetMap('circuit');
+});
+$('#vilCar').addEventListener('click', () => { if (!(A.cars || []).length) return openMy('shop'); VIL.picker = !VIL.picker; vilCarUI(); });
+$('#vilPick').addEventListener('click', e => {
+  const b = e.target.closest('[data-ride]'); if (!b) return;
+  const id = b.dataset.ride; VIL.picker = false;
+  if (id === '@shop') { vilCarUI(); return openMy('shop'); }
+  A.car = id; RK.want = true; saveNow(); vilCarUI(); if (RT.ok) rtTrack(); vSendPos(true);
+});
+window.addEventListener('resize', () => { if (VIL.open) vilResize(); });
+document.addEventListener('visibilitychange', () => { if (VIL.open && !document.hidden) { VIL.last = performance.now(); vSendPos(true); } });
+$('#vilBtn').addEventListener('click', () => openVillage('village'));
+
 /* ---------- boot ---------- */
 buildBook(); buildTape();
 function boot() {
@@ -3109,6 +4211,7 @@ function boot() {
   const T = nowSec();
   for (const s of syms) { advance(s, T); s.dx = s.pA; }
   if (A.dayKey !== TODAY_DAY) { A.dayKey = TODAY_DAY; A.dayStartEq = equity(); }
+  attendance();
   const away = lastSeen0 ? T - lastSeen0 : 0, msgs = G.catchup;
   A.fills.sort((x, y) => y.ts - x.ts);
   G.catchup = null; G.loading = false; G.at = 0;
@@ -3133,6 +4236,4 @@ function boot() {
 setTimeout(boot, 30);
 })();
 </script>
-
-</body>
-</html>
+</body></html>
