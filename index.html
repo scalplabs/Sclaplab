@@ -4312,8 +4312,8 @@ function applyGrants() {
     A.grantsDone.push(g.id);
     if (!g.user_id && Date.parse(g.created_at) < since) continue;         // 전체 지급은 그 뒤에 들어온 사람만 빼고
     const amt = Math.max(-1e9, Math.min(1e9, Math.round(+g.amount || 0))); if (!amt) continue;
-    A.cash = Math.max(0, A.cash + amt);
-    if (amt > 0) { A.principal = PRIN() + amt; A.dayStartEq = (A.dayStartEq || SEED) + amt; }
+    A.cash = Math.max(0, A.cash + amt);                                  // 회수(마이너스)는 원금도 같이 줄여서 수익률이 안 틀어지게
+    A.principal = Math.max(1, PRIN() + amt); A.dayStartEq = Math.max(1, (A.dayStartEq || SEED) + amt);
     toast(`<b>📢 관리자 ${amt > 0 ? '지급' : '회수'}</b> · ${amt > 0 ? '+' : ''}${won(amt)}원${g.note ? ' · ' + esc(vClean(g.note, 40)) : ''}`, amt > 0 ? 'buy' : 'sell', 5000);
   }
   saveNow();
@@ -4363,7 +4363,8 @@ function renderAdm() {
   } else if (ADM.tab === 'give') {
     h = `<label class="ad-l">받는 사람</label><div class="ad-row">${['all', 'one'].map(v => `<button type="button" class="ad-chip${(P.to || 'all') === v ? ' on' : ''}" data-k="to" data-v="${v}">${v === 'all' ? '전체' : '한 명 (ID)'}</button>`).join('')}</div>
       ${(P.to || 'all') === 'one' ? `<input id="admGiveId" placeholder="유저 ID (유저 탭에서 '지급' 누르면 자동 입력)" value="${esc(P.uid || '')}">` : ''}
-      <label class="ad-l">금액 (원) · 빼앗으려면 마이너스</label><input id="admAmt" inputmode="numeric" placeholder="예: 10000000" value="${P.amt || ''}">
+      <label class="ad-l">주기 / 회수</label><div class="ad-row"><button type="button" class="ad-chip${P.sign !== 'take' ? ' on' : ''}" data-k="sign" data-v="give">💰 주기</button><button type="button" class="ad-chip${P.sign === 'take' ? ' on' : ''}" data-k="sign" data-v="take">↩️ 회수 (잘못 준 돈 되돌리기)</button></div>
+      <label class="ad-l">금액 (원)</label><input id="admAmt" inputmode="numeric" placeholder="예: 10000000" value="${P.amt || ''}">
       <div class="ad-row">${[1e6, 1e7, 1e8, 1e9].map(v => `<button type="button" class="ad-chip" data-amt="${v}">${krwShort(v)}</button>`).join('')}</div>
       <input id="admGiveNote" maxlength="40" placeholder="메모 (받는 사람에게 보여요)"><button type="button" class="ad-go" id="admGiveGo">지급하기</button>`;
   } else {
@@ -4382,7 +4383,7 @@ $('#admBg').addEventListener('click', async e => {
   try {
     if (t.id === 'admX') return closeAdm();
     if (t.closest('#admTabs')) { ADM.tab = t.dataset.t; if (ADM.tab === 'user') admLoadUsers(); return renderAdm(); }
-    if (t.dataset.k) { P[t.dataset.k] = isNaN(+t.dataset.v) ? t.dataset.v : +t.dataset.v; if ($('#admNote')) P.note = $('#admNote').value; if ($('#admCode')) P.code = $('#admCode').value; return renderAdm(); }
+    if (t.dataset.k) { if ($('#admAmt')) P.amt = $('#admAmt').value; if ($('#admGiveId')) P.uid = $('#admGiveId').value; P[t.dataset.k] = isNaN(+t.dataset.v) ? t.dataset.v : +t.dataset.v; if ($('#admNote')) P.note = $('#admNote').value; if ($('#admCode')) P.code = $('#admCode').value; return renderAdm(); }
     if (t.id === 'admFire') {
       if (!P.pct) return toast('크기를 골라 주세요.');
       const code = $('#admCode').value, note = vClean($('#admNote').value, 60);
@@ -4407,11 +4408,11 @@ $('#admBg').addEventListener('click', async e => {
     if (t.dataset.give) { ADM.tab = 'give'; P.to = 'one'; P.uid = t.dataset.give; return renderAdm(); }
     if (t.dataset.amt) { $('#admAmt').value = t.dataset.amt; P.amt = t.dataset.amt; return; }
     if (t.id === 'admGiveGo') {
-      const amt = parseInt(($('#admAmt').value || '').replace(/[^0-9-]/g, ''), 10); if (!amt) return toast('금액을 넣어 주세요.');
+      const amt = Math.abs(parseInt(($('#admAmt').value || '').replace(/[^0-9]/g, ''), 10) || 0) * (P.sign === 'take' ? -1 : 1); if (!amt) return toast('금액을 넣어 주세요.');
       const uid = (P.to || 'all') === 'one' ? ($('#admGiveId').value || '').trim() : null;
       if (P.to === 'one' && !/^[0-9a-f-]{36}$/i.test(uid)) return toast('유저 ID가 올바르지 않아요.');
       await admPost('/rest/v1/grants', { user_id: uid, amount: amt, note: vClean($('#admGiveNote').value, 40) });
-      toast(`<b>지급 완료</b> · ${uid ? '한 명' : '전체'}에게 ${won(amt)}원 (다음 접속·30초 안에 들어가요)`); ADM.pend = { ramp: 180, hold: 600, recover: 3600 }; return renderAdm();
+      toast(`<b>${amt > 0 ? '지급' : '회수'} 완료</b> · ${uid ? '한 명' : '전체'} ${won(Math.abs(amt))}원 (접속 중이면 20초 안에, 아니면 다음 접속 때 반영)`); ADM.pend = { ramp: 180, hold: 600, recover: 3600 }; return renderAdm();
     }
     if (t.id === 'admNoticeGo') { const tx = vClean($('#admNotice').value, 120); if (!tx) return; await admPost('/rest/v1/notices', { text: tx }); try { localStorage.removeItem('scalplab.notice.x'); } catch (x) {} await admPoll(); return renderAdm(); }
     if (t.dataset.noff) { await admPost(`/rest/v1/notices?id=eq.${t.dataset.noff}`, { active: false }, 'PATCH'); await admPoll(); return renderAdm(); }
