@@ -665,7 +665,6 @@ td .sub{display:block;color:var(--muted);font-size:10.5px;font-family:var(--f-nu
 .sc-spd{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--muted);margin-top:3px}
 .sc-spd i{flex:1;max-width:60px;height:4px;border-radius:2px;background:var(--line-2);position:relative;overflow:hidden}
 .sc-spd i::after{content:"";position:absolute;inset:0;width:var(--w);background:linear-gradient(90deg,#35c9b4,#f2b544,#e5383b)}
-body.vil-on{overflow:hidden}
 .vil{position:fixed;inset:0;z-index:70;background:#0b0f17;display:flex;flex-direction:column;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);user-select:none;-webkit-user-select:none;touch-action:none}
 .vil-top{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--line);background:var(--bg)}
 .vil-back{display:inline-flex;align-items:center;gap:2px;height:34px;padding:0 12px 0 6px;border-radius:17px;border:1px solid var(--line-2);background:var(--panel);font-weight:700;font-size:12.5px}
@@ -718,6 +717,58 @@ body.vil-on{overflow:hidden}
 @media (min-width:900px){.vil-chat input{font-size:13.5px}.vil-board{top:110px}}
 @media (max-width:640px){.vil.circ .vil-board{top:104px;width:150px}.vil.circ .vil-car small,.vil.circ .vc-chg{display:none}.vil.circ .vil-car img{width:40px}.vil-hud{gap:2px 10px;padding:6px 9px}.vil-hud b{font-size:12px}.vil-log{width:calc(100% - 160px)}.vil.circ .vil-log{width:calc(100% - 20px)}}
 
+/* v17: 공지 · 돈 벌기 · 관리자 */
+.notice{display:flex;align-items:center;gap:8px;margin:8px 0 0;padding:8px 12px;border-radius:8px;background:rgba(242,181,68,.1);border:1px solid rgba(242,181,68,.4);font-size:12.5px}
+.notice b{flex:1;font-weight:600;line-height:1.45}
+.notice button{font-size:18px;color:var(--muted);padding:0 4px}
+.notice.ban{background:rgba(229,56,59,.12);border-color:rgba(229,56,59,.5)}.notice.ban button{display:none}
+.reset.workbtn{color:var(--gold);border-color:rgba(242,181,68,.5);font-weight:700}
+.wk-panel{width:min(460px,100%);max-height:calc(100dvh - 32px);overflow:auto;background:var(--panel);border:1px solid var(--line-2);border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,.55)}
+.wk-h{display:flex;align-items:center;gap:8px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.wk-h b{font-size:15px}.wk-h small{color:var(--muted);font-size:11.5px;margin-right:auto}
+#wkBody{padding:12px 14px 16px;display:flex;flex-direction:column;gap:10px}
+.wk-state{font-size:12.5px;padding:8px 10px;border-radius:8px;background:var(--panel-2);color:var(--muted)}
+.wk-state.ok{color:#35c9b4}.wk-state.bad{color:#ff6b6b;background:rgba(229,56,59,.1)}
+.wk-list{display:flex;flex-direction:column;gap:8px}
+.wk-job{position:relative;display:flex;align-items:center;gap:10px;min-height:84px;padding:10px 12px;border-radius:10px;border:1px solid var(--line-2);text-align:left;overflow:hidden;background:var(--bg) var(--bg-img,none);isolation:isolate}
+.wk-job::before{content:"";position:absolute;inset:0;z-index:-2;background-image:var(--bg);background-size:cover;background-position:center;image-rendering:pixelated}
+.wk-job::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(9,12,18,.88) 0%,rgba(9,12,18,.62) 55%,rgba(9,12,18,.2) 100%)}
+.wk-job:not(:disabled):hover{border-color:var(--gold)}
+.wk-job:disabled{opacity:.5;cursor:default;filter:grayscale(.6)}
+.wk-job .wk-ico{font-size:24px;width:34px;text-align:center}
+.wk-job b{display:block;font-size:14px}.wk-job small{display:block;font-size:11px;color:#c9cfdb;line-height:1.4;max-width:230px}
+.wk-job em{margin-left:auto;white-space:nowrap;font-style:normal;font-weight:800;color:#35c9b4;font-size:14px;text-shadow:0 1px 2px #000}
+.wk-job.risky{border-color:rgba(229,56,59,.45)}.wk-job.risky em{color:#ff6b6b}
+.wk-note{font-size:11px;color:var(--muted);line-height:1.5}
+.wk-run{display:flex;flex-direction:column;align-items:center;gap:8px;padding:26px 0}
+.wk-run .wk-ico{font-size:44px;animation:wkb .5s ease-in-out infinite alternate}@keyframes wkb{to{transform:translateY(-6px)}}
+.wk-run b{font-size:16px}.wk-run p{color:var(--muted);font-size:13px;min-height:18px}
+.wk-bar{width:80%;height:8px;border-radius:4px;background:var(--line-2);overflow:hidden}.wk-bar i{display:block;height:100%;background:linear-gradient(90deg,#35c9b4,#f2b544)}
+.my-idrow{display:flex;gap:6px;margin-top:4px}
+.my-idc,.my-admbtn{font-size:10.5px;padding:2px 7px;border-radius:5px;border:1px solid var(--line-2);color:var(--muted)}
+.my-admbtn{color:#ff6b6b;border-color:rgba(229,56,59,.5);font-weight:700}
+.adm-bg{z-index:86}
+.ad-h{display:flex;align-items:center;justify-content:space-between;padding:16px}
+.ad-h b{font-size:16px}
+.ad-tabs{grid-template-columns:repeat(5,1fr)!important}
+#admBody{display:flex;flex-direction:column;gap:8px;padding:14px 16px 30px;overflow:auto}
+.ad-l{font-size:11.5px;color:var(--muted);margin-top:6px}
+#admBody select,#admBody input:not([type=checkbox]),#admBody textarea{width:100%;height:38px;border-radius:8px;border:1px solid var(--line-2);background:var(--bg);color:var(--fg);padding:0 10px;font-size:14px}
+#admBody textarea{height:80px;padding:8px 10px;resize:vertical}
+.ad-row{display:flex;gap:5px;flex-wrap:wrap;align-items:center}.ad-row input{flex:1}
+.ad-chip{flex:1;min-width:56px;height:34px;border-radius:7px;border:1px solid var(--line-2);font-size:12px;font-weight:700;color:var(--muted)}
+.ad-chip.on{color:var(--fg);border-color:var(--gold);background:rgba(242,181,68,.12)}
+.ad-go{height:44px;border-radius:9px;background:var(--panel-2);border:1px solid var(--line-2);font-weight:800;font-size:14px;margin-top:6px}
+.ad-go.up{background:var(--up);color:#fff;border:0}.ad-go.down{background:var(--down);color:#fff;border:0}
+.ad-ev,.ad-user{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:12.5px}
+.ad-ev b{width:52px;font-size:13px}.ad-ev span{flex:1;min-width:0}.ad-ev small{display:block;color:var(--muted);font-size:10.5px}
+.ad-user>div{flex:1;min-width:0}.ad-user b{display:block;font-size:13px}.ad-user small{color:var(--muted);font-size:10.5px}
+.ad-user em{font-style:normal;font-size:10px;padding:0 4px;border-radius:3px;background:rgba(242,181,68,.2);color:var(--gold)}.ad-user em.b{background:rgba(229,56,59,.2);color:#ff6b6b}
+.ad-user.banned{opacity:.6}
+.ad-empty{color:var(--muted);font-size:12px;padding:10px 0}
+.ad-id{font-size:11px;word-break:break-all;color:var(--fg);background:var(--bg);padding:8px;border-radius:6px}
+.ad-chk{margin-top:10px;font-size:12px}
+
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -740,6 +791,7 @@ body.vil-on{overflow:hidden}
       <button class="mybtn" id="myBtn" aria-label="마이페이지 열기"><img id="myAva" alt="" hidden><svg id="myIco" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5.5" r="2.8"/><path d="M2.8 14c.7-2.8 2.7-4.2 5.2-4.2s4.5 1.4 5.2 4.2"/></svg><span>마이</span></button>
     </div>
   </header>
+  <div class="notice" id="notice" hidden><span>📢</span><b id="noticeT"></b><button type="button" id="noticeX" aria-label="공지 닫기">×</button></div>
 
   <section class="brief" id="brief" hidden>
     <div>
@@ -880,7 +932,7 @@ body.vil-on{overflow:hidden}
         <div><span>실현손익</span><b class="num" id="sReal"></b></div>
         <div><span>예수금</span><b class="num" id="sCash"></b></div>
       </div>
-      <div class="tabsrow"><div class="tabs" id="tabs"><button data-tab="pos" class="on">보유종목<i id="cPos">0</i></button><button data-tab="ord">미체결<i id="cOrd">0</i></button><button data-tab="fill">체결내역<i id="cFill">0</i></button></div><button id="resetAcct" class="reset">계좌 초기화</button></div>
+      <div class="tabsrow"><div class="tabs" id="tabs"><button data-tab="pos" class="on">보유종목<i id="cPos">0</i></button><button data-tab="ord">미체결<i id="cOrd">0</i></button><button data-tab="fill">체결내역<i id="cFill">0</i></button></div><button id="resetAcct" class="reset workbtn">💼 돈 벌러 가기</button></div>
       <div id="tabBody"></div>
     </section>
   </main>
@@ -943,12 +995,25 @@ body.vil-on{overflow:hidden}
     <button type="button" class="ps-ok" id="psOk">설정하기</button>
   </div>
 </div>
+<div class="sheet-bg" id="wkBg" hidden>
+  <div class="wk-panel" role="dialog" aria-modal="true" aria-label="돈 벌러 가기">
+    <div class="wk-h"><b>💼 돈 벌러 가기</b><small>하루 한 번 · 일당 100만 원</small><button type="button" class="ps-x" id="wkClose" aria-label="닫기">×</button></div>
+    <div id="wkBody"></div>
+  </div>
+</div>
+<div class="my-bg adm-bg" id="admBg" hidden>
+  <aside class="mypanel adm" role="dialog" aria-modal="true" aria-label="관리자">
+    <div class="ad-h"><b>👑 관리자</b><button type="button" class="ps-x" id="admX" aria-label="닫기">×</button></div>
+    <div class="my-tabs ad-tabs" id="admTabs"><button type="button" data-t="mkt" class="on">시세</button><button type="button" data-t="user">유저</button><button type="button" data-t="notice">공지</button><button type="button" data-t="give">지급</button><button type="button" data-t="me">내 계정</button></div>
+    <div class="my-body" id="admBody"></div>
+  </aside>
+</div>
 <div class="my-bg" id="myBg" hidden>
   <aside class="mypanel" role="dialog" aria-modal="true" aria-labelledby="myNickShow">
     <div class="my-head">
       <img class="my-ava" id="myAva2" alt="" hidden>
       <div class="my-carslot" id="myCarSlot"></div>
-      <div class="my-id"><b id="myNickShow">닉네임 없음</b><button type="button" class="nick-edit" id="nickEdit">닉네임 정하기</button></div>
+      <div class="my-id"><b id="myNickShow">닉네임 없음</b><button type="button" class="nick-edit" id="nickEdit">닉네임 정하기</button><span class="my-idrow"><button type="button" class="my-idc" id="myIdCopy">내 ID 복사</button><button type="button" class="my-admbtn" id="admBtn" hidden>👑 관리자</button></span></div>
       <button type="button" class="ps-x" id="myClose" aria-label="닫기">×</button>
     </div>
     <div class="nickrow" id="nickRow" hidden><input id="nickIn" maxlength="12" placeholder="랭킹에 나올 이름 (최대 12자)" autocomplete="off" enterkeyhint="done"><button type="button" id="nickSave">저장</button><button type="button" id="nickCancel" class="ghost">취소</button></div>
@@ -962,8 +1027,8 @@ body.vil-on{overflow:hidden}
         </div>
         <div class="my-grid" id="mGrid"></div>
         <div class="my-set">
-          <button type="button" id="resetAcct2" class="reset">계좌 초기화</button>
-          <p class="my-note">계좌는 이 기기에 저장돼요. 랭킹에는 닉네임, 총자산, 수익률, 체결 횟수만 올라가요. 브라우저 데이터를 지우면 새 참가자로 다시 시작돼요.</p>
+          <button type="button" id="resetAcct2" class="reset workbtn">💼 돈 벌러 가기</button>
+          <p class="my-note">계좌 초기화는 없어요. 돈이 모자라면 일해서 벌어 오세요. 계좌는 이 기기에 저장돼요. 랭킹에는 닉네임, 총자산, 수익률, 체결 횟수만 올라가요. 브라우저 데이터를 지우면 새 참가자로 다시 시작돼요.</p>
         </div>
       </section>
       <section id="myPf" hidden>
@@ -1384,7 +1449,7 @@ function advance(s, T) {
       s.dispT = s.tA; s.dx = s.pA;
     }
     if (s.k >= STEPS_DAY) beginDay(s, s.day + 1);
-    s.pB = coreStep(s); s.tB = s.tA + CORE_DT;
+    s.pB = coreStep(s) * evMul(s.code, s.tA + CORE_DT); s.tB = s.tA + CORE_DT;
   }
   // 뉴스 피드
   while (s.newsLog.length && s.newsLog[0].at <= T) {
@@ -1544,7 +1609,7 @@ function recordFill(s, side, px, q, pnl, earned, tag) {
   A.fills.unshift({ code: s.code, name: nmOf(s), side, px, q, pnl, ts: Math.floor(T / 60), tag: tag || '' });
   if (A.fills.length > 300) A.fills.length = 300;
   RK.want = true;
-  const msg = `<b>${tag || (side === 'buy' ? '매수' : '매도')} 체결</b> · ${nmOf(s)} ${won(q)}주 @ ${won(px)}원` + (pnl != null ? ` · <span class="${cls(pnl)}">${sgnWon(pnl)}원</span>` : '') + (earned ? ` · <span class="coin">+${won(earned)}코인</span>` : '');
+  const msg = `<b>${tag || (side === 'buy' ? '매수' : '매도')} 체결</b> · ${nmOf(s)} ${won(q)}주 @ ${won(px)}원` + (pnl != null ? ` · <span class="${cls(pnl)}">${sgnWon(pnl)}원</span>` : '');
   if (G.catchup) G.catchup.push(msg); else toast(msg, side);
   saveSoon();
 }
@@ -1937,7 +2002,8 @@ const CARS = [
 const CAR_ALIAS = { dotori: 'gn_lite', saebyeok: 'gn_plus', baram: 'gn_prime', e1: 'js_3', elegance: 'js_5', ambassador: 'js_7', gtcoupe: 'gb_gx', blitz: 'gb_gxs', tornado: 'jb_blaze', rosa: 'jb_thunder', zenith: 'jb_thunder', goldmini: 'gg_emperor' };
 const carById = id => CARS.find(c => c.id === (CAR_ALIAS[id] || id));
 const carName = c => c ? c.brand + ' ' + c.model : '';
-// 걷기 1 기준 속도. 4천 코인(400만 원) 1.6배 → 50만 코인(5억) 4.2배 (가격의 로그에 비례)
+const carWon = c => c.price * 1000;                     // 차 값은 게임 속 내 돈(예수금)으로 낸다
+// 걷기 1 기준 속도. 400만 원 차 1.6배 → 5억 원 차 4.2배 (가격의 로그에 비례)
 const carSpd = id => { const c = carById(id); return c ? 1.6 + 2.6 * Math.log(c.price / 4000) / Math.log(125) : 1; };
 function hexMix(h, t, k) { const a = parseInt(h.slice(1), 16), b = parseInt(t.slice(1), 16); const m = (x, y) => Math.round(x + (y - x) * k); const r = m(a >> 16, b >> 16), g = m((a >> 8) & 255, (b >> 8) & 255), bl = m(a & 255, b & 255); return '#' + ((1 << 24) | (r << 16) | (g << 8) | bl).toString(16).slice(1); }
 function carPixels(car) {
@@ -2075,7 +2141,7 @@ async function initSbRank() {
   try {
     await sbSession();
     RK.uid = SB.ses.uid; RK.state = 'on'; RK.want = true;
-    sbLoadRanks();
+    sbLoadRanks(); admPoll();
     setInterval(() => { if (MY.open && MY.tab === 'rank' && Date.now() - (RK.loadedAt || 0) > 15e3) sbLoadRanks(); }, 3000);
   } catch (e) {
     RK.state = 'sberr';
@@ -2113,7 +2179,7 @@ async function resolveProfiles() {
 function rankDoc() {
   const eq = equity(), base = A.dayStartEq || SEED;
   return {
-    nick: (RK.nick || '').slice(0, 12), eq: Math.round(eq), ret: eq / SEED - 1, today: eq / base - 1, dayKey: TODAY_DAY,
+    nick: (RK.nick || '').slice(0, 12), eq: Math.round(eq), ret: eq / PRIN() - 1, today: eq / base - 1, dayKey: TODAY_DAY,
     realized: Math.round(A.realized), trades: A.fills.length, sells: A.sells || 0, wins: A.wins || 0, car: A.car || '',
     todayTrades: A.fills.filter(f => f.ts >= TODAY_DAY * 1440).length,
     since: Math.floor(A.since || nowSec()), updatedAt: Date.now(),
@@ -2121,7 +2187,7 @@ function rankDoc() {
 }
 // 체결·닉네임 변경 때, 또는 자산이 0.3% 넘게 바뀌고 2분이 지났을 때만 기록한다
 async function writeRank(force) {
-  if (RK.state !== 'on' || RK.readOnly || G.loading) return;
+  if (RK.state !== 'on' || RK.readOnly || G.loading || RK.banned || admHidden()) return;
   if (RK.writing) { if (force) RK.want = true; return; }
   const eq = equity(), now = Date.now();
   if (!force && !(Math.abs(eq - RK.lastEq) / SEED >= .003 && now - RK.lastWrite > 120e3)) return;
@@ -2166,7 +2232,8 @@ const totalDebt = () => Object.values(A.pos).reduce((a, p) => a + (p.debt || 0),
 
 function renderMy() {
   if (!MY.open) return;
-  const eq = equity(), pnl = eq - SEED, base = A.dayStartEq || SEED, tday = eq - base;
+  $('#admBtn').hidden = !ADM.me;
+  const eq = equity(), pnl = eq - PRIN(), base = A.dayStartEq || SEED, tday = eq - base;
   $('#myNickShow').textContent = RK.nick || '닉네임 없음';
   $('#myNickShow').classList.toggle('none', !RK.nick);
   $('#nickEdit').textContent = RK.nick ? '닉네임 바꾸기' : '닉네임 정하기';
@@ -2174,7 +2241,7 @@ function renderMy() {
   const now = performance.now(), redraw = now - MY.drawnAt > 1000;
   if (MY.tab === 'asset') {
     $('#mEq').textContent = won(eq) + '원';
-    setHtml($('#mRet'), `<span class="${cls(pnl)}">${sgnWon(pnl)}원 (${pctS(pnl / SEED)})</span><span class="muted">오늘 <b class="${cls(tday)}">${sgnWon(tday)}원 ${pctS(tday / base)}</b></span>`);
+    setHtml($('#mRet'), `<span class="${cls(pnl)}">${sgnWon(pnl)}원 (${pctS(pnl / PRIN())})</span><span class="muted">오늘 <b class="${cls(tday)}">${sgnWon(tday)}원 ${pctS(tday / base)}</b></span>`);
     const sv = stockValue(), unreal = Object.keys(A.pos).reduce((a, c) => a + posPnl(A.pos[c], bySym(c).price), 0);
     const reserve = A.orders.reduce((a, o) => a + (o.reserve || 0), 0);
     const win = A.sells ? `${Math.round(A.wins / A.sells * 100)}%` : '—';
@@ -2183,7 +2250,7 @@ function renderMy() {
       ['주식 평가금액', won(sv) + '원', ''], ['예수금', won(A.cash) + '원', ''], ['주문 대기금', won(reserve) + '원', ''],
       ['평가손익', sgnWon(unreal) + '원', cls(unreal)], ['실현손익', sgnWon(A.realized) + '원', cls(A.realized)], ['수수료·세금', won(A.costs) + '원', ''],
       ['체결 횟수', `${A.fills.length}회`, ''], ['승률', `${win}${A.sells ? ` <small>${A.wins}/${A.sells}</small>` : ''}`, ''], ['신용 대출금', won(totalDebt()) + '원', totalDebt() ? 'lev' : ''],
-      ['보유 코인', won(A.coins || 0), 'coin'], ['보유 차량', `${(A.cars || []).length}대`, ''], ['계좌 개설', `${d.getMonth() + 1}월 ${d.getDate()}일`, ''],
+      ['차에 쓴 돈', won(A.carSpent || 0) + '원', ''], ['보유 차량', `${(A.cars || []).length}대`, ''], ['계좌 개설', `${d.getMonth() + 1}월 ${d.getDate()}일`, ''],
     ];
     setHtml($('#mGrid'), tiles.map(([k, v, c]) => `<div><span>${k}</span><b class="num ${c}">${v}</b></div>`).join(''));
     if (redraw) { drawEqChart(); MY.drawnAt = now; }
@@ -2199,7 +2266,7 @@ function drawEqChart() {
   const T = nowSec(), m = Math.floor(T / 60);
   let pts = (A.hist || []).concat([{ t: m, eq: equity() }]);
   if (MY.range === '1d') pts = pts.filter(p => p.t >= TODAY_DAY * 1440);
-  const base = MY.range === '1d' ? (A.dayStartEq || SEED) : SEED;
+  const base = MY.range === '1d' ? (A.dayStartEq || SEED) : PRIN();
   if (pts.length < 2) { x.fillStyle = COL.muted; x.font = '12px "IBM Plex Sans KR", sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('거래하면서 5분마다 자산이 기록돼요', W / 2, H / 2); return; }
   let lo = Math.min(base, ...pts.map(p => p.eq)), hi = Math.max(base, ...pts.map(p => p.eq)); if (hi - lo < base * .002) { hi += base * .001; lo -= base * .001; }
   const P = 10, t0 = pts[0].t, t1 = pts[pts.length - 1].t || t0 + 1;
@@ -2274,23 +2341,23 @@ function renderHall() {
     : `<div class="hall-empty"><b>아직 마감된 날이 없어요</b><p>매일 자정(한국 시간)이 지나면 그날 수익률 1~3위가 여기에 영원히 기록돼요. 오늘의 주인공이 되어 보세요.</p></div>`);
 }
 function renderShop() {
-  const coins = A.coins || 0, owned = new Set(A.cars || []), mine = A.car && carById(A.car);
+  const cash = A.cash, owned = new Set(A.cars || []), mine = A.car && carById(A.car);
   setHtml($('#shopTop'), `<div class="shop-me">${mine ? carImg(A.car, 'big') : '<div class="shop-none">아직 대표 차가 없어요</div>'}<div class="shop-me-t">${mine ? `<b>${esc(mine.brand)} ${esc(mine.model)}</b><span>내 대표 차 · 랭킹에 같이 보여요</span>` : '<b>첫 차를 골라 보세요</b><span>산 차는 랭킹과 명예의 전당에 내 이름 옆에 나와요</span>'}</div></div>
-    <div class="shop-coin"><span>보유 코인</span><b class="num">${won(coins)}</b><small>매도로 번 수익 1,000원당 1코인 · 매일 첫 접속 100코인</small></div>`);
+    <div class="shop-coin"><span>살 수 있는 돈 (예수금)</span><b class="num">${won(cash)}원</b><small>차 값은 예수금에서 빠져요. 산 차는 자산에 들어가지 않아서 그만큼 수익률이 내려가요. 주식을 팔아 현금을 만들면 더 비싼 차도 살 수 있어요.</small></div>`);
   const now = Date.now(), arm = MY.arm && now - MY.arm.t < 2600 ? MY.arm.id : null;
   const tiers = []; for (const c of CARS) { let t = tiers[tiers.length - 1]; if (!t || t.name !== c.tier) tiers.push(t = { name: c.tier, cars: [] }); t.cars.push(c); }
   setHtml($('#shopList'), tiers.map(t => `<h3 class="hall-h">${t.name}</h3><div class="shop-grid">${t.cars.map(c => {
-    const has = owned.has(c.id), use = A.car === c.id, lack = c.price - coins;
+    const has = owned.has(c.id), use = A.car === c.id, lack = carWon(c) - cash;
     const btn = use ? '<button class="sbtn on" disabled>대표 차</button>' : has ? `<button class="sbtn" data-use="${c.id}">대표로 쓰기</button>`
-      : lack > 0 ? `<button class="sbtn" disabled>${won(lack)}코인 부족</button>` : `<button class="sbtn buy${arm === c.id ? ' arm' : ''}" data-buy="${c.id}">${arm === c.id ? '한 번 더 누르면 구매' : '구매'}</button>`;
-    return `<div class="scard${has ? ' own' : ''}${c.gold ? ' gold' : ''}">${carImg(c.id, 'mid')}<div class="sc-t"><b>${esc(c.brand)} ${esc(c.model)}</b><span class="num">${has ? '보유 중' : won(c.price) + ' 코인'}</span><small class="sc-won">${krwShort(c.price * 1000)}원</small><small class="sc-spd">속도 <i style="--w:${Math.round(carSpd(c.id) / 4.2 * 100)}%"></i> ${carSpd(c.id).toFixed(1)}배</small></div>${btn}</div>`;
+      : lack > 0 ? `<button class="sbtn" disabled>${krwShort(lack)}원 부족</button>` : `<button class="sbtn buy${arm === c.id ? ' arm' : ''}" data-buy="${c.id}">${arm === c.id ? '한 번 더 누르면 구매' : '구매'}</button>`;
+    return `<div class="scard${has ? ' own' : ''}${c.gold ? ' gold' : ''}">${carImg(c.id, 'mid')}<div class="sc-t"><b>${esc(c.brand)} ${esc(c.model)}</b><span class="num">${has ? '보유 중' : krwShort(carWon(c)) + '원'}</span><small class="sc-spd">속도 <i style="--w:${Math.round(carSpd(c.id) / 4.2 * 100)}%"></i> ${carSpd(c.id).toFixed(1)}배</small></div>${btn}</div>`;
   }).join('')}</div>`).join(''));
 }
 function buyCar(id) {
   const c = carById(id); if (!c || (A.cars || []).includes(id)) return;
-  if ((A.coins || 0) < c.price) return toast('코인이 부족해요.');
+  if (A.cash < carWon(c)) return toast('예수금이 부족해요. 주식을 팔아 현금을 만들어 보세요.');
   if (!(MY.arm && MY.arm.id === id && Date.now() - MY.arm.t < 2600)) { MY.arm = { id, t: Date.now() }; dirty = true; setTimeout(() => { dirty = true; }, 2700); return; }
-  MY.arm = null; A.coins -= c.price; A.cars = (A.cars || []).concat(id); A.car = id;
+  MY.arm = null; A.cash -= carWon(c); A.costs = A.costs || 0; A.carSpent = (A.carSpent || 0) + carWon(c); A.cars = (A.cars || []).concat(id); A.car = id;
   toast(`<b>${esc(c.brand)} ${esc(c.model)}</b> 출고 완료! 대표 차로 설정했어요.`, null, 3500);
   RK.want = true; saveNow(); dirty = true;
 }
@@ -2309,7 +2376,7 @@ function attendance() {
   if (A.coins == null) A.coins = 500;
   if (!A.cars) A.cars = [];
   A.cars = [...new Set(A.cars.map(id => CAR_ALIAS[id] || id))]; if (A.car) A.car = CAR_ALIAS[A.car] || A.car;
-  if (A.attendDay !== TODAY_DAY) { const first = A.attendDay == null; A.attendDay = TODAY_DAY; if (!first) { A.coins += 100; toast('<b>출석 보상</b> · <span class="coin">+100코인</span>', null, 3000); } saveNow(); }
+  if (A.attendDay !== TODAY_DAY) { const first = A.attendDay == null; A.attendDay = TODAY_DAY; if (false) { toast('', null, 3000); } saveNow(); }
 }
 
 /* ---------- toasts ---------- */
@@ -2446,9 +2513,9 @@ function renderTicket() {
 const fmtWhen = ts => { const d = Math.floor(ts / 1440); if (d === TODAY_DAY) return hhmm(ts); const x = dateOf(d); return `${x.getMonth() + 1}/${x.getDate()} ${hhmm(ts)}`; };
 const partN = (p, k) => { const n = (p.ps || []).filter(x => x.kind === k).length; return n ? ` <em class="pn">+부분 ${n}</em>` : ''; };
 function renderAccount() {
-  const eq = equity(), pnl = eq - SEED;
+  const eq = equity(), pnl = eq - PRIN();
   $('#sEq').textContent = won(eq);
-  $('#sPnl').innerHTML = `<span class="${cls(pnl)}">${sgnWon(pnl)}</span> <small class="${cls(pnl)}">${pctS(pnl / SEED)}</small>`;
+  $('#sPnl').innerHTML = `<span class="${cls(pnl)}">${sgnWon(pnl)}</span> <small class="${cls(pnl)}">${pctS(pnl / PRIN())}</small>`;
   const r = $('#sReal'); r.textContent = sgnWon(A.realized); r.className = 'num ' + cls(A.realized);
   $('#sCash').textContent = won(A.cash);
   const codes = Object.keys(A.pos);
@@ -3174,17 +3241,15 @@ let resetArm = 0;
 function armReset(b) {
   if (A.resetDay === TODAY_DAY) return toast('계좌 초기화는 하루에 한 번만 할 수 있어요. 내일 다시 시도해 주세요.');
   if (Date.now() - resetArm < 2500) {
-    const keep = { coins: A.coins, cars: A.cars, car: A.car, attendDay: A.attendDay };
+    const keep = { coins: A.coins, cars: A.cars, car: A.car, attendDay: A.attendDay, carSpent: 0 };
     Object.assign(A, freshAccount(), keep, { lastSeen: nowSec(), dayKey: TODAY_DAY, resetDay: TODAY_DAY }); A.dayStartEq = SEED;
     for (const x of document.querySelectorAll('.reset')) { x.textContent = '계좌 초기화'; x.classList.remove('arm'); }
     resetArm = 0; saveNow(); fillStopsInputs(); RK.want = true; MY.drawnAt = 0;
-    toast('계좌를 1,000만 원으로 초기화했어요. 코인과 차고는 그대로예요.'); dirty = true; return;
+    toast('계좌를 1,000만 원으로 초기화했어요. 산 차는 그대로예요.'); dirty = true; return;
   }
   resetArm = Date.now(); b.textContent = '한 번 더 누르면 초기화'; b.classList.add('arm');
   setTimeout(() => { if (Date.now() - resetArm >= 2400) { b.textContent = '계좌 초기화'; b.classList.remove('arm'); } }, 2500);
 }
-$('#resetAcct').addEventListener('click', e => armReset(e.currentTarget));
-$('#resetAcct2').addEventListener('click', e => armReset(e.currentTarget));
 $('#myBtn').addEventListener('click', () => openMy());
 $('#myClose').addEventListener('click', closeMy);
 $('#myBg').addEventListener('click', e => { if (e.target === $('#myBg')) closeMy(); });
@@ -3876,6 +3941,7 @@ function vPresJoin(k, meta) {
 function vPeerLeave(k) { if (VIL.peers.delete(k)) vilTopUI(); }
 function vOnNet(ev, d) {
   const id = vClean(d.id, 40); if (!id || id === VIL.id) return;
+  if (d.u && ADM.bans.has(d.u)) { VIL.peers.delete(id); return; }
   let p = VIL.peers.get(id);
   if (ev === 'pos') {
     const fresh = !p;
@@ -3885,11 +3951,11 @@ function vOnNet(ev, d) {
     const m = d.m === 'circuit' ? 'circuit' : 'village';
     p.tx = num(d.x); p.ty = num(d.y); p.th = num(d.h); p.b = Math.max(0, num(d.b)); p.seen = performance.now();
     if (!p.placed || p.m !== m) { p.x = p.tx; p.y = p.ty; p.h = p.th; p.placed = true; }
-    p.m = m;
+    p.m = m; p.adm = !!d.u && ADM.admins.has(d.u);
     if (fresh) vilTopUI();
   } else if (ev === 'chat') {
     const t = vClean(d.t, 60); if (!t) return;
-    const n = vClean(d.n, 12) || (p && p.n) || '익명 개미';
+    const n = (d.u && ADM.admins.has(d.u) ? '👑 ' : '') + (vClean(d.n, 12) || (p && p.n) || '익명 개미');
     if (p) { p.say = t; p.sayT = performance.now(); }
     vChatPush(n, t, false);
   } else if (ev === 'lap') {
@@ -3902,7 +3968,7 @@ function vOnNet(ev, d) {
 function vSendPos(force) {
   const me = VIL.me; if (!me || VIL.net !== 'on') return;
   const now = performance.now();
-  const d = { x: Math.round(me.x), y: Math.round(me.y), h: Math.round(me.h * 100) / 100, m: VIL.map, n: vNick(), c: vRideId(), b: vBest() };
+  const d = { x: Math.round(me.x), y: Math.round(me.y), h: Math.round(me.h * 100) / 100, m: VIL.map, n: vNick(), c: vRideId(), b: vBest(), u: RK.uid || '' };
   const key = `${d.x},${d.y},${d.h},${d.m},${d.c}`;
   const moving = key !== VIL.sentKey;
   if (!force && !(moving && now - VIL.sendT > (RT.room ? 60 : 160)) && now - VIL.sendT < 2500) return;
@@ -3927,22 +3993,23 @@ function vSendChat() {
   vChatT = now; inp.value = '';
   VIL.me.say = t; VIL.me.sayT = performance.now();
   vChatPush(vNick(), t, true);
-  netEmit('chat', { t, n: vNick() });
+  netEmit('chat', { t, n: vNick(), u: RK.uid || '' });
 }
 
 /* ---- 열기 · 닫기 ---- */
 function openVillage(map) {
+  if (RK.banned) return toast('관리자가 이 계정의 마을 이용을 막았어요.');
   if (!VBG.village) vilPrerender();
   if (!VIL.id) VIL.id = ((RK.uid || 'guest').replace(/[^a-z0-9]/gi, '').slice(0, 8) || 'g') + '-' + Math.random().toString(36).slice(2, 7);
   VIL.open = true; VIL.map = map || VIL.map || 'village'; VIL.keys = {}; VIL.pad = {};
-  $('#vil').hidden = false; document.body.classList.add('vil-on');
+  $('#vil').hidden = false; document.body.classList.add('in-vil');
   vSpawn(); vilSyncMap(); vilResize();
   if (!VIL.chat.length) vChatPush('안내', '접속해 있는 사람끼리만 보이고, 채팅은 저장되지 않아요. 방향 버튼이나 방향키로 움직여요.', false, true);
   netOpen(); VIL.last = performance.now();
   cancelAnimationFrame(VIL.raf); VIL.raf = requestAnimationFrame(vilFrame);
 }
 function closeVillage() {
-  VIL.open = false; $('#vil').hidden = true; document.body.classList.remove('vil-on');
+  VIL.open = false; $('#vil').hidden = true; document.body.classList.remove('in-vil');
   cancelAnimationFrame(VIL.raf); netClose(); dirty = true;
 }
 function vilSetMap(m) {
@@ -4086,8 +4153,8 @@ function vilDraw(t) {
     x.fillStyle = `rgba(217,238,252,${.55 + f * .4})`; x.fillRect(41 * VT + 6 - f * 2, 15 * VT + 2 - f * 3, 4 + f * 4, 10 + f * 3);
     for (const p of VMAP.parked) ents.push({ x: p.x, y: p.y, h: p.h, c: p.id, parked: 1 });
   }
-  for (const p of VIL.peers.values()) if (p.placed && p.m === VIL.map) ents.push({ x: p.x, y: p.y, h: p.h, c: VIL.map === 'circuit' ? (p.c || 'kart') : p.c, n: p.n, say: p.say, sayT: p.sayT, ghost: VIL.map === 'circuit' });
-  ents.push({ x: me.x, y: me.y, h: me.h, c: vRideId(), n: vNick(), me: 1, say: me.say, sayT: me.sayT });
+  for (const p of VIL.peers.values()) if (p.placed && p.m === VIL.map) ents.push({ x: p.x, y: p.y, h: p.h, c: VIL.map === 'circuit' ? (p.c || 'kart') : p.c, n: (p.adm ? '👑 ' : '') + p.n, adm: p.adm, say: p.say, sayT: p.sayT, ghost: VIL.map === 'circuit' });
+  ents.push({ x: me.x, y: me.y, h: me.h, c: vRideId(), n: (ADM.me ? '👑 ' : '') + vNick(), me: 1, say: me.say, sayT: me.sayT });
   ents.sort((a, b) => a.y - b.y);
   for (const e of ents) {
     const spr = e.c ? carTop(e.c) : null;
@@ -4134,7 +4201,7 @@ function vilDraw(t) {
     if (lx < -60 || lx > VIL.cw + 60 || ly < -60 || ly > VIL.ch + 60) continue;
     x.font = '700 10.5px "IBM Plex Sans KR", sans-serif';
     const nw = x.measureText(e.n).width + 10, ny = ly - 12 * S - 6;
-    x.fillStyle = e.me ? 'rgba(242,181,68,.92)' : 'rgba(9,12,18,.75)'; x.fillRect(lx - nw / 2, ny - 7, nw, 14);
+    x.fillStyle = e.me ? 'rgba(242,181,68,.92)' : e.adm ? 'rgba(229,56,59,.9)' : 'rgba(9,12,18,.75)'; x.fillRect(lx - nw / 2, ny - 7, nw, 14);
     x.fillStyle = e.me ? '#1a1205' : '#f1f3f8'; x.fillText(e.n, lx, ny);
     if (e.say && now - e.sayT < 6000) {
       x.font = '600 12px "IBM Plex Sans KR", sans-serif';
@@ -4197,6 +4264,277 @@ window.addEventListener('resize', () => { if (VIL.open) vilResize(); });
 document.addEventListener('visibilitychange', () => { if (VIL.open && !document.hidden) { VIL.last = performance.now(); vSendPos(true); } });
 $('#vilBtn').addEventListener('click', () => openVillage('village'));
 
+/* ---------- 관리자: 시세 이벤트 · 공지 · 밴 · 돈 지급 ---------- */
+// 모든 사람의 화면이 같은 이벤트 목록을 받아 같은 공식으로 가격에 곱하므로, 폭등·폭락이 모두에게 똑같이 보인다.
+const ADM = { events: [], notices: [], bans: new Set(), admins: new Set(), grants: [], setup: true, me: false, open: false, tab: 'mkt', users: [], q: '', at: 0, pend: { ramp: 180, hold: 600, recover: 3600 } };
+try { const c = JSON.parse(localStorage.getItem('scalplab.adm.cache') || 'null'); if (c) { ADM.events = c.events || []; ADM.notices = c.notices || []; ADM.bans = new Set(c.bans || []); ADM.admins = new Set(c.admins || []); } } catch (e) {}
+const smooth = u => u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u);
+function evMul(code, t) {
+  let m = 1;
+  for (const e of ADM.events) {
+    if (e.code !== '*' && e.code !== code) continue;
+    let d = t - (e.start_at - EPOCH_MS) / 1000; if (d <= 0) continue;
+    let env;
+    if (d < e.ramp) env = smooth(d / e.ramp);
+    else if ((d -= e.ramp) < e.hold) env = 1;
+    else if ((d -= e.hold) < e.recover) env = 1 - smooth(d / e.recover);
+    else continue;
+    m *= Math.max(.05, 1 + e.pct * env);
+  }
+  return m;
+}
+const ADM_ON = () => RK.mode === 'sb' && RK.state === 'on';
+async function admPoll() {
+  if (!ADM_ON()) return;
+  const get = p => sbReq(p, {}, true);
+  try {
+    const [ev, no, ba, ad, gr] = await Promise.all([
+      get('/rest/v1/market_events?select=id,code,pct,start_at,ramp,hold,recover,note&order=id.desc&limit=80'),
+      get('/rest/v1/notices?select=id,text&active=eq.true&order=id.desc&limit=3'),
+      get('/rest/v1/bans?select=user_id'),
+      get('/rest/v1/admins?select=user_id'),
+      get('/rest/v1/grants?select=id,user_id,amount,note,created_at&order=id.asc&limit=300'),
+    ]);
+    ADM.events = ev.map(e => ({ id: e.id, code: e.code, pct: +e.pct, start_at: +e.start_at, ramp: +e.ramp, hold: +e.hold, recover: +e.recover, note: vClean(e.note, 60) }));
+    ADM.notices = no.map(n => ({ id: n.id, text: vClean(n.text, 120) }));
+    ADM.bans = new Set(ba.map(b => b.user_id)); ADM.admins = new Set(ad.map(a => a.user_id));
+    ADM.grants = gr; ADM.setup = true; ADM.at = Date.now();
+    try { localStorage.setItem('scalplab.adm.cache', JSON.stringify({ events: ADM.events, notices: ADM.notices, bans: [...ADM.bans], admins: [...ADM.admins] })); } catch (e) {}
+    ADM.me = ADM.admins.has(RK.uid); RK.banned = ADM.bans.has(RK.uid);
+    applyGrants(); renderNotice(); dirty = true;
+  } catch (e) { if (e.status === 404 || /schema cache|does not exist/.test(e.message)) ADM.setup = false; }
+}
+function applyGrants() {
+  A.grantsDone = A.grantsDone || [];
+  const done = new Set(A.grantsDone), since = EPOCH_MS + (A.since || 0) * 1000;
+  for (const g of ADM.grants) {
+    if (done.has(g.id)) continue;
+    A.grantsDone.push(g.id);
+    if (!g.user_id && Date.parse(g.created_at) < since) continue;         // 전체 지급은 그 뒤에 들어온 사람만 빼고
+    const amt = Math.max(-1e9, Math.min(1e9, Math.round(+g.amount || 0))); if (!amt) continue;
+    A.cash = Math.max(0, A.cash + amt);
+    if (amt > 0) { A.principal = PRIN() + amt; A.dayStartEq = (A.dayStartEq || SEED) + amt; }
+    toast(`<b>📢 관리자 ${amt > 0 ? '지급' : '회수'}</b> · ${amt > 0 ? '+' : ''}${won(amt)}원${g.note ? ' · ' + esc(vClean(g.note, 40)) : ''}`, amt > 0 ? 'buy' : 'sell', 5000);
+  }
+  saveNow();
+}
+function renderNotice() {
+  const n = ADM.notices[0], el = $('#notice');
+  let seen = ''; try { seen = localStorage.getItem('scalplab.notice.x') || ''; } catch (e) {}
+  const ban = RK.banned ? '관리자가 이 계정의 랭킹·마을 이용을 막았어요.' : '';
+  if (ban) { el.hidden = false; el.className = 'notice ban'; $('#noticeT').textContent = ban; return; }
+  if (!n || seen === String(n.id)) { el.hidden = true; return; }
+  el.hidden = false; el.className = 'notice'; $('#noticeT').textContent = n.text; el.dataset.id = n.id;
+}
+$('#noticeX').addEventListener('click', () => { const el = $('#notice'); try { localStorage.setItem('scalplab.notice.x', el.dataset.id || ''); } catch (e) {} el.hidden = true; });
+
+/* ---- 관리자 창 ---- */
+const admPost = (path, body, method = 'POST', prefer = 'return=minimal') => sbReq(path, { method, headers: { Prefer: prefer }, body: body ? JSON.stringify(body) : undefined }, true);
+function openAdm() { if (!ADM.me) return; ADM.open = true; $('#admBg').hidden = false; admLoadUsers(); renderAdm(); }
+function closeAdm() { ADM.open = false; $('#admBg').hidden = true; }
+async function admLoadUsers() {
+  try { const q = ADM.q ? `&nick=ilike.*${encodeURIComponent(ADM.q.replace(/[*,()]/g, ''))}*` : ''; ADM.users = await sbReq(`/rest/v1/ranks?select=user_id,nick,eq,ret,trades,updated_at${q}&order=updated_at.desc&limit=100`, {}, true); }
+  catch (e) { ADM.users = []; toast('유저 목록을 못 불러왔어요: ' + esc(e.message)); }
+  renderAdm();
+}
+const admEvLabel = e => { const now = Date.now(), st = e.start_at, a = st + e.ramp * 1000, b = a + e.hold * 1000, c = b + e.recover * 1000; return now < st ? '대기' : now < a ? '진행' : now < b ? '유지' : now < c ? '회복 중' : '끝남'; };
+function renderAdm() {
+  if (!ADM.open) return;
+  document.querySelectorAll('#admTabs button').forEach(b => b.classList.toggle('on', b.dataset.t === ADM.tab));
+  const P = ADM.pend, opts = `<option value="*">전체 종목</option>` + syms.map(s => `<option value="${s.code}"${P.code === s.code ? ' selected' : ''}>${esc(s.name)} (${won(s.price)})</option>`).join('');
+  let h = '';
+  if (ADM.tab === 'mkt') {
+    const chip = (k, v, l) => `<button type="button" class="ad-chip${P[k] === v ? ' on' : ''}" data-k="${k}" data-v="${v}">${l}</button>`;
+    h = `<label class="ad-l">종목</label><select id="admCode">${opts}</select>
+      <label class="ad-l">크기</label><div class="ad-row">${[-50, -30, -15, -5].map(v => chip('pct', v, v + '%')).join('')}</div><div class="ad-row">${[5, 15, 30, 100].map(v => chip('pct', v, '+' + v + '%')).join('')}</div>
+      <label class="ad-l">얼마나 빨리 (도달 시간)</label><div class="ad-row">${chip('ramp', 30, '30초')}${chip('ramp', 180, '3분')}${chip('ramp', 600, '10분')}${chip('ramp', 1800, '30분')}</div>
+      <label class="ad-l">그 가격 유지</label><div class="ad-row">${chip('hold', 0, '바로 회복')}${chip('hold', 600, '10분')}${chip('hold', 3600, '1시간')}${chip('hold', 21600, '6시간')}${chip('hold', 86400, '하루')}</div>
+      <label class="ad-l">원래 흐름으로 돌아오는 시간</label><div class="ad-row">${chip('recover', 600, '10분')}${chip('recover', 3600, '1시간')}${chip('recover', 21600, '6시간')}${chip('recover', 86400, '하루')}</div>
+      <input id="admNote" maxlength="60" placeholder="메모 (예: 실적 쇼크) · 넣으면 공지로도 떠요" value="${esc(P.note || '')}">
+      <button type="button" class="ad-go ${P.pct < 0 ? 'down' : 'up'}" id="admFire">${P.pct ? `${P.pct > 0 ? '폭등' : '폭락'} ${P.pct > 0 ? '+' : ''}${P.pct}% 발동 (20초 뒤 시작)` : '크기를 골라 주세요'}</button>
+      <p class="ad-l">최근 이벤트</p>` + (ADM.events.slice(0, 15).map(e => { const s = e.code === '*' ? null : bySym(e.code), st = admEvLabel(e); return `<div class="ad-ev"><b class="${e.pct < 0 ? 'down' : 'up'}">${e.pct > 0 ? '+' : ''}${Math.round(e.pct * 100)}%</b><span>${s ? esc(s.name) : '전체'}${e.note ? ' · ' + esc(e.note) : ''}<small>${new Date(e.start_at).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })} · ${st}</small></span>${st !== '끝남' && st !== '회복 중' ? `<button type="button" class="mini" data-evend="${e.id}">지금 끝내기</button>` : ''}</div>`; }).join('') || '<p class="ad-empty">아직 없어요</p>');
+  } else if (ADM.tab === 'user') {
+    h = `<div class="ad-row"><input id="admQ" placeholder="닉네임 검색" value="${esc(ADM.q)}"><button type="button" class="mini" id="admQGo">검색</button></div>` +
+      (ADM.users.map(u => { const ban = ADM.bans.has(u.user_id), adm = ADM.admins.has(u.user_id); return `<div class="ad-user${ban ? ' banned' : ''}"><div><b>${esc(u.nick || '익명 개미')}${adm ? ' <em>관리자</em>' : ''}${ban ? ' <em class="b">밴</em>' : ''}</b><small class="num">${won(u.eq)}원 · ${pctS(u.ret)} · 체결 ${u.trades} · ${u.user_id.slice(0, 8)}</small></div>
+        <button type="button" class="mini" data-give="${u.user_id}">지급</button>${adm ? '' : `<button type="button" class="mini ${ban ? '' : 'sell'}" data-ban="${u.user_id}" data-on="${ban ? 0 : 1}">${ban ? '밴 해제' : '밴'}</button>`}<button type="button" class="mini" data-delrank="${u.user_id}">랭킹 삭제</button></div>`; }).join('') || '<p class="ad-empty">유저가 없어요</p>');
+  } else if (ADM.tab === 'notice') {
+    h = `<label class="ad-l">모든 사람 화면 위에 띄울 공지</label><textarea id="admNotice" maxlength="120" placeholder="예: 오늘 밤 9시 폭락 이벤트!"></textarea><button type="button" class="ad-go" id="admNoticeGo">공지 올리기</button>` +
+      (ADM.notices.map(n => `<div class="ad-ev"><span>${esc(n.text)}</span><button type="button" class="mini" data-noff="${n.id}">내리기</button></div>`).join(''));
+  } else if (ADM.tab === 'give') {
+    h = `<label class="ad-l">받는 사람</label><div class="ad-row">${['all', 'one'].map(v => `<button type="button" class="ad-chip${(P.to || 'all') === v ? ' on' : ''}" data-k="to" data-v="${v}">${v === 'all' ? '전체' : '한 명 (ID)'}</button>`).join('')}</div>
+      ${(P.to || 'all') === 'one' ? `<input id="admGiveId" placeholder="유저 ID (유저 탭에서 '지급' 누르면 자동 입력)" value="${esc(P.uid || '')}">` : ''}
+      <label class="ad-l">금액 (원) · 빼앗으려면 마이너스</label><input id="admAmt" inputmode="numeric" placeholder="예: 10000000" value="${P.amt || ''}">
+      <div class="ad-row">${[1e6, 1e7, 1e8, 1e9].map(v => `<button type="button" class="ad-chip" data-amt="${v}">${krwShort(v)}</button>`).join('')}</div>
+      <input id="admGiveNote" maxlength="40" placeholder="메모 (받는 사람에게 보여요)"><button type="button" class="ad-go" id="admGiveGo">지급하기</button>`;
+  } else {
+    h = `<label class="ad-l">내 예수금 바로 바꾸기 (관리자 무제한)</label><input id="admCash" inputmode="numeric" value="${Math.round(A.cash)}">
+      <div class="ad-row">${[1e8, 1e9, 1e10].map(v => `<button type="button" class="ad-chip" data-cash="${v}">${krwShort(v)}</button>`).join('')}</div>
+      <button type="button" class="ad-go" id="admCashGo">적용</button>
+      <label class="chk ad-chk"><input type="checkbox" id="admHide"${localStorage.getItem('scalplab.adm.hide') !== '0' ? ' checked' : ''}><span>내 기록은 랭킹에 안 올리기 (관리자 돈이 랭킹을 망치지 않게)</span></label>
+      <p class="ad-l">내 ID</p><p class="ad-id num">${esc(RK.uid || '')}</p>`;
+  }
+  setHtml($('#admBody'), h);
+}
+$('#admBg').addEventListener('click', async e => {
+  if (e.target === $('#admBg')) return closeAdm();
+  const t = e.target.closest('button'); if (!t) return;
+  const P = ADM.pend;
+  try {
+    if (t.id === 'admX') return closeAdm();
+    if (t.closest('#admTabs')) { ADM.tab = t.dataset.t; if (ADM.tab === 'user') admLoadUsers(); return renderAdm(); }
+    if (t.dataset.k) { P[t.dataset.k] = isNaN(+t.dataset.v) ? t.dataset.v : +t.dataset.v; if ($('#admNote')) P.note = $('#admNote').value; if ($('#admCode')) P.code = $('#admCode').value; return renderAdm(); }
+    if (t.id === 'admFire') {
+      if (!P.pct) return toast('크기를 골라 주세요.');
+      const code = $('#admCode').value, note = vClean($('#admNote').value, 60);
+      await admPost('/rest/v1/market_events', { code, pct: P.pct / 100, start_at: Date.now() + 20000, ramp: P.ramp || 180, hold: P.hold == null ? 600 : P.hold, recover: P.recover || 3600, note });
+      if (note) await admPost('/rest/v1/notices', { text: `${code === '*' ? '시장 전체' : bySym(code).name} ${note}` }).catch(() => {});
+      toast(`<b>이벤트 등록</b> · 20초 뒤 ${P.pct > 0 ? '폭등' : '폭락'} 시작`); ADM.pend = { ramp: P.ramp, hold: P.hold, recover: P.recover }; await admPoll(); return renderAdm();
+    }
+    if (t.dataset.evend) {
+      const ev = ADM.events.find(x => x.id === +t.dataset.evend); if (!ev) return;
+      const el = Math.max(0, Math.round((Date.now() + 15000 - ev.start_at) / 1000));            // 15초 뒤부터 회복 시작
+      const patch = el < ev.ramp ? { ramp: Math.max(10, el), hold: 0, recover: 600 } : { hold: Math.max(0, el - ev.ramp), recover: 600 };
+      await admPost(`/rest/v1/market_events?id=eq.${ev.id}`, patch, 'PATCH'); toast('15초 뒤부터 10분 동안 원래 흐름으로 돌아가요.'); await admPoll(); return renderAdm();
+    }
+    if (t.id === 'admQGo') { ADM.q = $('#admQ').value.trim(); return admLoadUsers(); }
+    if (t.dataset.ban) {
+      const uid = t.dataset.ban;
+      if (t.dataset.on === '1') await admPost('/rest/v1/bans', { user_id: uid, reason: '' }, 'POST', 'resolution=merge-duplicates,return=minimal');
+      else await admPost(`/rest/v1/bans?user_id=eq.${uid}`, null, 'DELETE');
+      await admPoll(); return renderAdm();
+    }
+    if (t.dataset.delrank) { if (!(ADM.delArm === t.dataset.delrank && Date.now() - ADM.delT < 2500)) { ADM.delArm = t.dataset.delrank; ADM.delT = Date.now(); return toast('한 번 더 누르면 이 사람의 랭킹 기록을 지워요.'); } await admPost(`/rest/v1/ranks?user_id=eq.${t.dataset.delrank}`, null, 'DELETE'); await admPost(`/rest/v1/daily?user_id=eq.${t.dataset.delrank}`, null, 'DELETE').catch(() => {}); return admLoadUsers(); }
+    if (t.dataset.give) { ADM.tab = 'give'; P.to = 'one'; P.uid = t.dataset.give; return renderAdm(); }
+    if (t.dataset.amt) { $('#admAmt').value = t.dataset.amt; P.amt = t.dataset.amt; return; }
+    if (t.id === 'admGiveGo') {
+      const amt = parseInt(($('#admAmt').value || '').replace(/[^0-9-]/g, ''), 10); if (!amt) return toast('금액을 넣어 주세요.');
+      const uid = (P.to || 'all') === 'one' ? ($('#admGiveId').value || '').trim() : null;
+      if (P.to === 'one' && !/^[0-9a-f-]{36}$/i.test(uid)) return toast('유저 ID가 올바르지 않아요.');
+      await admPost('/rest/v1/grants', { user_id: uid, amount: amt, note: vClean($('#admGiveNote').value, 40) });
+      toast(`<b>지급 완료</b> · ${uid ? '한 명' : '전체'}에게 ${won(amt)}원 (다음 접속·30초 안에 들어가요)`); ADM.pend = { ramp: 180, hold: 600, recover: 3600 }; return renderAdm();
+    }
+    if (t.id === 'admNoticeGo') { const tx = vClean($('#admNotice').value, 120); if (!tx) return; await admPost('/rest/v1/notices', { text: tx }); try { localStorage.removeItem('scalplab.notice.x'); } catch (x) {} await admPoll(); return renderAdm(); }
+    if (t.dataset.noff) { await admPost(`/rest/v1/notices?id=eq.${t.dataset.noff}`, { active: false }, 'PATCH'); await admPoll(); return renderAdm(); }
+    if (t.dataset.cash) { $('#admCash').value = t.dataset.cash; return; }
+    if (t.id === 'admCashGo') { const v = parseInt(($('#admCash').value || '').replace(/[^0-9]/g, ''), 10); if (!(v >= 0)) return; A.cash = v; saveNow(); dirty = true; toast(`예수금을 ${won(v)}원으로 바꿨어요.`); return; }
+  } catch (err) { toast('실패했어요: ' + esc(err.message || '')); }
+});
+$('#admBg').addEventListener('change', e => {
+  if (e.target.id === 'admHide') { try { localStorage.setItem('scalplab.adm.hide', e.target.checked ? '1' : '0'); } catch (x) {} if (e.target.checked && RK.uid) admPost(`/rest/v1/ranks?user_id=eq.${RK.uid}`, null, 'DELETE').catch(() => {}); else RK.want = true; }
+  if (e.target.id === 'admCode') ADM.pend.code = e.target.value;
+});
+const admHidden = () => ADM.me && (() => { try { return localStorage.getItem('scalplab.adm.hide') !== '0'; } catch (e) { return true; } })();
+$('#admBtn').addEventListener('click', () => { closeMy(); openAdm(); });
+$('#myIdCopy').addEventListener('click', () => { const v = RK.uid || ''; try { navigator.clipboard.writeText(v).then(() => toast('내 ID를 복사했어요.'), () => toast(v)); } catch (e) { toast(v); } });
+setInterval(admPoll, 20000);
+
+/* ---------- 돈 벌러 가기 (하루 한 번) ---------- */
+// 투자 원금 = 시작 1,000만 원 + 일해서 번 돈 + 관리자 지급. 수익률은 원금 대비로 계산해서, 일당은 수익률에 안 섞인다.
+const PRIN = () => A.principal || SEED;
+const JOBS = [
+  { id: 'daeri', name: '대리운전', ico: '🚗', pay: 1e6, desc: '밤새 손님 차를 대신 몰아 줘요.', lines: ['콜 잡는 중…', '손님 차 키 받는 중…', '강남에서 일산까지 운행 중…', '손님 집 앞 도착!'] },
+  { id: 'nogada', name: '막노동', ico: '🧱', pay: 1e6, desc: '새벽 인력사무소에서 현장으로.', lines: ['새벽 5시 인력사무소 대기…', '현장 배정 완료', '시멘트 포대 나르는 중…', '일당 받는 중'] },
+  { id: 'delivery', name: '배달', ico: '🛵', pay: 1e6, desc: '점심·저녁 피크 타임 배달.', lines: ['배달 앱 켜는 중…', '점심 피크 콜 폭주!', '저녁 피크 달리는 중…', '오늘 정산 완료'] },
+  { id: 'illegal', name: '불법 알바', ico: '🕶️', pay: 2e6, risk: .3, desc: '두 배를 벌지만 30% 확률로 검거돼요. 검거되면 예수금 절반 몰수, 24시간 동안 일 못 해요.', lines: ['수상한 연락을 받았다…', '접선 장소로 이동 중…', '주변을 살피는 중…', '……'] },
+];
+const WK = { open: false, run: null };
+const wkJailed = () => (A.jailUntil || 0) > nowSec();
+const wkDone = () => A.workDay === TODAY_DAY;
+function openWork() { WK.open = true; $('#wkBg').hidden = false; renderWork(); }
+function closeWork() { if (WK.run) return toast('일하는 중이에요. 끝날 때까지 기다려 주세요.'); WK.open = false; $('#wkBg').hidden = true; }
+function renderWork() {
+  if (!WK.open) return;
+  const jail = wkJailed(), done = wkDone(), left = jail ? A.jailUntil - nowSec() : 0;
+  const hm = s => `${Math.floor(s / 3600)}시간 ${Math.floor(s % 3600 / 60)}분`;
+  const state = jail ? `<div class="wk-state bad">🚔 검거돼서 일을 못 해요 · ${hm(left)} 남음</div>`
+    : done ? `<div class="wk-state">오늘은 이미 일했어요 · 내일(자정 지나면) 다시 할 수 있어요</div>`
+    : `<div class="wk-state ok">오늘 한 번 일할 수 있어요</div>`;
+  if (WK.run) {
+    const R = WK.run, t = Math.min(1, (performance.now() - R.t0) / (R.dur * 1000)), j = JOBS.find(x => x.id === R.id);
+    setHtml($('#wkBody'), `<div class="wk-run"><div class="wk-ico">${j.ico}</div><b>${j.name}</b><p>${j.lines[Math.min(j.lines.length - 1, Math.floor(t * j.lines.length))]}</p><div class="wk-bar"><i style="width:${Math.round(t * 100)}%"></i></div></div>`);
+    if (t >= 1) finishWork();
+    return;
+  }
+  setHtml($('#wkBody'), state + `<div class="wk-list">${JOBS.map(j => `<button type="button" class="wk-job${j.risk ? ' risky' : ''}" data-job="${j.id}"${jail || done ? ' disabled' : ''} style="--bg:url(${jobScene(j.id)})"><span class="wk-ico">${j.ico}</span><div><b>${j.name}</b><small>${j.desc}</small></div><em class="num">+${krwShort(j.pay)}원</em></button>`).join('')}</div>
+    <p class="wk-note">번 돈은 예수금으로 들어와요. 수익률은 "시작 1,000만 원 + 일해서 번 돈"을 원금으로 계산해서, 일당 때문에 랭킹 수익률이 오르진 않아요. 지금까지 번 돈 <b class="num">${won(A.workTotal || 0)}원</b></p>`);
+}
+function startWork(id) {
+  const j = JOBS.find(x => x.id === id); if (!j || WK.run) return;
+  if (wkJailed()) return toast('검거돼서 아직 일을 못 해요.');
+  if (wkDone()) return toast('오늘은 이미 일했어요.');
+  const caught = j.risk ? Math.random() < j.risk : false;
+  A.workDay = TODAY_DAY; A.workPending = { id, caught }; saveNow();            // 시작할 때 결과를 정해 둬서 새로고침으로 다시 굴릴 수 없게
+  WK.run = { id, caught, t0: performance.now(), dur: 4.5 };
+  const loop = () => { if (!WK.run) return; renderWork(); requestAnimationFrame(loop); }; loop();
+}
+function finishWork() {
+  const R = WK.run; WK.run = null; settleWork(R.id, R.caught); renderWork();
+}
+function settleWork(id, caught) {
+  const j = JOBS.find(x => x.id === id); A.workPending = null;
+  if (!j) return;
+  if (caught) {
+    const fine = Math.floor(A.cash * .5);
+    A.cash -= fine; A.jailUntil = nowSec() + 86400; A.confiscated = (A.confiscated || 0) + fine;
+    toast(`<b>🚔 검거!</b> 예수금 ${won(fine)}원이 몰수됐어요. 24시간 동안 일을 못 해요.`, 'sell', 5000);
+  } else {
+    A.cash += j.pay; A.principal = PRIN() + j.pay; A.dayStartEq = (A.dayStartEq || SEED) + j.pay; A.workTotal = (A.workTotal || 0) + j.pay;
+    toast(`<b>${j.ico} ${j.name} 완료</b> · 예수금 <span class="up">+${won(j.pay)}원</span>`, 'buy', 3500);
+  }
+  RK.want = true; saveNow(); dirty = true;
+}
+// 일하다가 창을 닫았으면 다음에 켤 때 마저 정산
+function resumeWork() { if (A.workPending) settleWork(A.workPending.id, A.workPending.caught); }
+$('#wkBg').addEventListener('click', e => { if (e.target === $('#wkBg')) closeWork(); });
+$('#wkClose').addEventListener('click', closeWork);
+$('#wkBody').addEventListener('click', e => { const b = e.target.closest('[data-job]'); if (!b) return; const j = JOBS.find(x => x.id === b.dataset.job); if (j.risk && !(WK.arm === j.id && Date.now() - WK.armT < 2500)) { WK.arm = j.id; WK.armT = Date.now(); return toast('정말요? 30% 확률로 잡혀요. 한 번 더 누르면 시작해요.'); } startWork(b.dataset.job); });
+for (const id of ['#resetAcct', '#resetAcct2']) $(id).addEventListener('click', openWork);
+setInterval(() => { if (WK.open && !WK.run) renderWork(); }, 30000);
+// 일자리마다 작은 픽셀 풍경 (120×44 격자를 그려서 확대)
+const WK_BG = {};
+function jobScene(id) {
+  if (WK_BG[id]) return WK_BG[id];
+  const W = 120, H = 44, c = document.createElement('canvas'); c.width = W; c.height = H;
+  const x = c.getContext('2d'), R = vRand(vHash(id)), r = (a, b) => a + Math.floor(R() * (b - a + 1));
+  const px = (X, Y, w, h, col) => { x.fillStyle = col; x.fillRect(X, Y, w, h); };
+  const sky = (a, b) => { for (let y = 0; y < H; y++) px(0, y, W, 1, hexMix(a, b, y / H)); };
+  if (id === 'daeri') {                                            // 밤 도시와 도로
+    sky('#0b1026', '#2a2b5a');
+    for (let i = 0; i < 26; i++) px(r(0, W), r(0, 18), 1, 1, R() < .3 ? '#ffffff' : '#9aa6d8');
+    px(96, 4, 6, 6, '#f4f1c9'); px(97, 3, 4, 1, '#f4f1c9'); px(98, 5, 3, 3, '#e8e2a8');
+    for (let bx = 0; bx < W;) { const bw = r(8, 14), bh = r(12, 26); px(bx, 32 - bh, bw, bh, '#151a33'); for (let wy = 34 - bh; wy < 30; wy += 3) for (let wx = bx + 2; wx < bx + bw - 1; wx += 3) if (R() < .45) px(wx, wy, 1, 1, R() < .8 ? '#f2c94c' : '#7fd1ff'); bx += bw + r(0, 2); }
+    px(0, 32, W, 12, '#22252e'); for (let i = 2; i < W; i += 10) px(i, 37, 5, 1, '#e8c547');
+    // 손님 차 (옆모습)
+    const cx = 58; px(cx, 33, 22, 5, '#d9dde6'); px(cx + 5, 30, 11, 3, '#d9dde6'); px(cx + 6, 31, 4, 2, '#8fc1e6'); px(cx + 11, 31, 4, 2, '#8fc1e6');
+    px(cx + 2, 38, 4, 3, '#0e1118'); px(cx + 16, 38, 4, 3, '#0e1118'); px(cx + 21, 34, 1, 1, '#fff6c2'); px(cx + 22, 34, 14, 2, 'rgba(255,246,194,.18)'); px(cx, 34, 1, 1, '#ff4d5e');
+  } else if (id === 'nogada') {                                    // 공사 현장
+    sky('#f6b26b', '#ffe0b2');
+    px(18, 4, 2, 32, '#e0a800'); px(10, 4, 46, 2, '#e0a800'); for (let i = 10; i < 56; i += 3) px(i, 6, 1, 1, '#b07f00'); px(46, 6, 1, 10, '#555b66'); px(44, 16, 5, 3, '#8a6d3b');
+    for (let fy = 14; fy < 36; fy += 6) { px(62, fy, 40, 1, '#7a4b33'); } for (let fx = 62; fx <= 102; fx += 8) px(fx, 14, 1, 22, '#7a4b33');
+    for (let i = 0; i < 6; i++) { const wx = 64 + i * 6, wy = r(16, 30); px(wx, wy, 2, 2, '#9aa0ab'); }
+    px(0, 36, W, 8, '#b9905a'); for (let i = 0; i < 40; i++) px(r(0, W), r(37, 43), 1, 1, '#a07a46');
+    px(28, 31, 7, 5, '#e9e2d0'); px(36, 32, 7, 4, '#e9e2d0'); px(32, 28, 7, 4, '#e9e2d0'); px(29, 32, 5, 1, '#c9c0aa');
+    px(108, 32, 3, 4, '#ff6b1a'); px(107, 35, 5, 1, '#ff6b1a'); px(109, 33, 1, 1, '#ffffff');
+  } else if (id === 'delivery') {                                  // 저녁 상가 골목
+    sky('#ff8a5b', '#5b3a7a');
+    const signs = ['#e5383b', '#3b8cff', '#7ccf3a', '#f2c94c', '#b38cff'];
+    for (let sx = 0, i = 0; sx < W; i++) { const sw = r(18, 26); px(sx, 10, sw - 1, 24, i % 2 ? '#3a3350' : '#433b5c'); px(sx + 2, 12, sw - 5, 4, signs[i % signs.length]); px(sx + 3, 20, sw - 7, 9, '#f6d98a'); px(sx + 4, 21, sw - 9, 7, '#ffe9b0'); sx += sw; }
+    px(0, 34, W, 10, '#2e3340'); px(0, 34, W, 1, '#9aa0ab');
+    const bx = 44; px(bx, 33, 16, 3, '#e5383b'); px(bx + 4, 29, 8, 4, '#e5383b'); px(bx + 1, 25, 7, 5, '#f1f3f8'); px(bx + 2, 26, 5, 1, '#3b8cff');
+    px(bx + 12, 27, 2, 6, '#1b1f27'); px(bx + 9, 23, 4, 4, '#f2b544'); px(bx + 1, 36, 4, 4, '#0e1118'); px(bx + 12, 36, 4, 4, '#0e1118'); px(bx + 16, 33, 1, 1, '#fff6c2');
+    for (let i = 0; i < 6; i++) px(bx - 4 - i * 3, 34 + (i % 2), 2, 1, 'rgba(255,255,255,.35)');
+  } else {                                                         // 어두운 뒷골목
+    sky('#05060a', '#141826');
+    for (let by = 2; by < 36; by += 3) for (let bx = (by / 3) % 2 ? 0 : 3; bx < W; bx += 7) px(bx, by, 6, 2, R() < .5 ? '#2a1f22' : '#30242a');
+    px(86, 4, 2, 32, '#3a3f4a'); px(80, 4, 8, 2, '#3a3f4a'); px(80, 6, 4, 2, '#f2e3a0');
+    const g = x.createRadialGradient(82, 10, 1, 82, 26, 26); g.addColorStop(0, 'rgba(242,227,160,.35)'); g.addColorStop(1, 'rgba(242,227,160,0)'); x.fillStyle = g; x.fillRect(56, 6, 52, 36);
+    px(0, 36, W, 8, '#101318'); px(70, 39, 22, 2, 'rgba(242,227,160,.18)');
+    px(40, 18, 6, 6, '#06070b'); px(38, 24, 10, 12, '#06070b'); px(41, 21, 4, 1, '#e5383b');
+    px(18, 30, 10, 6, '#3d3020'); px(19, 31, 8, 1, '#5a4630');
+  }
+  return (WK_BG[id] = c.toDataURL());
+}
+
 /* ---------- boot ---------- */
 buildBook(); buildTape();
 function boot() {
@@ -4211,7 +4549,7 @@ function boot() {
   const T = nowSec();
   for (const s of syms) { advance(s, T); s.dx = s.pA; }
   if (A.dayKey !== TODAY_DAY) { A.dayKey = TODAY_DAY; A.dayStartEq = equity(); }
-  attendance();
+  attendance(); resumeWork();
   const away = lastSeen0 ? T - lastSeen0 : 0, msgs = G.catchup;
   A.fills.sort((x, y) => y.ts - x.ts);
   G.catchup = null; G.loading = false; G.at = 0;
