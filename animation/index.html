@@ -1,0 +1,735 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>풀매수 금지</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Jua&display=swap">
+<style>
+/* Standalone cartoon short: doodle-style characters drawn on a canvas, synthesized voices/SFX via Web Audio. */
+:root{color-scheme:dark;--bg:#0e0e10;--panel:#18181c;--fg:#f1f1f1;--muted:#9a9aa3;--accent:#ff3b3b}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:'Jua',system-ui,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:16px}
+h1{font-family:'Black Han Sans','Jua',sans-serif;font-weight:400;font-size:26px;margin:4px 0 12px}
+h1 span{color:var(--accent)}
+.stage{position:relative}
+canvas{width:100%;aspect-ratio:16/9;display:block;background:#000;border-radius:12px;cursor:pointer}
+.bar{display:flex;gap:8px;align-items:center;margin-top:10px}
+button{font:inherit;font-size:16px;background:var(--panel);color:var(--fg);border:1px solid #2c2c33;border-radius:10px;padding:8px 14px;cursor:pointer;white-space:nowrap}
+button:hover{border-color:#4a4a55}
+input[type=range]{flex:1;accent-color:var(--accent);min-width:0}
+.time{font-variant-numeric:tabular-nums;color:var(--muted);font-size:14px;min-width:84px;text-align:right}
+p.note{color:var(--muted);font-size:14px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>스캘프 랩 애니 <span>#1 풀매수 금지</span></h1>
+  <div class="stage"><canvas id="cv"></canvas></div>
+  <div class="bar">
+    <button id="play">▶ 재생</button>
+    <input id="seek" type="range" min="0" max="1000" value="0">
+    <span class="time" id="time">0:00 / 0:00</span>
+    <button id="snd">🔊</button>
+  </div>
+  <p class="note">화면을 눌러도 재생/정지돼요. 목소리와 효과음은 브라우저에서 바로 합성됩니다.</p>
+</div>
+<script>
+const W = 1280, H = 720;
+const cv = document.getElementById('cv');
+cv.width = W; cv.height = H;
+const g = cv.getContext('2d');
+
+const INK = '#161616', SKIN = '#f7d2b4';
+const UP = '#ff4257', DOWN = '#3d8bff';
+const FONT_T = "'Black Han Sans','Jua',sans-serif";
+const FONT_S = "'Jua','Black Han Sans',sans-serif";
+
+// ---------- math ----------
+function rnd(n) { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); }
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const ease = t => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+const easeOut = t => 1 - Math.pow(1 - clamp(t, 0, 1), 3);
+const backOut = t => { t = clamp(t, 0, 1); const c = 2.2; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); };
+
+// ---------- drawing primitives ----------
+function ink(lw = 4) { g.strokeStyle = INK; g.lineWidth = lw; g.lineJoin = 'round'; g.lineCap = 'round'; }
+function fs(fill, lw = 4) { if (fill) { g.fillStyle = fill; g.fill(); } ink(lw); g.stroke(); }
+function ell(x, y, rx, ry) { g.beginPath(); g.ellipse(x, y, Math.max(rx, 0.1), Math.max(ry, 0.1), 0, 0, Math.PI * 2); }
+function rr(x, y, w, h, r) { g.beginPath(); g.roundRect(x, y, w, h, r); }
+function line(x1, y1, x2, y2, lw = 4) { g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); ink(lw); g.stroke(); }
+
+function bigText(txt, x, y, size, fill, rot = 0, sc = 1) {
+  g.save(); g.translate(x, y); g.rotate(rot); g.scale(sc, sc);
+  g.font = `${size}px ${FONT_T}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
+  g.lineWidth = size * 0.26; g.strokeStyle = INK; g.strokeText(txt, 0, 0);
+  g.lineWidth = size * 0.13; g.strokeStyle = '#fff'; g.strokeText(txt, 0, 0);
+  g.fillStyle = fill; g.fillText(txt, 0, 0);
+  g.restore();
+}
+
+function subtitle(txt) {
+  g.save();
+  g.font = `44px ${FONT_S}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
+  g.lineWidth = 10; g.strokeStyle = 'rgba(0,0,0,.9)'; g.strokeText(txt, W / 2, H - 52);
+  g.fillStyle = '#fff'; g.fillText(txt, W / 2, H - 52);
+  g.restore();
+}
+
+function withCam(z, cx, cy, fn) { g.save(); g.translate(W / 2, H / 2); g.scale(z, z); g.translate(-cx, -cy); fn(); g.restore(); }
+
+function focusLines(cx, cy, bg, col, T, r0 = 300) {
+  g.fillStyle = bg; g.fillRect(0, 0, W, H);
+  const seed = Math.floor(T * 12);
+  g.fillStyle = col;
+  for (let i = 0; i < 90; i++) {
+    const a = (i / 90) * Math.PI * 2 + rnd(i + seed * 3.1) * 0.05;
+    const r1 = r0 + rnd(i * 7 + seed) * 140, wdt = 0.006 + rnd(i * 3 + seed) * 0.014;
+    g.beginPath();
+    g.moveTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1);
+    g.lineTo(cx + Math.cos(a - wdt) * 1400, cy + Math.sin(a - wdt) * 1400);
+    g.lineTo(cx + Math.cos(a + wdt) * 1400, cy + Math.sin(a + wdt) * 1400);
+    g.fill();
+  }
+}
+
+function sunburst(cx, cy, c1, c2, T) {
+  g.fillStyle = c1; g.fillRect(0, 0, W, H);
+  g.save(); g.translate(cx, cy); g.rotate(T * 0.4); g.fillStyle = c2;
+  for (let i = 0; i < 16; i++) {
+    const a = (i / 16) * Math.PI * 2;
+    g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, 1500, a, a + Math.PI / 16); g.fill();
+  }
+  g.restore();
+}
+
+function sparkle(x, y, r) {
+  g.beginPath();
+  for (let i = 0; i < 8; i++) {
+    const a = i * Math.PI / 4, rad = i % 2 ? r * 0.3 : r;
+    g.lineTo(x + Math.cos(a) * rad, y + Math.sin(a) * rad);
+  }
+  g.closePath(); fs('#fff7a8', 3);
+}
+
+// ---------- characters ----------
+// Shared face parts. Everything is in head-local units: head ~80 radius, origin at head center.
+function eye(x, y, r, p, blink) {
+  if (p.tremble) {
+    const k = Math.floor(p.t * 30);
+    x += (rnd(k + x) * 2 - 1) * p.tremble; y += (rnd(k * 1.7 + y + 5) * 2 - 1) * p.tremble;
+  }
+  ell(x, y, r, r * (blink ? 0.1 : 1)); fs('#fff', 4);
+  if (blink) return;
+  const pr = r * 0.27 * (p.pupil ?? 1), max = r - pr - 5;
+  const lx = clamp(p.lx || 0, -1, 1), ly = clamp(p.ly || 0, -1, 1);
+  ell(x + lx * max, y + ly * max, pr, pr); g.fillStyle = INK; g.fill();
+  if (p.lid) {
+    // half-closed deadpan lid
+    g.save(); ell(x, y, r, r); g.clip();
+    g.fillStyle = p.skin || SKIN; g.fillRect(x - r - 2, y - r - 2, 2 * r + 4, 2 * r * p.lid + 2);
+    line(x - r, y - r + 2 * r * p.lid, x + r, y - r + 2 * r * p.lid, 4);
+    g.restore();
+    ell(x, y, r, r); ink(4); g.stroke();
+  }
+}
+
+function brows(p, dx, y) {
+  if (!p.brow) return;
+  const s = p.brow === 'mad' ? 1 : -1; // mad: inner ends low. worried: inner ends high
+  line(-dx - 22, y - 8 * s, -dx + 18, y + 8 * s, 7);
+  line(dx + 22, y - 8 * s, dx - 18, y + 8 * s, 7);
+}
+
+function mouth(p, w, y, open) {
+  if (open > 0.05) {
+    g.beginPath(); g.moveTo(-24, y); g.quadraticCurveTo(0, y + 40 * open, 24, y); g.closePath(); fs('#7a2626', 3);
+  }
+  if (p.mouth === 'wavy') {
+    g.beginPath(); g.moveTo(-w, y);
+    for (let i = 1; i <= 8; i++) g.lineTo(-w + (2 * w * i) / 8, y + (i % 2 ? -6 : 6));
+    ink(4); g.stroke();
+  } else if (p.mouth === 'smile') {
+    g.beginPath(); g.moveTo(-w, y - 6); g.quadraticCurveTo(0, y + 16, w, y - 6); ink(4); g.stroke();
+  } else {
+    line(-w, y, w, y, 4);
+  }
+}
+
+function paleFx(p, headPath) {
+  if (!p.pale) return;
+  g.save(); headPath(); g.clip();
+  const gr = g.createLinearGradient(0, -90, 0, 10);
+  gr.addColorStop(0, `rgba(80,90,210,${0.55 * p.pale})`); gr.addColorStop(1, 'rgba(80,90,210,0)');
+  g.fillStyle = gr; g.fillRect(-120, -120, 240, 140);
+  g.strokeStyle = `rgba(50,50,160,${0.8 * p.pale})`; g.lineWidth = 3;
+  for (let i = -66; i <= 66; i += 13) {
+    g.beginPath(); g.moveTo(i, -100); g.lineTo(i, -40 + (Math.abs(i) % 26 ? 0 : 14)); g.stroke();
+  }
+  g.restore();
+}
+
+function sweat(p) {
+  if (!p.sweat) return;
+  for (let i = 0; i < p.sweat; i++) {
+    const side = i % 2 ? -1 : 1, ph = (p.t * 0.7 + i * 0.37) % 1;
+    const x = side * (84 + i * 6), y = -40 + ph * 70 + i * 8;
+    g.beginPath(); g.moveTo(x, y - 18); g.quadraticCurveTo(x + 11, y + 2, x, y + 8); g.quadraticCurveTo(x - 11, y + 2, x, y - 18);
+    fs('#9fd8ff', 3);
+  }
+}
+
+function talkOpen(p) { return p.talk ? 0.3 + 0.7 * Math.abs(Math.sin(p.t * 17 + Math.sin(p.t * 5))) : 0; }
+function isBlink(p) { return !p.noBlink && ((p.t * 0.43 + (p.seed || 0)) % 1) < 0.035; }
+
+function tee(p, shirt, shorts) {
+  const skin = p.skin || SKIN;
+  // legs + feet
+  line(-22, 212, -24, 258, 6); line(22, 212, 24, 258, 6);
+  ell(-32, 262, 16, 8); fs('#fff', 4); ell(32, 262, 16, 8); fs('#fff', 4);
+  // shorts
+  g.beginPath(); g.moveTo(-50, 160); g.lineTo(50, 160); g.lineTo(58, 220); g.lineTo(6, 222); g.lineTo(0, 196); g.lineTo(-6, 222); g.lineTo(-58, 220); g.closePath(); fs(shorts);
+  // arms (behind sleeves): armL/armR 0 = down, 1 = raised pointing outward
+  const arm = (side, a) => {
+    const hx = side * lerp(70, 140, a), hy = lerp(178, 40, a);
+    line(side * 66, 120, hx, hy, 6);
+    ell(hx, hy, 11, 11); fs(skin, 4);
+  };
+  arm(-1, p.armL || 0); arm(1, p.armR || 0);
+  // shirt
+  g.beginPath(); g.moveTo(-30, 60); g.lineTo(30, 60); g.lineTo(62, 78); g.lineTo(78, 118); g.lineTo(56, 128); g.lineTo(50, 108);
+  g.lineTo(52, 170); g.lineTo(-52, 170); g.lineTo(-50, 108); g.lineTo(-56, 128); g.lineTo(-78, 118); g.lineTo(-62, 78); g.closePath(); fs(shirt);
+  g.beginPath(); g.arc(0, 60, 16, 0.15, Math.PI - 0.15); ink(3); g.stroke();
+}
+
+// 민수: spiky hair, round head
+function minsu(p) {
+  g.save(); g.translate(p.x, p.y); g.scale(p.s, p.s);
+  if (p.body !== false) tee(p, '#ffffff', '#f2c230');
+  const open = talkOpen(p), blink = isBlink(p);
+  g.translate(0, p.talk ? Math.sin(p.t * 9) * 3 : Math.sin(p.t * 2 + 1) * 1.2);
+  const skin = p.skin || SKIN;
+  ell(-78, 10, 12, 16); fs(skin); ell(78, 10, 12, 16); fs(skin);
+  const head = () => ell(0, 0, 80, 76);
+  head(); fs(skin);
+  paleFx(p, head);
+  g.beginPath(); g.moveTo(-80, -8);
+  [[-90, -48], [-72, -50], [-80, -94], [-50, -78], [-44, -124], [-20, -92], [-2, -132], [14, -94], [38, -126], [46, -86], [80, -106], [70, -64], [94, -56], [80, -8]]
+    .forEach(([x, y]) => g.lineTo(x, y));
+  g.quadraticCurveTo(40, -40, 0, -46); g.quadraticCurveTo(-40, -40, -80, -8); g.closePath();
+  fs(INK, 3);
+  eye(-31, 4, 31, p, blink); eye(31, 4, 31, p, blink);
+  brows(p, 31, -36);
+  mouth(p, 58, 46, open);
+  sweat(p);
+  g.restore();
+}
+
+// 준호: long chin, bowl cut, glasses
+function junho(p) {
+  g.save(); g.translate(p.x, p.y); g.scale(p.s, p.s);
+  if (p.body !== false) { g.save(); g.translate(0, 22); tee(p, '#2f62c0', '#8a8f9a'); g.restore(); }
+  const open = talkOpen(p), blink = isBlink(p);
+  g.translate(0, p.talk ? Math.sin(p.t * 9) * 3 : Math.sin(p.t * 2) * 1.2);
+  const skin = p.skin || SKIN;
+  const head = () => {
+    g.beginPath(); g.moveTo(0, -84);
+    g.bezierCurveTo(50, -84, 72, -52, 70, -6); g.bezierCurveTo(68, 52, 28, 112, 0, 118);
+    g.bezierCurveTo(-28, 112, -68, 52, -70, -6); g.bezierCurveTo(-72, -52, -50, -84, 0, -84);
+  };
+  ell(-70, 8, 10, 15); fs(skin); ell(70, 8, 10, 15); fs(skin);
+  head(); fs(skin);
+  paleFx(p, head);
+  g.beginPath(); g.moveTo(-74, -4); g.bezierCurveTo(-82, -104, 82, -104, 74, -4);
+  [[60, -30], [42, -38], [22, -32], [2, -42], [-20, -34], [-40, -40], [-60, -30]].forEach(([x, y]) => g.lineTo(x, y));
+  g.closePath(); fs(INK, 3);
+  eye(-28, 8, 25, p, blink); eye(28, 8, 25, p, blink);
+  // glasses
+  g.save(); ink(3);
+  ell(-28, 8, 32, 32); g.stroke(); ell(28, 8, 32, 32); g.stroke();
+  g.beginPath(); g.moveTo(-60, 4); g.lineTo(-71, 0); g.moveTo(60, 4); g.lineTo(71, 0); g.stroke();
+  g.restore();
+  brows(p, 28, -32);
+  mouth(p, 36, 68, open);
+  sweat(p);
+  g.restore();
+}
+
+// 로봇: box head, yellow square eyes, treads
+function robot(p) {
+  g.save(); g.translate(p.x, p.y); g.scale(p.s, p.s);
+  const roll = p.roll || 0;
+  rr(-78, 206, 156, 46, 23); fs('#d6d6d6');
+  for (let i = 0; i < 5; i++) {
+    const x = -52 + i * 26; ell(x, 229, 11, 11); fs('#8b8b8b', 3);
+    const a = roll + i; line(x, 229, x + Math.cos(a) * 9, 229 + Math.sin(a) * 9, 2);
+  }
+  line(-50, 150, -96, 120 - (p.armUp || 0) * 70, 5);
+  line(50, 150, 96, 180, 5);
+  const claw = (x, y) => { g.beginPath(); g.moveTo(x - 8, y - 10); g.lineTo(x, y); g.lineTo(x + 8, y - 10); ink(4); g.stroke(); };
+  claw(-96, 120 - (p.armUp || 0) * 70); claw(96, 180);
+  rr(-58, 74, 116, 134, 8); fs('#fbfbfb');
+  rr(-26, 98, 52, 70, 5); fs('#ececec', 3);
+  for (let i = 0; i < 3; i++) line(-14, 114 + i * 16, 14, 114 + i * 16, 3);
+  ell(-38, 96, 5, 5); fs(p.talk && Math.sin(p.t * 20) > 0 ? '#ff5050' : '#a33', 2);
+  rr(-16, 56, 32, 22, 3); fs('#bdbdbd', 3);
+  g.translate(0, p.talk ? Math.sin(p.t * 14) * 2 : 0);
+  rr(-90, -16, 16, 34, 4); fs('#bdbdbd', 3); rr(74, -16, 16, 34, 4); fs('#bdbdbd', 3);
+  line(-90, 0, -112, 0, 3); line(90, 0, 112, 0, 3);
+  ell(-116, 0, 6, 6); fs('#ff5050', 3); ell(116, 0, 6, 6); fs('#ff5050', 3);
+  rr(-74, -72, 148, 130, 12); fs('#fdfdfd');
+  const glow = p.talk && Math.sin(p.t * 22) > 0;
+  const ey = (x) => {
+    rr(x - 18, -44, 36, 42, 4); fs(glow ? '#ffe46b' : '#f5c518');
+    const lx = clamp(p.lx || 0, -1, 1) * 9;
+    g.fillStyle = INK; g.fillRect(x - 5 + lx, -28, 10, 12);
+  };
+  ey(-30); ey(30);
+  rr(-58, 18, 116, 18, 3); fs(glow ? '#c8c8c8' : '#9a9a9a', 3);
+  for (let i = 1; i < 10; i++) line(-58 + i * 11.6, 20, -58 + i * 11.6, 34, 2);
+  g.restore();
+}
+
+// ---------- set ----------
+function room() {
+  for (let i = -8; i < 30; i++) {
+    const x = i * 64;
+    g.fillStyle = i % 2 ? '#c48a52' : '#cf955e'; g.fillRect(x, -300, 64, 870);
+    g.strokeStyle = '#7d4f27'; g.lineWidth = 3; g.beginPath(); g.moveTo(x, -300); g.lineTo(x, 562); g.stroke();
+    const sy = 40 + rnd(i) * 420;
+    g.beginPath(); g.moveTo(x, sy); g.lineTo(x + 64, sy); g.stroke();
+    if (rnd(i + 9) > 0.6) { ell(x + 32, 120 + rnd(i + 3) * 340, 7, 10); g.strokeStyle = '#8d5a2c'; g.lineWidth = 2; g.stroke(); }
+  }
+  g.fillStyle = '#efe5cc'; g.fillRect(-600, 560, 2600, 600);
+  line(-600, 560, 2000, 560, 5);
+  // bear-print quilt
+  for (let r = 0; r < 4; r++) for (let c = -6; c < 26; c++) {
+    const x = c * 90 + (r % 2) * 45, y = 600 + r * 50;
+    g.fillStyle = '#f2a73b'; ell(x, y, 13, 11); g.fill(); ell(x - 10, y - 10, 5, 5); g.fill(); ell(x + 10, y - 10, 5, 5); g.fill();
+  }
+  // blue blanket corner
+  g.beginPath(); g.moveTo(-600, 640); g.lineTo(260, 610); g.lineTo(340, 760); g.lineTo(-600, 760); g.closePath(); fs('#3a56a6');
+  // poster
+  rr(1030, 110, 170, 230, 4); fs('#fff6dc');
+  g.save(); g.translate(1115, 210); g.rotate(-0.5);
+  rr(-16, -50, 32, 90, 16); fs('#ff5a5a', 3);
+  g.beginPath(); g.moveTo(-14, 30); g.lineTo(-28, 54); g.lineTo(-6, 40); g.moveTo(14, 30); g.lineTo(28, 54); g.lineTo(6, 40); ink(3); g.stroke();
+  ell(0, -14, 8, 8); fs('#9fd8ff', 3);
+  g.restore();
+  g.font = `30px ${FONT_T}`; g.textAlign = 'center'; g.fillStyle = '#e02828'; g.fillText('가즈아', 1115, 318);
+  // ramen cups
+  const cup = (x, y) => {
+    g.beginPath(); g.moveTo(x - 24, y - 50); g.lineTo(x + 24, y - 50); g.lineTo(x + 18, y); g.lineTo(x - 18, y); g.closePath(); fs('#fff8e8');
+    g.fillStyle = '#e53935'; g.fillRect(x - 21, y - 34, 41, 12); line(x - 21, y - 34, x + 21, y - 34, 2);
+    ell(x, y - 50, 24, 6); fs('#f6c14b', 3);
+  };
+  cup(1150, 680); cup(1205, 668);
+}
+
+function monitor(x, y, w, h, screen) {
+  rr(x, y, w, h, 14); fs('#2a2a2e', 5);
+  g.save(); rr(x + 14, y + 14, w - 28, h - 28, 6); g.clip();
+  screen(x + 14, y + 14, w - 28, h - 28);
+  g.restore();
+  rr(x + 14, y + 14, w - 28, h - 28, 6); ink(3); g.stroke();
+}
+
+// ---------- price data ----------
+function seg(from, to, n, seed, shape = u => u) {
+  const a = [];
+  for (let i = 1; i <= n; i++) {
+    const u = i / n, v = lerp(from, to, shape(u));
+    a.push(i === n ? v : v * (1 + (rnd(seed * 100 + i) - 0.5) * 0.045));
+  }
+  return a;
+}
+const BUY = 130;
+const P1 = [100, ...seg(100, 130, 60, 1, u => u * u)];
+const P2 = P1.concat(seg(130, 91, 30, 2, u => u * u));
+const P3 = P2.concat(seg(91, 39, 30, 3, u => Math.sqrt(u)));
+const P4 = P3.concat(seg(39, 520, 40, 4, u => u * u * u));
+
+function chart(x, y, w, h, all, shown, opt = {}) {
+  const arr = all.slice(0, Math.max(2, Math.round(shown)));
+  g.fillStyle = '#0c111b'; g.fillRect(x, y, w, h);
+  g.strokeStyle = '#1b2433'; g.lineWidth = 1;
+  for (let i = 1; i < 5; i++) { g.beginPath(); g.moveTo(x, y + (h * i) / 5); g.lineTo(x + w, y + (h * i) / 5); g.stroke(); }
+  let mn = Math.min(...arr, opt.buy ? BUY : Infinity), mx = Math.max(...arr, opt.buy ? BUY : -Infinity);
+  const pad = (mx - mn) * 0.12 + 1; mn -= pad; mx += pad;
+  const N = all.length, top = y + h * 0.2, bot = y + h - 16;
+  const xs = i => x + 16 + (w - 130) * i / (N - 1), ys = v => bot - (bot - top) * (v - mn) / (mx - mn);
+  const last = arr[arr.length - 1], col = last >= BUY || !opt.buy ? UP : DOWN;
+  g.beginPath(); g.moveTo(xs(0), bot);
+  arr.forEach((v, i) => g.lineTo(xs(i), ys(v)));
+  g.lineTo(xs(arr.length - 1), bot); g.closePath();
+  const gr = g.createLinearGradient(0, top, 0, bot);
+  gr.addColorStop(0, col === UP ? 'rgba(255,66,87,.35)' : 'rgba(61,139,255,.35)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = gr; g.fill();
+  g.beginPath(); arr.forEach((v, i) => i ? g.lineTo(xs(i), ys(v)) : g.moveTo(xs(i), ys(v)));
+  g.strokeStyle = col; g.lineWidth = Math.max(3, w / 220); g.lineJoin = 'round'; g.stroke();
+  const fz = Math.max(14, w / 30);
+  if (opt.buy) {
+    g.setLineDash([10, 8]); g.strokeStyle = '#f2c94c'; g.lineWidth = 2;
+    g.beginPath(); g.moveTo(x, ys(BUY)); g.lineTo(x + w, ys(BUY)); g.stroke(); g.setLineDash([]);
+    g.font = `${fz}px ${FONT_S}`; g.fillStyle = '#f2c94c'; g.textAlign = 'right'; g.textBaseline = 'bottom';
+    g.fillText('내 평단', x + w - 10, ys(BUY) - 4);
+  }
+  if (opt.sellAt != null) {
+    const sx = xs(opt.sellAt), sy = ys(all[opt.sellAt]);
+    ell(sx, sy, 10, 10); g.fillStyle = '#fff'; g.fill();
+    g.font = `${fz * 1.3}px ${FONT_T}`; g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'top';
+    g.fillText('↑ 내가 판 자리', sx + 40, sy + 18);
+  }
+  const ex = xs(arr.length - 1), ey = ys(last);
+  ell(ex, ey, 7 + Math.sin(performance.now() / 120) * 0, 7); g.fillStyle = col; g.fill();
+  g.font = `${fz}px ${FONT_S}`; g.textAlign = 'left'; g.textBaseline = 'middle';
+  g.fillStyle = '#c9d2e3'; g.fillText('떡상코인 / DDS', x + 16, y + fz * 0.9);
+  if (opt.pct) {
+    const pct = (last / BUY - 1) * 100;
+    g.font = `${fz * 2}px ${FONT_T}`; g.textAlign = 'right'; g.fillStyle = col;
+    g.fillText(`${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%`, x + w - 16, y + fz * 1.4);
+  } else {
+    g.font = `${fz * 1.3}px ${FONT_T}`; g.textAlign = 'right'; g.fillStyle = col;
+    g.fillText(last.toFixed(1), x + w - 16, y + fz);
+  }
+}
+
+function cursor(x, y, sc = 1) {
+  g.save(); g.translate(x, y); g.scale(sc, sc);
+  g.beginPath(); g.moveTo(0, 0); g.lineTo(0, 54); g.lineTo(14, 42); g.lineTo(24, 64); g.lineTo(34, 59); g.lineTo(24, 38); g.lineTo(42, 38); g.closePath();
+  fs('#fff', 4); g.restore();
+}
+
+// ---------- script ----------
+// lines: [start, end, who, text] in shot-local seconds. who: m 민수, j 준호, r 로봇, '' (no voice)
+// sfx: [time, type, duration]
+const CAST = {
+  m: { x: 560, y: 360, s: 0.82, seed: 0.1 },
+  j: { x: 860, y: 350, s: 0.82, seed: 0.6 },
+};
+const SHOTS = [
+  { d: 3.2, sfx: [[0.15, 'pop'], [0, 'bgm', 16.0]], draw(t, T) {
+    withCam(1.05, 640, 380, () => {
+      room();
+      robot({ x: 250, y: 370, s: 0.8, t: T, lx: 1, armUp: 1 });
+      minsu({ ...CAST.m, x: 620, t: T, lx: 0.7, armR: 0.4 });
+      junho({ ...CAST.j, x: 950, t: T, lx: -0.7, lid: 0.35 });
+    });
+    const k = backOut(t / 0.45);
+    bigText('풀매수 금지', 640, 130, 130, '#ff2b2b', -0.04, k);
+  } },
+  { d: 6.5, lines: [[0.3, 2.2, 'm', '야 준호야 이거 봐봐'], [2.5, 3.3, 'j', '뭔데'], [3.6, 6.3, 'm', '지금 들어가면 무조건 떡상임']], draw(t, T, say) {
+    withCam(1, 640, 360, () => {
+      room();
+      monitor(70, 70, 420, 260, (x, y, w, h) => chart(x, y, w, h, P1, lerp(20, 61, ease(t / 6))));
+      minsu({ ...CAST.m, t: T, talk: say('m'), lx: t < 0.3 || (t > 3.6 && t < 5) ? -0.9 : 0.8, armL: t > 3.6 ? easeOut((t - 3.6) / 0.3) : 0 });
+      junho({ ...CAST.j, t: T, talk: say('j'), lx: t < 2.4 ? -0.9 : -0.6, lid: 0.3 });
+    });
+  } },
+  { d: 3.2, lines: [[0.2, 3.0, 'j', '...저번에도 그 소리 했잖아']], draw(t, T, say) {
+    withCam(2.4 - t * 0.03, 860, 330, () => { room(); junho({ ...CAST.j, t: T, talk: say('j'), lx: -0.9, lid: 0.45, noBlink: true }); });
+  } },
+  { d: 3.2, sfx: [[0.05, 'pop']], lines: [[0.2, 3.0, 'm', '이번엔 진짜야. 풀매수 간다']], draw(t, T, say) {
+    sunburst(640, 360, '#ffe066', '#ffd23a', T);
+    minsu({ x: 640, y: 380, s: 2.6 * (1 + 0.06 * (1 - easeOut(t / 0.3))), t: T, talk: say('m'), brow: 'mad', body: false, noBlink: true });
+    sparkle(250, 190, 40 + Math.sin(T * 8) * 8); sparkle(1040, 230, 30 + Math.cos(T * 9) * 8); sparkle(1000, 540, 24);
+  } },
+  { d: 1.7, sfx: [[0.85, 'click'], [0.85, 'shake', 0.25]], draw(t) {
+    g.fillStyle = '#e9ecf1'; g.fillRect(0, 0, W, H);
+    g.fillStyle = '#fff'; g.fillRect(260, 40, 760, 640);
+    g.font = `40px ${FONT_T}`; g.fillStyle = '#222'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText('떡상코인 (DDS)', 640, 120);
+    g.font = `72px ${FONT_T}`; g.fillStyle = UP; g.fillText('130.0', 640, 210);
+    g.font = `28px ${FONT_S}`; g.fillStyle = '#888'; g.fillText('주문 가능 금액: 전 재산', 640, 300);
+    const pressed = t > 0.85, s = pressed ? 0.94 : 1;
+    g.save(); g.translate(640, 460); g.scale(s, s);
+    rr(-220, -70, 440, 140, 28); fs(pressed ? '#c41f33' : UP, 5);
+    g.font = `76px ${FONT_T}`; g.fillStyle = '#fff'; g.fillText('풀매수', 0, 4);
+    g.restore();
+    const u = ease(t / 0.75);
+    cursor(lerp(1180, 660, u), lerp(700, 470, u), pressed && t < 1 ? 0.9 : 1);
+    if (pressed) {
+      bigText('딸깍!', 1110, 330, 110, '#fff', 0.15, backOut((t - 0.85) / 0.25));
+      g.globalAlpha = clamp((t - 1.1) / 0.2, 0, 1);
+      rr(470, 570, 340, 70, 35); g.fillStyle = 'rgba(20,20,20,.88)'; g.fill();
+      g.font = `32px ${FONT_S}`; g.fillStyle = '#fff'; g.fillText('매수 체결 완료 ✔', 640, 606);
+      g.globalAlpha = 1;
+    }
+  } },
+  { d: 4.2, sfx: [[0.3, 'fall', 2.9], [3.2, 'boom'], [3.2, 'shake', 0.5]], draw(t) {
+    g.fillStyle = '#1d1d22'; g.fillRect(0, 0, W, H);
+    monitor(40, 30, 1200, 660, (x, y, w, h) => chart(x, y, w, h, P2, lerp(61, P2.length, ease((t - 0.3) / 2.9)), { buy: true, pct: true }));
+    if (t > 3.2) bigText('-30%', 760, 420, 210, DOWN, -0.08, backOut((t - 3.2) / 0.3));
+  } },
+  { d: 3.2, sfx: [[0, 'wind', 3.2], [2.1, 'gulp']], lines: [[0.4, 2.0, '', '......']], draw(t, T) {
+    focusLines(320, 380, '#2a3566', '#1b2246', T, 260);
+    g.save(); g.beginPath(); g.rect(640, 0, 640, H); g.clip();
+    focusLines(960, 380, '#3a2a5e', '#25193f', T + 1, 260);
+    g.restore();
+    g.save(); g.beginPath(); g.rect(0, 0, 640, H); g.clip();
+    minsu({ x: 320, y: 400, s: 2.3, t: T, tremble: 4, pale: 1, sweat: 2, mouth: 'wavy', body: false, noBlink: true, lx: 0.4 });
+    g.restore();
+    g.save(); g.beginPath(); g.rect(640, 0, 640, H); g.clip();
+    junho({ x: 960, y: 360, s: 2.2, t: T, tremble: 3, pale: 0.7, mouth: 'wavy', body: false, noBlink: true, lx: -0.5 });
+    g.restore();
+    line(640, 0, 640, H, 10);
+    if (t > 2.1) bigText('꿀꺽', 470, 160, 64, '#fff', -0.2, backOut((t - 2.1) / 0.2));
+  } },
+  { d: 4.2, sfx: [[0, 'roll', 1.2], [1.4, 'beep']], lines: [[1.4, 4.0, 'r', '삐빅. 손절을 권장합니다.']], draw(t, T, say) {
+    const rx = lerp(1450, 1030, easeOut(t / 1.2));
+    withCam(1, 640, 360, () => {
+      room();
+      monitor(70, 70, 420, 260, (x, y, w, h) => chart(x, y, w, h, P2, P2.length, { buy: true, pct: true }));
+      minsu({ ...CAST.m, x: 520, t: T, pale: 1, sweat: 1, lx: t > 1 ? 1 : -0.9, mouth: 'wavy' });
+      junho({ ...CAST.j, x: 760, t: T, pale: 0.5, lx: t > 0.9 ? 1 : -0.9 });
+      robot({ x: rx, y: 370, s: 0.8, t: T, talk: say('r'), roll: -T * 8, lx: -1, armUp: say('r') ? 1 : 0 });
+    });
+  } },
+  { d: 3.6, lines: [[0.2, 3.4, 'm', '아니야... 아직 안 끝났어... 존버야']], draw(t, T, say) {
+    focusLines(640, 380, '#f4f4f4', '#2a2a2a', T, 330);
+    minsu({ x: 640, y: 390, s: 2.7, t: T, talk: say('m'), brow: 'worried', noBlink: true, sweat: 4, tremble: 1.5, pale: 0.6, lx: -0.6, ly: 0.3, body: false });
+  } },
+  { d: 3.4, sfx: [[0.2, 'fall', 1.6], [1.9, 'boom'], [1.9, 'shake', 0.4], [3.0, 'click']], lines: [[2.2, 3.3, 'm', '...손절.']], draw(t) {
+    g.fillStyle = '#1d1d22'; g.fillRect(0, 0, W, H);
+    monitor(40, 30, 1200, 660, (x, y, w, h) => chart(x, y, w, h, P3, lerp(P2.length, P3.length, ease((t - 0.2) / 1.6)), { buy: true, pct: true }));
+    if (t > 1.9) bigText('-70%', 760, 420, 230, DOWN, 0.06, backOut((t - 1.9) / 0.3));
+    if (t > 3.0) {
+      rr(470, 560, 340, 70, 35); g.fillStyle = 'rgba(20,20,20,.9)'; g.fill();
+      g.font = `32px ${FONT_S}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText('매도 체결 완료', 640, 596);
+    }
+  } },
+  { d: 3.8, sfx: [[0.4, 'rise', 2.6], [3.0, 'ding'], [3.0, 'shake', 0.3]], draw(t) {
+    g.fillStyle = '#1d1d22'; g.fillRect(0, 0, W, H);
+    monitor(40, 30, 1200, 660, (x, y, w, h) => chart(x, y, w, h, P4, lerp(P3.length, P4.length, ease((t - 0.4) / 2.6)), { buy: true, pct: true, sellAt: P3.length - 1 }));
+    if (t > 3.0) bigText('+300%', 640, 300, 210, UP, -0.06, backOut((t - 3.0) / 0.3));
+  } },
+  { d: 4.2, sfx: [[0, 'wind', 4.2], [2.5, 'caw']], lines: [[1.0, 2.4, '', '......']], draw(t, T) {
+    const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#d9d9de'); gr.addColorStop(1, '#8d8d97');
+    g.fillStyle = gr; g.fillRect(0, 0, W, H);
+    minsu({ x: 640, y: 420 + t * 8, s: 3.0 + t * 0.12, t: T, pale: 1, pupil: 0.45, noBlink: true, body: false, skin: '#e6d8cf' });
+    g.fillStyle = 'rgba(255,255,255,.12)'; g.fillRect(0, 0, W, H);
+    if (t > 2.5) {
+      g.globalAlpha = clamp((t - 2.5) / 0.2, 0, 1);
+      g.font = `48px ${FONT_T}`; g.textAlign = 'center'; g.fillStyle = '#333'; g.fillText('까악 까악', 1080, 110);
+      g.globalAlpha = 1;
+    }
+  } },
+  { d: 4.6, sfx: [[2.6, 'beep'], [2.6, 'bgm', 5]], lines: [[0.3, 2.3, 'j', '그래서 내가 하지 말랬지'], [2.6, 4.5, 'r', '삐빅. 정상입니다.']], draw(t, T, say) {
+    withCam(1, 640, 360, () => {
+      room();
+      monitor(70, 70, 420, 260, (x, y, w, h) => chart(x, y, w, h, P4, P4.length, { buy: true, pct: true, sellAt: P3.length - 1 }));
+      minsu({ ...CAST.m, x: 560, t: T, pale: 1, pupil: 0.45, noBlink: true, skin: '#e6d8cf' });
+      junho({ ...CAST.j, x: 800, t: T, talk: say('j'), lx: -1, lid: 0.45 });
+      robot({ x: 1050, y: 370, s: 0.8, t: T, talk: say('r'), lx: -1, armUp: say('r') ? 1 : 0 });
+    });
+  } },
+  { d: 3.2, sfx: [[0.1, 'pop']], draw(t, T) {
+    sunburst(640, 360, '#1a1a1f', '#232329', T);
+    bigText('다음 화', 640, 225, 84, '#fff', 0, backOut(t / 0.4));
+    bigText('물타기', 640, 360, 170, '#ff2b2b', -0.04, backOut((t - 0.2) / 0.4));
+    g.globalAlpha = clamp((t - 0.8) / 0.3, 0, 1);
+    g.font = `34px ${FONT_S}`; g.textAlign = 'center'; g.fillStyle = '#cfcfd6'; g.fillText('구독 · 좋아요 · 손절은 빠르게', 640, 520);
+    g.globalAlpha = 1;
+  } },
+];
+
+// Build the global timeline.
+let acc = 0;
+const LINES = [], EVENTS = [];
+for (const s of SHOTS) {
+  s.t0 = acc;
+  (s.lines || []).forEach(([a, b, who, text]) => {
+    LINES.push({ t0: acc + a, t1: acc + b, who, text });
+    if (who) EVENTS.push({ t: acc + a, type: 'voice', who, text, d: b - a });
+  });
+  (s.sfx || []).forEach(([a, type, d]) => EVENTS.push({ t: acc + a, type, d }));
+  acc += s.d;
+}
+const DUR = acc;
+
+function shakeAt(T) {
+  let amp = 0;
+  for (const e of EVENTS) if (e.type === 'shake' && T >= e.t && T < e.t + e.d) amp = Math.max(amp, 18 * (1 - (T - e.t) / e.d));
+  return amp;
+}
+
+function drawFrame(T) {
+  T = clamp(T, 0, DUR - 1e-3);
+  let shot = SHOTS[0];
+  for (const s of SHOTS) if (T >= s.t0) shot = s;
+  const say = who => LINES.some(l => l.who === who && T >= l.t0 && T < l.t1);
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  g.fillStyle = '#000'; g.fillRect(0, 0, W, H);
+  g.save();
+  const amp = shakeAt(T);
+  if (amp) g.translate((rnd(T * 97) - 0.5) * amp * 2, (rnd(T * 61 + 3) - 0.5) * amp * 2);
+  shot.draw(T - shot.t0, T, say);
+  g.restore();
+  const cur = LINES.find(l => T >= l.t0 && T < l.t1);
+  if (cur) subtitle(cur.text);
+  g.font = `22px ${FONT_T}`; g.textAlign = 'right'; g.textBaseline = 'top'; g.lineWidth = 5; g.strokeStyle = 'rgba(0,0,0,.6)';
+  g.strokeText('SCALP LAB', W - 22, 18); g.fillStyle = 'rgba(255,255,255,.85)'; g.fillText('SCALP LAB', W - 22, 18);
+}
+
+// ---------- audio ----------
+const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+function noiseBuf(ac) {
+  if (ac._noise) return ac._noise;
+  const b = ac.createBuffer(1, ac.sampleRate * 2, ac.sampleRate), d = b.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  return (ac._noise = b);
+}
+function env(ac, out, t, a, hold, rel, peak) {
+  const gn = ac.createGain();
+  gn.gain.setValueAtTime(0, t); gn.gain.linearRampToValueAtTime(peak, t + a);
+  gn.gain.setValueAtTime(peak, t + a + hold); gn.gain.exponentialRampToValueAtTime(0.0001, t + a + hold + rel);
+  gn.connect(out); return gn;
+}
+function tone(ac, out, t, type, f0, f1, dur, peak) {
+  const o = ac.createOscillator(); o.type = type;
+  o.frequency.setValueAtTime(f0, t); if (f1 !== f0) o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+  o.connect(env(ac, out, t, 0.008, dur * 0.4, dur * 0.6, peak)); o.start(t); o.stop(t + dur + 0.05);
+  return o;
+}
+function noise(ac, out, t, dur, ftype, freq, q, peak, a = 0.01) {
+  const s = ac.createBufferSource(); s.buffer = noiseBuf(ac); s.loop = true;
+  const f = ac.createBiquadFilter(); f.type = ftype; f.frequency.value = freq; f.Q.value = q;
+  s.connect(f); f.connect(env(ac, out, t, a, dur * 0.5, dur * 0.5, peak)); s.start(t); s.stop(t + dur + 0.05);
+  return f;
+}
+
+const VOICE = { m: { type: 'triangle', f: 330, g: 0.22 }, j: { type: 'sine', f: 210, g: 0.3 }, r: { type: 'square', f: 600, g: 0.07 } };
+const SYNTH = {
+  voice(ac, out, t, e) {
+    const syl = Array.from(e.text).filter(c => /[가-힣]/.test(c));
+    const step = Math.min(0.13, (e.d - 0.1) / Math.max(syl.length, 1));
+    const v = VOICE[e.who];
+    syl.forEach((c, i) => {
+      const f = e.who === 'r' ? v.f * (i % 2 ? 1 : 1.5) : v.f * (0.85 + rnd(c.charCodeAt(0)) * 0.35);
+      const end = i === syl.length - 1 ? 0.85 : 1;
+      tone(ac, out, t + i * step, v.type, f, f * end, step * 0.85, v.g);
+    });
+  },
+  pop(ac, out, t) { tone(ac, out, t, 'sine', 300, 900, 0.12, 0.4); },
+  click(ac, out, t) { noise(ac, out, t, 0.04, 'highpass', 3000, 1, 0.6, 0.002); tone(ac, out, t, 'square', 1800, 1200, 0.03, 0.15); },
+  fall(ac, out, t, e) {
+    const o = ac.createOscillator(); o.type = 'sine';
+    o.frequency.setValueAtTime(1100, t); o.frequency.exponentialRampToValueAtTime(90, t + e.d);
+    const lfo = ac.createOscillator(), lg = ac.createGain(); lfo.frequency.value = 7; lg.gain.value = 25; lfo.connect(lg); lg.connect(o.frequency);
+    o.connect(env(ac, out, t, 0.05, e.d * 0.8, e.d * 0.2, 0.25)); o.start(t); o.stop(t + e.d + 0.1); lfo.start(t); lfo.stop(t + e.d + 0.1);
+  },
+  rise(ac, out, t, e) {
+    const o = ac.createOscillator(); o.type = 'sine';
+    o.frequency.setValueAtTime(180, t); o.frequency.exponentialRampToValueAtTime(1600, t + e.d);
+    o.connect(env(ac, out, t, 0.05, e.d * 0.85, e.d * 0.15, 0.22)); o.start(t); o.stop(t + e.d + 0.1);
+  },
+  boom(ac, out, t) { noise(ac, out, t, 0.9, 'lowpass', 220, 0.7, 0.9); tone(ac, out, t, 'sine', 90, 40, 0.8, 0.6); },
+  ding(ac, out, t) { tone(ac, out, t, 'sine', 1320, 1320, 1.2, 0.25); tone(ac, out, t, 'sine', 1980, 1980, 0.9, 0.12); },
+  wind(ac, out, t, e) {
+    const f = noise(ac, out, t, e.d, 'bandpass', 500, 3, 0.35, 0.6);
+    f.frequency.setValueAtTime(400, t); f.frequency.linearRampToValueAtTime(900, t + e.d / 2); f.frequency.linearRampToValueAtTime(450, t + e.d);
+  },
+  roll(ac, out, t, e) { noise(ac, out, t, e.d, 'lowpass', 180, 1, 0.5, 0.1); },
+  gulp(ac, out, t) { tone(ac, out, t, 'sine', 220, 70, 0.18, 0.5); },
+  beep(ac, out, t) { tone(ac, out, t, 'square', 1400, 1400, 0.07, 0.08); tone(ac, out, t + 0.1, 'square', 1050, 1050, 0.09, 0.08); },
+  caw(ac, out, t) {
+    for (const k of [0, 0.45]) {
+      const o = ac.createOscillator(); o.type = 'sawtooth';
+      o.frequency.setValueAtTime(760, t + k); o.frequency.exponentialRampToValueAtTime(480, t + k + 0.3);
+      const f = ac.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 1400; f.Q.value = 2;
+      o.connect(f); f.connect(env(ac, out, t + k, 0.02, 0.12, 0.18, 0.3)); o.start(t + k); o.stop(t + k + 0.4);
+    }
+  },
+  bgm(ac, out, t, e, from) {
+    // Light chiptune loop: C - Am - F - G
+    const beat = 60 / 132, prog = [[60, 64, 67], [57, 60, 64], [53, 57, 60], [55, 59, 62]];
+    const mel = [72, 74, 76, 79, 81, 79, 76, 74];
+    for (let i = 0; i * beat / 2 < e.d; i++) {
+      const nt = t + (i * beat) / 2;
+      if (nt < ac.currentTime + 0.02) continue;
+      const ch = prog[Math.floor(i / 8) % 4];
+      if (i % 2 === 0) tone(ac, out, nt, 'triangle', mtof(ch[0] - 24), mtof(ch[0] - 24), beat * 0.45, 0.13);
+      if (i % 2 === 1) ch.forEach(n => tone(ac, out, nt, 'square', mtof(n), mtof(n), 0.06, 0.018));
+      if (rnd(i * 3.3) > 0.45) { const n = mel[(i * 3 + Math.floor(i / 8)) % mel.length]; tone(ac, out, nt, 'square', mtof(n), mtof(n), 0.1, 0.03); }
+    }
+  },
+};
+
+// Schedule every event at or after `from` (timeline seconds) on context `ac`, with timeline 0 mapped to `base`.
+function schedule(ac, out, base, from) {
+  for (const e of EVENTS) {
+    if (!SYNTH[e.type]) continue;
+    const longRunning = e.type === 'bgm';
+    if (e.t < from - (longRunning ? e.d : 0)) continue;
+    if (!longRunning && e.t < from) continue;
+    SYNTH[e.type](ac, out, base + e.t, e, from);
+  }
+}
+function master(ac) {
+  const comp = ac.createDynamicsCompressor(), gn = ac.createGain();
+  gn.gain.value = 0.9; gn.connect(comp); comp.connect(ac.destination); return gn;
+}
+
+// Offline render for video export (used by the MP4 render script).
+window.renderAudioWav = async () => {
+  const sr = 44100, oac = new OfflineAudioContext(2, Math.ceil(sr * DUR), sr);
+  schedule(oac, master(oac), 0, 0);
+  const buf = await oac.startRendering();
+  const n = buf.length, L = buf.getChannelData(0), R = buf.getChannelData(1);
+  const out = new DataView(new ArrayBuffer(44 + n * 4));
+  const str = (o, s) => [...s].forEach((c, i) => out.setUint8(o + i, c.charCodeAt(0)));
+  str(0, 'RIFF'); out.setUint32(4, 36 + n * 4, true); str(8, 'WAVEfmt '); out.setUint32(16, 16, true);
+  out.setUint16(20, 1, true); out.setUint16(22, 2, true); out.setUint32(24, sr, true); out.setUint32(28, sr * 4, true);
+  out.setUint16(32, 4, true); out.setUint16(34, 16, true); str(36, 'data'); out.setUint32(40, n * 4, true);
+  for (let i = 0; i < n; i++) {
+    out.setInt16(44 + i * 4, clamp(L[i], -1, 1) * 32767, true);
+    out.setInt16(46 + i * 4, clamp(R[i], -1, 1) * 32767, true);
+  }
+  const bytes = new Uint8Array(out.buffer); let s = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(s);
+};
+window.drawFrame = drawFrame;
+window.DUR = DUR;
+
+// ---------- player ----------
+const btn = document.getElementById('play'), seek = document.getElementById('seek'), timeEl = document.getElementById('time'), sndBtn = document.getElementById('snd');
+let playing = false, cur = 0, startPerf = 0, ac = null, muted = false;
+const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+
+function stopAudio() { if (ac) { ac.close(); ac = null; } }
+function startAudio() {
+  stopAudio();
+  if (muted) return;
+  ac = new (window.AudioContext || window.webkitAudioContext)();
+  schedule(ac, master(ac), ac.currentTime + 0.05 - cur, cur);
+}
+function play() {
+  if (cur >= DUR - 0.05) cur = 0;
+  playing = true; startPerf = performance.now() - cur * 1000; btn.textContent = '⏸ 정지';
+  startAudio(); requestAnimationFrame(tick);
+}
+function pause() { playing = false; btn.textContent = '▶ 재생'; stopAudio(); }
+function render() { drawFrame(cur); seek.value = Math.round((cur / DUR) * 1000); timeEl.textContent = `${fmt(cur)} / ${fmt(DUR)}`; }
+function tick() {
+  if (!playing) return;
+  cur = (performance.now() - startPerf) / 1000;
+  if (cur >= DUR) { cur = DUR; pause(); }
+  render();
+  if (playing) requestAnimationFrame(tick);
+}
+btn.onclick = () => (playing ? pause() : play());
+cv.onclick = () => (playing ? pause() : play());
+seek.oninput = () => { cur = (seek.value / 1000) * DUR; if (playing) { startPerf = performance.now() - cur * 1000; startAudio(); } render(); };
+sndBtn.onclick = () => { muted = !muted; sndBtn.textContent = muted ? '🔇' : '🔊'; if (playing) startAudio(); };
+
+window.ready = Promise.all([document.fonts.load(`40px 'Black Han Sans'`), document.fonts.load(`40px 'Jua'`)]).catch(() => {}).then(() => {
+  cur = 1.2; render(); cur = 0;
+  timeEl.textContent = `${fmt(0)} / ${fmt(DUR)}`; seek.value = 0;
+});
+</script>
+</body>
+</html>
