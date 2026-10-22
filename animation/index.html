@@ -34,8 +34,9 @@ p.note{color:var(--muted);font-size:14px;line-height:1.5}
     <span class="time" id="time">0:00 / 0:00</span>
     <button id="snd">🔊</button>
   </div>
-  <p class="note">화면을 눌러도 재생/정지돼요. 목소리와 효과음은 브라우저에서 바로 합성됩니다.</p>
+  <p class="note">화면을 눌러도 재생/정지돼요. 대사는 TTS 더빙, 효과음과 BGM은 브라우저에서 바로 합성됩니다.</p>
 </div>
+<script src="voices.js"></script>
 <script>
 const W = 1280, H = 720;
 const cv = document.getElementById('cv');
@@ -542,7 +543,8 @@ const LINES = [], EVENTS = [];
 for (const s of SHOTS) {
   s.t0 = acc;
   (s.lines || []).forEach(([a, b, who, text]) => {
-    LINES.push({ t0: acc + a, t1: acc + b, who, text });
+    const v = window.VOICES && window.VOICES[text];
+    LINES.push({ t0: acc + a, t1: acc + b, talk1: acc + a + (v ? v.dur : b - a), who, text });
     if (who) EVENTS.push({ t: acc + a, type: 'voice', who, text, d: b - a });
   });
   (s.sfx || []).forEach(([a, type, d]) => EVENTS.push({ t: acc + a, type, d }));
@@ -560,7 +562,7 @@ function drawFrame(T) {
   T = clamp(T, 0, DUR - 1e-3);
   let shot = SHOTS[0];
   for (const s of SHOTS) if (T >= s.t0) shot = s;
-  const say = who => LINES.some(l => l.who === who && T >= l.t0 && T < l.t1);
+  const say = who => LINES.some(l => l.who === who && T >= l.t0 && T < l.talk1);
   g.setTransform(1, 0, 0, 1, 0, 0);
   g.fillStyle = '#000'; g.fillRect(0, 0, W, H);
   g.save();
@@ -604,6 +606,8 @@ function noise(ac, out, t, dur, ftype, freq, q, peak, a = 0.01) {
 const VOICE = { m: { type: 'triangle', f: 330, g: 0.22 }, j: { type: 'sine', f: 210, g: 0.3 }, r: { type: 'square', f: 600, g: 0.07 } };
 const SYNTH = {
   voice(ac, out, t, e) {
+    const buf = VOICE_BUF[e.text];
+    if (buf) { const src = ac.createBufferSource(); src.buffer = buf; src.connect(out); src.start(t); return; }
     const syl = Array.from(e.text).filter(c => /[가-힣]/.test(c));
     const step = Math.min(0.13, (e.d - 0.1) / Math.max(syl.length, 1));
     const v = VOICE[e.who];
@@ -657,6 +661,13 @@ const SYNTH = {
     }
   },
 };
+
+// Dialogue clips from voices.js, decoded once; AudioBuffers can be shared across contexts.
+const VOICE_BUF = {};
+const voicesReady = Promise.all(Object.entries(window.VOICES || {}).map(async ([k, v]) => {
+  const bin = Uint8Array.from(atob(v.src.split(',')[1]), c => c.charCodeAt(0));
+  VOICE_BUF[k] = await new OfflineAudioContext(1, 1, 44100).decodeAudioData(bin.buffer);
+})).catch(() => {});
 
 // Schedule every event at or after `from` (timeline seconds) on context `ac`, with timeline 0 mapped to `base`.
 function schedule(ac, out, base, from) {
@@ -726,7 +737,7 @@ cv.onclick = () => (playing ? pause() : play());
 seek.oninput = () => { cur = (seek.value / 1000) * DUR; if (playing) { startPerf = performance.now() - cur * 1000; startAudio(); } render(); };
 sndBtn.onclick = () => { muted = !muted; sndBtn.textContent = muted ? '🔇' : '🔊'; if (playing) startAudio(); };
 
-window.ready = Promise.all([document.fonts.load(`40px 'Black Han Sans'`), document.fonts.load(`40px 'Jua'`)]).catch(() => {}).then(() => {
+window.ready = Promise.all([voicesReady, document.fonts.load(`40px 'Black Han Sans'`), document.fonts.load(`40px 'Jua'`)]).catch(() => {}).then(() => {
   cur = 1.2; render(); cur = 0;
   timeEl.textContent = `${fmt(0)} / ${fmt(DUR)}`; seek.value = 0;
 });
