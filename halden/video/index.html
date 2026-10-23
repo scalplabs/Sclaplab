@@ -8,6 +8,8 @@
 @font-face{font-family:"Instrument Serif";src:url(assets/fonts/serif.woff2) format("woff2");font-weight:400;font-style:normal;font-display:block}
 @font-face{font-family:"Instrument Serif";src:url(assets/fonts/serif-italic.woff2) format("woff2");font-weight:400;font-style:italic;font-display:block}
 @font-face{font-family:"Inter";src:url(assets/fonts/inter.woff2) format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Pretendard";src:url(assets/fonts/pretendard-medium.woff2) format("woff2");font-weight:500;font-display:block}
+@font-face{font-family:"Pretendard";src:url(assets/fonts/pretendard-bold.woff2) format("woff2");font-weight:700;font-display:block}
 @font-face{font-family:"JetBrains Mono";src:url(assets/fonts/mono.woff2) format("woff2");font-weight:400;font-display:block}
 :root{
   --ink:#0d0c0a;--ink-2:#14120f;--bone:#ebe5da;--bone-dim:#8b8377;
@@ -27,10 +29,11 @@ body{font-family:var(--sans);-webkit-font-smoothing:antialiased}
   radial-gradient(55% 60% at 88% 12%,rgba(86,92,190,.55),transparent 62%),
   radial-gradient(40% 50% at 70% 85%,rgba(196,72,92,.35),transparent 60%),
   linear-gradient(160deg,#141a2e 0%,#0b0d16 55%,#120b0a 100%)}
-.menubar{position:absolute;left:0;right:0;top:0;height:25px;display:flex;align-items:center;gap:20px;padding:0 18px;
+.menubar{position:absolute;left:0;right:0;top:0;height:25px;display:flex;align-items:center;gap:19px;padding:0 18px;font-family:"Pretendard",var(--sans);letter-spacing:-.01em;
   font-size:13px;font-weight:500;background:rgba(18,18,24,.42);color:rgba(255,255,255,.92)}
 .menubar .app{font-weight:700}
 .menubar .right{margin-left:auto;display:flex;gap:16px;align-items:center}
+.menubar .ime{display:grid;place-items:center;width:19px;height:16px;border-radius:4px;background:rgba(255,255,255,.92);color:#1a1a1f;font-size:11px;font-weight:700;letter-spacing:0}
 .window{position:absolute;left:160px;top:76px;width:1600px;height:952px;border-radius:12px;overflow:hidden;background:#000;
   box-shadow:0 0 0 .5px rgba(255,255,255,.16),0 28px 70px rgba(0,0,0,.6),0 8px 22px rgba(0,0,0,.4)}
 .toolbar{height:52px;display:flex;align-items:center;background:#1f1f22;border-bottom:1px solid #000;padding:0 16px;position:relative;color:#8e8e93}
@@ -153,12 +156,13 @@ body{font-family:var(--sans);-webkit-font-smoothing:antialiased}
 <div id="stage" class="clip" data-start="0" data-duration="10" data-track-index="0" data-layout-allow-overflow data-layout-allow-overlap>
   <div class="wall"></div>
   <div class="menubar">
-    <span class="app">Safari</span><span>File</span><span>Edit</span><span>View</span><span>History</span><span>Bookmarks</span><span>Window</span><span>Help</span>
+    <span class="app">Safari</span><span>파일</span><span>편집</span><span>보기</span><span>방문 기록</span><span>책갈피</span><span>윈도우</span><span>도움말</span>
     <span class="right">
       <svg width="24" height="12" viewBox="0 0 24 12" fill="none" stroke="currentColor"><rect x=".5" y=".5" width="20" height="11" rx="3"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor" stroke="none"/><path d="M22.5 4v4" stroke-linecap="round"/></svg>
       <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 11.5 5.6 9a3.4 3.4 0 0 1 4.8 0L8 11.5ZM3.4 6.8a6.6 6.6 0 0 1 9.2 0l-1.1 1.1a5 5 0 0 0-7 0L3.4 6.8ZM1.1 4.5a9.9 9.9 0 0 1 13.8 0l-1.1 1.1a8.3 8.3 0 0 0-11.6 0L1.1 4.5Z"/></svg>
+      <span class="ime">가</span>
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6" cy="6" r="4.5"/><path d="m9.5 9.5 3.5 3.5" stroke-linecap="round"/></svg>
-      <span>Fri 23 Oct&nbsp;&nbsp;6:42 PM</span>
+      <span>10월 23일 (금)&nbsp;&nbsp;오후 6:42</span>
     </span>
   </div>
   <div class="window">
