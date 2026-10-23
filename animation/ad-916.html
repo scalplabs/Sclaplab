@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>물광 크림 쇼츠</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
+<style>
+/* 30s vertical (9:16) cartoon cosmetics ad: pastel bean characters on a canvas, speech-bubble dialogue, product hidden behind an "광고" mosaic. */
+:root{color-scheme:dark;--bg:#0e0e10;--panel:#18181c;--fg:#f1f1f1;--muted:#9a9aa3;--accent:#ff8fb0}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:'Jua',system-ui,sans-serif}
+.wrap{max-width:460px;margin:0 auto;padding:16px}
+h1{font-weight:400;font-size:24px;margin:4px 0 12px}
+h1 span{color:var(--accent)}
+canvas{width:100%;max-width:420px;margin:0 auto;aspect-ratio:9/16;display:block;background:#000;border-radius:12px;cursor:pointer}
+.bar{display:flex;gap:8px;align-items:center;margin-top:10px}
+button{font:inherit;font-size:16px;background:var(--panel);color:var(--fg);border:1px solid #2c2c33;border-radius:10px;padding:8px 14px;cursor:pointer;white-space:nowrap}
+button:hover{border-color:#4a4a55}
+input[type=range]{flex:1;accent-color:var(--accent);min-width:0}
+.time{font-variant-numeric:tabular-nums;color:var(--muted);font-size:14px;min-width:84px;text-align:right}
+p.note{color:var(--muted);font-size:14px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>스캘프 랩 애니 <span>물광 크림 쇼츠 (9:16 · 30초)</span></h1>
+  <canvas id="cv"></canvas>
+  <div class="bar">
+    <button id="play">▶ 재생</button>
+    <input id="seek" type="range" min="0" max="1000" value="0">
+    <span class="time" id="time">0:00 / 0:00</span>
+    <button id="snd">🔊</button>
+  </div>
+  <p class="note">화면을 눌러도 재생/정지돼요. 대사는 말풍선, 목소리는 옹알옹알 효과음이에요. 소리는 전부 브라우저에서 합성됩니다.</p>
+</div>
+<script>
+const W = 720, H = 1280;
+const cv = document.getElementById('cv');
+cv.width = W; cv.height = H;
+const g = cv.getContext('2d');
+
+const OUT = '#4a3530';
+const FONT_T = "'Jua',sans-serif";
+const FONT_B = "'Jua',sans-serif";
+
+// ---------- math ----------
+function rnd(n) { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); }
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const ease = t => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+const easeOut = t => 1 - Math.pow(1 - clamp(t, 0, 1), 3);
+const backOut = t => { t = clamp(t, 0, 1); const c = 2.2; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); };
+
+// ---------- primitives ----------
+function ink(lw = 4) { g.strokeStyle = OUT; g.lineWidth = lw; g.lineJoin = 'round'; g.lineCap = 'round'; }
+function fs(fill, lw = 4) { if (fill) { g.fillStyle = fill; g.fill(); } ink(lw); g.stroke(); }
+function ell(x, y, rx, ry, rot = 0) { g.beginPath(); g.ellipse(x, y, Math.max(rx, 0.1), Math.max(ry, 0.1), rot, 0, Math.PI * 2); }
+function rr(x, y, w, h, r) { g.beginPath(); g.roundRect(x, y, w, h, r); }
+function line(x1, y1, x2, y2, lw = 4) { g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); ink(lw); g.stroke(); }
+function withCam(z, cx, cy, fn) { g.save(); g.translate(W / 2, H / 2); g.scale(z, z); g.translate(-cx, -cy); fn(); g.restore(); }
+
+function popText(txt, x, y, size, fill, rot = 0, sc = 1) {
+  if (sc <= 0) return;
+  g.save(); g.translate(x, y); g.rotate(rot); g.scale(sc, sc);
+  g.font = `${size}px ${FONT_T}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
+  g.lineWidth = size * 0.22; g.strokeStyle = OUT; g.strokeText(txt, 0, 0);
+  g.lineWidth = size * 0.11; g.strokeStyle = '#fff'; g.strokeText(txt, 0, 0);
+  g.fillStyle = fill; g.fillText(txt, 0, 0);
+  g.restore();
+}
+
+function star(x, y, r, col = '#fff6b0', rot = 0) {
+  g.save(); g.translate(x, y); g.rotate(rot); g.beginPath();
+  for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4, rad = i % 2 ? r * 0.32 : r; g.lineTo(Math.cos(a) * rad, Math.sin(a) * rad); }
+  g.closePath(); fs(col, 3); g.restore();
+}
+
+function sparkles(cx, cy, rad, n, T, k = 1) {
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2 + T * 0.6, tw = 0.5 + 0.5 * Math.sin(T * 6 + i * 2.1);
+    star(cx + Math.cos(a) * rad * (0.85 + rnd(i) * 0.3), cy + Math.sin(a) * rad * 0.8, (10 + 12 * tw) * k, i % 3 ? '#fff6b0' : '#ffd1e3', T + i);
+  }
+}
+
+// Product placeholder: pixel mosaic with a "광고" tag, like a blurred-out brand.
+function adBox(x, y, w, h, T, label = 22) {
+  const cell = Math.max(10, Math.round(w / 9)), k = Math.floor(T * 5);
+  const pal = ['#ffc6d6', '#ffe9ef', '#f7a8c0', '#fff', '#e8d6ff', '#ffdbe6', '#d9c2f0'];
+  g.save(); rr(x, y, w, h, 6); g.clip();
+  for (let i = 0; i * cell < w; i++) for (let j = 0; j * cell < h; j++) {
+    g.fillStyle = pal[Math.floor(rnd(i * 17 + j * 31 + k * 0.37) * pal.length)];
+    g.fillRect(x + i * cell, y + j * cell, cell + 1, cell + 1);
+  }
+  g.restore();
+  rr(x, y, w, h, 6); fs(null, 4);
+  g.font = `${label}px ${FONT_T}`; g.textAlign = 'center'; g.textBaseline = 'middle';
+  const tw = g.measureText('광고').width + label;
+  rr(x + w / 2 - tw / 2, y + h / 2 - label * 0.8, tw, label * 1.6, label * 0.4);
+  g.fillStyle = 'rgba(30,20,20,.88)'; g.fill();
+  g.fillStyle = '#fff'; g.fillText('광고', x + w / 2, y + h / 2 + 1);
+}
+
+// ---------- characters ----------
+// Jellybean bodies, beady eyes, blush. Origin = body center, ~240 tall at s=1.
+const CHAR = {
+  hana: { skin: '#ffe6d6', outfit: '#c9b6f2', hair: '#4a2c2a' },
+  jiu: { skin: '#ffe1cc', outfit: '#8fd9c4', hair: '#e0883a' },
+};
+function bodyPath() {
+  g.beginPath(); g.moveTo(0, -120);
+  g.bezierCurveTo(86, -120, 96, -40, 92, 30); g.bezierCurveTo(90, 106, 60, 122, 0, 122);
+  g.bezierCurveTo(-60, 122, -90, 106, -92, 30); g.bezierCurveTo(-96, -40, -86, -120, 0, -120);
+}
+function bean(p) {
+  const c = CHAR[p.who], t = p.t || 0;
+  const hop = p.hop ? Math.abs(Math.sin(t * 7)) * 22 : 0;
+  const sq = 1 + Math.sin(t * 3 + (p.who === 'jiu' ? 1 : 0)) * 0.015;
+  g.save(); g.translate(p.x, p.y - hop * p.s); g.scale(p.s, p.s * sq);
+  // feet
+  ell(-32, 124, 24, 11); fs('#6b4a42'); ell(32, 124, 24, 11); fs('#6b4a42');
+  // hair behind (bob sides)
+  if (p.who === 'hana') { g.beginPath(); g.moveTo(-100, 34); g.bezierCurveTo(-112, -150, 112, -150, 100, 34); g.lineTo(70, 34); g.lineTo(-70, 34); g.closePath(); fs(c.hair); }
+  if (p.who === 'jiu') { ell(-56, -116, 30, 30); fs(c.hair); ell(56, -116, 30, 30); fs(c.hair); }
+  bodyPath(); fs(c.skin);
+  g.save(); bodyPath(); g.clip();
+  g.fillStyle = c.outfit; g.fillRect(-120, 38, 240, 120);
+  if (p.dry) {
+    g.fillStyle = `rgba(140,130,110,${0.38 * p.dry})`; g.fillRect(-120, -130, 240, 168);
+  }
+  g.restore();
+  g.beginPath(); g.moveTo(-90, 38); g.quadraticCurveTo(0, 56, 90, 38); ink(4); g.stroke();
+  if (p.who === 'jiu') { g.beginPath(); g.moveTo(-10, 48); g.lineTo(-14, 80); g.moveTo(10, 48); g.lineTo(14, 80); ink(3); g.stroke(); }
+  bodyPath(); fs(null);
+  // arms
+  const armR = p.armR || 0, armL = p.armL || 0;
+  ell(lerp(96, 98, armR), lerp(64, -14, armR), 15, 28, lerp(-0.3, -2.6, armR)); fs(c.outfit);
+  ell(lerp(-96, -98, armL), lerp(64, -14, armL), 15, 28, lerp(0.3, 2.6, armL)); fs(c.outfit);
+  // hair front
+  if (p.who === 'hana') {
+    g.beginPath(); g.moveTo(-94, -20); g.bezierCurveTo(-100, -136, 100, -136, 94, -20);
+    for (let i = 0; i <= 8; i++) g.lineTo(80 - i * 20, -66 + (i % 2 ? 6 : 0));
+    g.closePath(); fs(c.hair);
+    star(54, -92, 13, '#ffd84d', 0.3);
+  } else {
+    g.beginPath(); g.moveTo(-88, -30); g.bezierCurveTo(-96, -136, 96, -136, 88, -30);
+    for (let i = 0; i <= 6; i++) { const x = 70 - i * 23.3; g.quadraticCurveTo(x + 12, -48, x, -72); }
+    g.closePath(); fs(c.hair);
+  }
+  // face
+  const fx = (p.lx || 0) * 8;
+  g.fillStyle = `rgba(255,120,145,${p.dry ? 0.2 : 0.5})`; ell(-54 + fx * 0.5, -14, 16, 10); g.fill(); ell(54 + fx * 0.5, -14, 16, 10); g.fill();
+  const blink = ((t * 0.41 + (p.who === 'jiu' ? 0.5 : 0)) % 1) < 0.03 && !p.noBlink;
+  if (p.happy || blink) {
+    for (const ex of [-28, 28]) { g.beginPath(); g.arc(ex + fx, -32, 10, p.happy ? Math.PI * 1.1 : Math.PI * 0.1, p.happy ? Math.PI * 1.9 : Math.PI * 0.9); ink(5); g.stroke(); }
+  } else {
+    for (const ex of [-28, 28]) {
+      ell(ex + fx, -36, 8, p.big ? 14 : 11); g.fillStyle = '#3a2622'; g.fill();
+      ell(ex + fx - 2, -41, 3, 3.5); g.fillStyle = '#fff'; g.fill();
+    }
+  }
+  if (p.dry) {
+    // tired under-eyes + flaky cheek marks
+    g.globalAlpha = p.dry;
+    for (const ex of [-28, 28]) { g.beginPath(); g.arc(ex + fx, -24, 10, 0.2, Math.PI - 0.2); ink(2); g.stroke(); }
+    for (const sx of [-1, 1]) {
+      g.beginPath(); g.moveTo(sx * 46, -2); g.lineTo(sx * 54, 4); g.lineTo(sx * 48, 10); g.lineTo(sx * 58, 16); ink(2.5); g.stroke();
+    }
+    g.globalAlpha = 1;
+  }
+  const open = p.talk ? 0.3 + 0.7 * Math.abs(Math.sin(t * 16 + Math.sin(t * 5))) : 0;
+  if (open > 0.05) { ell(fx, -6, 9, 3 + 8 * open); fs('#c2455a', 3); }
+  else if (p.sad) { g.beginPath(); g.arc(fx, 2, 9, Math.PI * 1.15, Math.PI * 1.85); ink(4); g.stroke(); }
+  else { g.beginPath(); g.arc(fx, -12, 9, 0.2, Math.PI - 0.2); ink(4); g.stroke(); }
+  if (p.glow) {
+    g.globalAlpha = p.glow * 0.85; g.fillStyle = '#fff';
+    ell(-40, -64, 16, 6, -0.4); g.fill(); ell(58, -6, 7, 4, -0.4); g.fill(); ell(-56, -8, 7, 4, -0.4); g.fill();
+    g.globalAlpha = 1;
+  }
+  g.restore();
+  // head anchor for speech bubbles (screen space, before camera)
+  return { x: p.x, y: p.y - (130 + hop) * p.s };
+}
+
+function cloud(x, y, s, T) {
+  g.save(); g.translate(x, y); g.scale(s, s);
+  for (const [cx, cy, r] of [[-40, 0, 30], [0, -16, 38], [42, 0, 30], [0, 10, 30]]) { ell(cx, cy, r, r); fs('#9aa0ad', 3); }
+  for (const [cx, cy, r] of [[-40, 0, 28], [0, -16, 36], [42, 0, 28], [0, 10, 28]]) { ell(cx, cy, r, r); g.fillStyle = '#9aa0ad'; g.fill(); }
+  for (let i = 0; i < 5; i++) {
+    const dy = ((T * 90 + i * 37) % 70);
+    line(-44 + i * 22, 40 + dy, -48 + i * 22, 52 + dy, 3);
+  }
+  g.restore();
+}
+
+// ---------- sets ----------
+function bedroom() {
+  g.fillStyle = '#ffe3ea'; g.fillRect(-300, -300, 1400, 1300);
+  g.fillStyle = '#fff3f6';
+  for (let r = 0; r < 22; r++) for (let c = -4; c < 16; c++) { ell(c * 70 + (r % 2) * 35, r * 60 - 160, 7, 7); g.fill(); }
+  g.fillStyle = '#f6d7b0'; g.fillRect(-300, 980, 1400, 600);
+  for (let i = -4; i < 16; i++) line(i * 90, 980, i * 90 - 60, 1280, 2);
+  line(-300, 980, 1100, 980, 4);
+  // window
+  rr(70, 250, 240, 220, 14); fs('#bfe6ff'); line(190, 250, 190, 470, 5); line(70, 360, 310, 360, 5);
+  g.fillStyle = '#fff'; ell(130, 300, 30, 12); g.fill(); ell(260, 410, 26, 10); g.fill();
+  // shelf with blank bottles
+  rr(410, 440, 250, 16, 4); fs('#d9a77a');
+  [['#ffd1e3', 430, 50], ['#e8d6ff', 480, 70], ['#c8f0e3', 540, 40], ['#fff1b8', 590, 60]].forEach(([col, x, h]) => { rr(x, 440 - h, 34, h, 8); fs(col, 3); });
+  // plant
+  rr(668, 880, 70, 100, 10); fs('#ffb38a');
+  for (const a of [-0.6, -0.2, 0.2, 0.6]) { ell(703 + Math.sin(a) * 40, 840 - Math.cos(a) * 30, 14, 34, a); fs('#8fd9a8', 3); }
+}
+
+const MIR = { x: 360, y: 700, rx: 310, ry: 470 };
+function mirrorFrame() {
+  g.save();
+  g.beginPath(); g.rect(0, 0, W, H); g.ellipse(MIR.x, MIR.y, MIR.rx, MIR.ry, 0, 0, Math.PI * 2);
+  g.fillStyle = '#fbe9d7'; g.fill('evenodd');
+  ell(MIR.x, MIR.y, MIR.rx, MIR.ry); g.lineWidth = 26; g.strokeStyle = '#e8bf6a'; g.stroke();
+  ell(MIR.x, MIR.y, MIR.rx + 13, MIR.ry + 13); ink(4); g.stroke(); ell(MIR.x, MIR.y, MIR.rx - 13, MIR.ry - 13); ink(4); g.stroke();
+  g.globalAlpha = 0.3; g.fillStyle = '#fff';
+  g.beginPath(); g.moveTo(190, 330); g.lineTo(250, 330); g.lineTo(130, 700); g.lineTo(90, 700); g.fill();
+  g.globalAlpha = 1; g.restore();
+}
+
+function pastelBurst(cx, cy, c1, c2, T) {
+  g.fillStyle = c1; g.fillRect(0, 0, W, H);
+  g.save(); g.translate(cx, cy); g.rotate(T * 0.25); g.fillStyle = c2;
+  for (let i = 0; i < 14; i++) { const a = (i / 14) * Math.PI * 2; g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, 1800, a, a + Math.PI / 14); g.fill(); }
+  g.restore();
+}
+
+function bubblesFx(T, n, alpha = 1) {
+  g.globalAlpha = alpha;
+  for (let i = 0; i < n; i++) {
+    const ph = (T * 0.2 + rnd(i)) % 1, x = rnd(i * 3) * W + Math.sin(T * 2 + i) * 14, y = H + 40 - ph * (H + 120), r = 8 + rnd(i * 7) * 22;
+    ell(x, y, r, r); g.strokeStyle = 'rgba(255,255,255,.9)'; g.lineWidth = 3; g.stroke();
+    ell(x - r * 0.35, y - r * 0.35, r * 0.2, r * 0.2); g.fillStyle = '#fff'; g.fill();
+  }
+  g.globalAlpha = 1;
+}
+
+// ---------- speech bubbles ----------
+function speechBubble(text, ax, ay, side, k) {
+  if (k <= 0) return;
+  g.save();
+  g.font = `40px ${FONT_B}`;
+  const tw = g.measureText(text).width, bw = tw + 56, bh = 82;
+  let bx = clamp(ax + side * (bw / 2 - 40), bw / 2 + 16, W - bw / 2 - 16), by = Math.max(ay - 80, bh / 2 + 70);
+  g.translate(bx, by); g.scale(k, k);
+  const tx = clamp(ax - bx, -bw / 2 + 30, bw / 2 - 30);
+  g.beginPath(); g.moveTo(tx - 20, bh / 2 - 4); g.lineTo(ax - bx, ay - by); g.lineTo(tx + 20, bh / 2 - 4); g.closePath(); fs('#fff');
+  rr(-bw / 2, -bh / 2, bw, bh, 36); fs('#fff');
+  g.fillStyle = '#fff'; g.fillRect(tx - 17, bh / 2 - 8, 34, 8);
+  g.fillStyle = '#3a2622'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(text, 0, 3);
+  g.restore();
+}
+
+// ---------- script ----------
+// lines: [start, end, who, text, side] (shot-local seconds). who h 하나, j 지우 (babble + bubble), n 화면 문구(소리 없음). side: bubble leans left(-1)/right(1)
+// sfx: [time, type, duration]
+const SHOTS = [
+  { d: 4.0, sfx: [[0.1, 'gloom', 3.6]], lines: [[0.6, 3.8, 'h', '아… 피부 왜 이래…', 1]], draw(t, T, say) {
+    const a = {};
+    bedroom();
+    a.h = bean({ who: 'hana', x: 360, y: 830, s: 1.45, t: T, dry: 1, sad: true, talk: say('h') });
+    cloud(360, 400 + Math.sin(T * 2) * 6, 0.9, T);
+    mirrorFrame();
+    return a;
+  } },
+  { d: 4.5, sfx: [[0.1, 'whoosh'], [0.5, 'sparkle'], [0.2, 'bgm', 26]], lines: [[0.9, 2.6, 'h', '헐, 너 피부 뭐야?!', 1], [2.8, 4.4, 'j', '나? 비결 있지~', -1]], draw(t, T, say) {
+    const a = {}, jx = lerp(900, 535, easeOut(t / 0.6));
+    bedroom();
+    a.h = bean({ who: 'hana', x: 185, y: 830, s: 1.15, t: T, dry: 1, big: t > 0.6, talk: say('h'), lx: 1 });
+    a.j = bean({ who: 'jiu', x: jx, y: 830, s: 1.15, t: T, glow: 1, talk: say('j'), lx: -1, happy: t > 2.8 && !say('j') });
+    sparkles(jx, 800, 190, 7, T, 0.9);
+    return a;
+  } },
+  { d: 3.0, sfx: [[0.3, 'ding'], [0.3, 'sparkle']], lines: [[0.6, 2.9, 'j', '짠! 요거 하나면 끝!', 1]], draw(t, T, say) {
+    pastelBurst(440, 420, '#fff0f5', '#ffe0ec', T);
+    const a = {};
+    a.j = bean({ who: 'jiu', x: 300, y: 960, s: 1.55, t: T, glow: 1, armR: easeOut(t / 0.3), talk: say('j'), lx: 0.6 });
+    const k = backOut((t - 0.3) / 0.35);
+    if (k > 0) {
+      g.save(); g.translate(450, 400); g.scale(k, k); g.rotate(Math.sin(T * 3) * 0.05);
+      adBox(-115, -145, 230, 290, T, 40); g.restore();
+      sparkles(450, 400, 220, 8, T, 1.1);
+    }
+    return a;
+  } },
+  { d: 4.0, lines: [[0.3, 1.6, 'h', '그게 뭔데?', 1], [1.9, 3.9, 'j', '수분 크림! 발라봐~', -1]], draw(t, T, say) {
+    const a = {};
+    bedroom();
+    a.h = bean({ who: 'hana', x: 185, y: 830, s: 1.15, t: T, dry: 1, talk: say('h'), lx: 1 });
+    a.j = bean({ who: 'jiu', x: 535, y: 830, s: 1.15, t: T, glow: 1, talk: say('j'), lx: -1, armL: 1 });
+    const bx = lerp(390, 330, ease((t - 2) / 1.2));
+    adBox(bx - 40, 790, 80, 100, T, 22);
+    return a;
+  } },
+  { d: 4.5, sfx: [[0.4, 'squish'], [1.3, 'squish'], [1.9, 'sparkle'], [3.2, 'ding']], draw(t, T) {
+    const heal = ease((t - 1.6) / 1.8);
+    g.fillStyle = '#ffe3ea'; g.fillRect(0, 0, W, H);
+    if (heal > 0) { g.globalAlpha = heal; pastelBurst(360, 760, '#e9fbff', '#d3f4ff', T); g.globalAlpha = 1; }
+    bean({ who: 'hana', x: 360, y: 900, s: 2.7, t: T, dry: 1 - heal, glow: heal, happy: heal > 0.8, noBlink: true });
+    // cream dollop + rubbing hand
+    const rub = t > 0.4 && t < 2.4, ang = T * 9;
+    const cx = 360 + 145 + (rub ? Math.cos(ang) * 18 : 0), cy = 862 + (rub ? Math.sin(ang) * 12 : 0);
+    if (t > 0.4 && t < 2.6) {
+      g.globalAlpha = clamp((2.6 - t) / 0.4, 0, 1);
+      g.beginPath(); g.moveTo(cx - 36, cy + 10);
+      g.bezierCurveTo(cx - 40, cy - 18, cx - 6, cy - 28, cx, cy - 42); g.bezierCurveTo(cx + 8, cy - 26, cx + 42, cy - 18, cx + 36, cy + 10); g.closePath();
+      fs('#fffdf8', 4); g.globalAlpha = 1;
+    }
+    if (rub) { ell(cx + 64, cy + 60, 42, 70, -0.6); fs(CHAR.jiu.outfit); ell(cx + 28, cy + 10, 28, 28); fs(CHAR.hana.skin); }
+    if (heal > 0) { bubblesFx(T, 22, heal); sparkles(360, 800, 330, 10, T, 1.3 * heal); }
+    if (t > 2.0) popText('촉촉', 210, 300, 120, '#7cc8ff', -0.12, backOut((t - 2.0) / 0.3));
+    if (t > 3.2) popText('물광!', 500, 450, 130, '#ff7aa8', 0.1, backOut((t - 3.2) / 0.3));
+    return {};
+  } },
+  { d: 3.5, sfx: [[0.1, 'sparkle']], lines: [[0.3, 2.1, 'h', '와… 완전 물광이야!', 1], [2.3, 3.4, 'j', '그치?', -1]], draw(t, T, say) {
+    const a = {};
+    pastelBurst(360, 760, '#fff4c9', '#ffe9a6', T);
+    bubblesFx(T, 12, 0.8);
+    a.h = bean({ who: 'hana', x: 190, y: 840, s: 1.15, t: T, glow: 1, hop: !say('h'), happy: !say('h'), talk: say('h'), lx: 0.5 });
+    a.j = bean({ who: 'jiu', x: 535, y: 840, s: 1.1, t: T, glow: 1, happy: !say('j'), talk: say('j'), lx: -0.5 });
+    sparkles(190, 800, 200, 6, T, 0.9);
+    return a;
+  } },
+  { d: 4.0, sfx: [[0.1, 'splash'], [0.1, 'whoosh']], draw(t, T) {
+    const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#d8f3ff'); gr.addColorStop(1, '#ffe3ef');
+    g.fillStyle = gr; g.fillRect(0, 0, W, H);
+    bubblesFx(T, 26, 0.9);
+    for (let i = 0; i < 3; i++) {
+      const ph = ((t * 0.7 + i / 3) % 1);
+      g.globalAlpha = 1 - ph; ell(360, 660, 120 + ph * 200, 26 + ph * 50); g.strokeStyle = '#8fd0ff'; g.lineWidth = 4; g.stroke();
+    }
+    g.globalAlpha = 1;
+    ell(360, 700, 180, 40); fs('#fff'); g.fillStyle = '#fff'; g.fillRect(180, 660, 360, 40); ell(360, 660, 180, 40); fs('#fff7fa');
+    line(180, 660, 180, 700); line(540, 660, 540, 700);
+    const k = backOut(t / 0.45);
+    g.save(); g.translate(360, 500); g.scale(k, k); adBox(-110, -150, 220, 290, T, 40); g.restore();
+    sparkles(360, 480, 230, 8, T, 1);
+    g.globalAlpha = clamp((t - 0.5) / 0.4, 0, 1);
+    popText('하루 한 번,', 360, 840, 78, '#ff7aa8', 0, 1);
+    popText('물광 충전 💧', 360, 945, 92, '#4aa8ff', 0, 1);
+    g.font = `36px ${FONT_T}`; g.textAlign = 'center'; g.fillStyle = '#6b4a42'; g.fillText('촉촉함이 오래가는 수분 크림', 360, 1040);
+    g.globalAlpha = 1;
+    return {};
+  } },
+  { d: 2.5, sfx: [[0.1, 'pop']], draw(t, T) {
+    pastelBurst(360, 600, '#ffe3ea', '#ffd6e2', T);
+    bean({ who: 'hana', x: 200, y: 880, s: 0.9, t: T, glow: 1, happy: true, armR: 0.6 + Math.sin(T * 10) * 0.25 });
+    bean({ who: 'jiu', x: 520, y: 880, s: 0.9, t: T, glow: 1, happy: true, armL: 0.6 + Math.sin(T * 10 + 1) * 0.25 });
+    const k = backOut(t / 0.4);
+    g.save(); g.translate(360, 400); g.scale(k, k); adBox(-150, -60, 300, 120, T, 40); g.restore();
+    popText('지금 만나보세요!', 360, 580, 66, '#ff7aa8', -0.03, backOut((t - 0.25) / 0.4));
+    return {};
+  } },
+];
+
+// Gibberish "옹알옹알" speech: one blip per Hangul syllable, pauses at spaces/punctuation.
+function babblePlan(text, d) {
+  const toks = Array.from(text).map(c => (/[가-힣]/.test(c) ? c : /[\s,…~.]/.test(c) ? ' ' : null)).filter(Boolean);
+  const units = toks.reduce((n, c) => n + (c === ' ' ? 0.6 : 1), 0);
+  const step = Math.min(0.115, (d - 0.25) / Math.max(units, 1));
+  let at = 0; const syl = [];
+  for (const c of toks) { if (c === ' ') at += step * 0.6; else { syl.push({ c, at }); at += step; } }
+  return { syl, step, dur: at };
+}
+
+let acc = 0;
+const LINES = [], EVENTS = [];
+for (const s of SHOTS) {
+  s.t0 = acc;
+  (s.lines || []).forEach(([a, b, who, text, side]) => {
+    LINES.push({ t0: acc + a, t1: acc + b, talk1: acc + a + babblePlan(text, b - a).dur, who, text, side: side || 1 });
+    EVENTS.push({ t: acc + a, type: 'babble', who, text, d: b - a });
+  });
+  (s.sfx || []).forEach(([a, type, d]) => EVENTS.push({ t: acc + a, type, d }));
+  acc += s.d;
+}
+const DUR = acc;
+
+function drawFrame(T) {
+  T = clamp(T, 0, DUR - 1e-3);
+  let shot = SHOTS[0];
+  for (const s of SHOTS) if (T >= s.t0) shot = s;
+  const say = who => LINES.some(l => l.who === who && T >= l.t0 && T < l.talk1);
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  g.fillStyle = '#000'; g.fillRect(0, 0, W, H);
+  const anchors = shot.draw(T - shot.t0, T, say) || {};
+  for (const l of LINES) {
+    if (l.who === 'n' || T < l.t0 || T >= l.t1 || !anchors[l.who]) continue;
+    const k = Math.min(backOut((T - l.t0) / 0.25), clamp((l.t1 - T) / 0.12, 0, 1));
+    speechBubble(l.text, anchors[l.who].x, anchors[l.who].y, l.side, k);
+  }
+  // ad disclosure tag
+  g.font = `22px ${FONT_T}`; rr(18, 16, 64, 34, 8); g.fillStyle = 'rgba(30,20,20,.75)'; g.fill();
+  g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('광고', 50, 34);
+}
+
+// ---------- audio ----------
+const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+function noiseBuf(ac) {
+  if (ac._noise) return ac._noise;
+  const b = ac.createBuffer(1, ac.sampleRate * 2, ac.sampleRate), d = b.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  return (ac._noise = b);
+}
+function env(ac, out, t, a, hold, rel, peak) {
+  const gn = ac.createGain();
+  gn.gain.setValueAtTime(0, t); gn.gain.linearRampToValueAtTime(peak, t + a);
+  gn.gain.setValueAtTime(peak, t + a + hold); gn.gain.exponentialRampToValueAtTime(0.0001, t + a + hold + rel);
+  gn.connect(out); return gn;
+}
+function tone(ac, out, t, type, f0, f1, dur, peak) {
+  const o = ac.createOscillator(); o.type = type;
+  o.frequency.setValueAtTime(f0, t); if (f1 !== f0) o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+  o.connect(env(ac, out, t, 0.008, dur * 0.4, dur * 0.6, peak)); o.start(t); o.stop(t + dur + 0.05);
+}
+function noise(ac, out, t, dur, ftype, freq, q, peak, a = 0.01) {
+  const s = ac.createBufferSource(); s.buffer = noiseBuf(ac); s.loop = true;
+  const f = ac.createBiquadFilter(); f.type = ftype; f.frequency.value = freq; f.Q.value = q;
+  s.connect(f); f.connect(env(ac, out, t, a, dur * 0.5, dur * 0.5, peak)); s.start(t); s.stop(t + dur + 0.05);
+  return f;
+}
+
+const SYNTH = {
+  babble(ac, out, t, e) {
+    // vowel formants (F1, F2) by Hangul medial vowel; sawtooth through two band-passes reads as a cute "voice"
+    const F = { a: [850, 1300], e: [520, 1900], eo: [620, 1050], o: [460, 820], u: [350, 900], eu: [400, 1450], i: [320, 2300] };
+    const MED = ['a', 'e', 'a', 'e', 'eo', 'e', 'eo', 'e', 'o', 'a', 'e', 'e', 'o', 'u', 'eo', 'e', 'i', 'u', 'eu', 'i', 'i'];
+    const base = e.who === 'h' ? 440 : 340, end = /[?]/.test(e.text) ? 1.35 : /!/.test(e.text) ? 1.15 : /…/.test(e.text) ? 0.85 : 1;
+    const { syl, step } = babblePlan(e.text, e.d);
+    syl.forEach(({ c, at }, i) => {
+      const code = c.charCodeAt(0) - 0xac00, [f1, f2] = F[MED[Math.floor((code % 588) / 28)]];
+      const last = i === syl.length - 1, p = base * (1 + 0.1 * Math.sin(i * 1.9) + (rnd(code) - 0.5) * 0.12) * (last ? end : 1);
+      const st = t + at, dur = step * 0.92;
+      const o = ac.createOscillator(); o.type = 'sawtooth';
+      o.frequency.setValueAtTime(p * (last && end > 1 ? 0.92 : 1.05), st); o.frequency.linearRampToValueAtTime(p * (last && end > 1 ? 1.08 : 0.95), st + dur);
+      const amp = env(ac, out, st, 0.012, dur * 0.45, dur * 0.5, 0.55);
+      for (const [f, q, gn] of [[f1 * 1.15, 6, 1], [f2 * 1.15, 9, 0.5]]) {
+        const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = q;
+        const gg = ac.createGain(); gg.gain.value = gn; o.connect(bp); bp.connect(gg); gg.connect(amp);
+      }
+      o.start(st); o.stop(st + dur + 0.05);
+      tone(ac, out, st, 'sine', p, p * 0.97, dur, 0.07);
+      if (code % 28) tone(ac, out, st + dur * 0.55, 'sine', p * 0.9, p * 0.85, dur * 0.4, 0.06); // 받침: soft hum ("옹")
+    });
+  },
+  pop(ac, out, t) { tone(ac, out, t, 'sine', 400, 1000, 0.12, 0.35); },
+  ding(ac, out, t) { tone(ac, out, t, 'sine', 1568, 1568, 1.0, 0.22); tone(ac, out, t, 'sine', 2349, 2349, 0.8, 0.1); },
+  sparkle(ac, out, t) { [76, 81, 84, 88, 91, 96].forEach((m, i) => tone(ac, out, t + i * 0.06, 'sine', mtof(m), mtof(m), 0.35, 0.09)); },
+  whoosh(ac, out, t) { const f = noise(ac, out, t, 0.5, 'bandpass', 600, 1.2, 0.35, 0.15); f.frequency.setValueAtTime(400, t); f.frequency.exponentialRampToValueAtTime(2400, t + 0.5); },
+  squish(ac, out, t) { const f = noise(ac, out, t, 0.35, 'lowpass', 900, 6, 0.4, 0.03); f.frequency.setValueAtTime(1400, t); f.frequency.exponentialRampToValueAtTime(300, t + 0.35); },
+  splash(ac, out, t) { noise(ac, out, t, 0.9, 'highpass', 1500, 0.7, 0.3, 0.01); [72, 79, 84].forEach((m, i) => tone(ac, out, t + 0.1 + i * 0.08, 'sine', mtof(m) * 1.5, mtof(m), 0.25, 0.12)); },
+  gloom(ac, out, t, e) {
+    // slow descending minor notes for the "bad skin" open
+    [[64, 0], [62, 0.9], [60, 1.8], [59, 2.7]].forEach(([m, dt]) => { tone(ac, out, t + dt, 'triangle', mtof(m - 12), mtof(m - 12), 0.8, 0.14); tone(ac, out, t + dt, 'sine', mtof(m), mtof(m), 0.7, 0.06); });
+  },
+  bgm(ac, out, t, e) {
+    // bright bell-pop loop: F - G - Em - Am
+    const beat = 60 / 116, prog = [[53, 57, 60, 64], [55, 59, 62, 67], [52, 55, 59, 64], [57, 60, 64, 67]];
+    const mel = [72, 76, 79, 77, 76, 74, 72, 74, 76, 79, 81, 79];
+    for (let i = 0; i * beat / 2 < e.d; i++) {
+      const nt = t + (i * beat) / 2;
+      if (nt < ac.currentTime + 0.02) continue;
+      const fade = clamp((e.d - (i * beat) / 2) / 1.5, 0, 1), ch = prog[Math.floor(i / 8) % 4];
+      if (i % 4 === 0) tone(ac, out, nt, 'triangle', mtof(ch[0] - 12), mtof(ch[0] - 12), beat * 1.2, 0.12 * fade);
+      if (i % 2 === 1) ch.slice(1).forEach(n => tone(ac, out, nt, 'sine', mtof(n + 12), mtof(n + 12), 0.18, 0.025 * fade));
+      if (i % 2 === 0 || rnd(i) > 0.6) { const n = mel[i % mel.length]; tone(ac, out, nt, 'sine', mtof(n + 12), mtof(n + 12), 0.25, 0.045 * fade); }
+      if (i % 4 === 2) noise(ac, out, nt, 0.05, 'highpass', 6000, 1, 0.05 * fade, 0.002);
+    }
+  },
+};
+
+function schedule(ac, out, base, from) {
+  for (const e of EVENTS) {
+    if (!SYNTH[e.type]) continue;
+    if (e.type === 'bgm' ? e.t + e.d < from : e.t < from) continue;
+    SYNTH[e.type](ac, out, base + e.t, e);
+  }
+}
+function master(ac) {
+  const comp = ac.createDynamicsCompressor(), gn = ac.createGain();
+  gn.gain.value = 0.9; gn.connect(comp); comp.connect(ac.destination); return gn;
+}
+
+window.renderAudioWav = async () => {
+  const sr = 44100, oac = new OfflineAudioContext(2, Math.ceil(sr * DUR), sr);
+  schedule(oac, master(oac), 0, 0);
+  const buf = await oac.startRendering();
+  const n = buf.length, L = buf.getChannelData(0), R = buf.getChannelData(1);
+  const out = new DataView(new ArrayBuffer(44 + n * 4));
+  const str = (o, s) => [...s].forEach((c, i) => out.setUint8(o + i, c.charCodeAt(0)));
+  str(0, 'RIFF'); out.setUint32(4, 36 + n * 4, true); str(8, 'WAVEfmt '); out.setUint32(16, 16, true);
+  out.setUint16(20, 1, true); out.setUint16(22, 2, true); out.setUint32(24, sr, true); out.setUint32(28, sr * 4, true);
+  out.setUint16(32, 4, true); out.setUint16(34, 16, true); str(36, 'data'); out.setUint32(40, n * 4, true);
+  for (let i = 0; i < n; i++) {
+    out.setInt16(44 + i * 4, clamp(L[i], -1, 1) * 32767, true);
+    out.setInt16(46 + i * 4, clamp(R[i], -1, 1) * 32767, true);
+  }
+  const bytes = new Uint8Array(out.buffer); let s = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(s);
+};
+window.drawFrame = drawFrame;
+window.DUR = DUR;
+
+// ---------- player ----------
+const btn = document.getElementById('play'), seek = document.getElementById('seek'), timeEl = document.getElementById('time'), sndBtn = document.getElementById('snd');
+let playing = false, cur = 0, startPerf = 0, ac = null, muted = false;
+const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+
+function stopAudio() { if (ac) { ac.close(); ac = null; } }
+function startAudio() {
+  stopAudio();
+  if (muted) return;
+  ac = new (window.AudioContext || window.webkitAudioContext)();
+  schedule(ac, master(ac), ac.currentTime + 0.05 - cur, cur);
+}
+function play() {
+  if (cur >= DUR - 0.05) cur = 0;
+  playing = true; startPerf = performance.now() - cur * 1000; btn.textContent = '⏸ 정지';
+  startAudio(); requestAnimationFrame(tick);
+}
+function pause() { playing = false; btn.textContent = '▶ 재생'; stopAudio(); }
+function render() { drawFrame(cur); seek.value = Math.round((cur / DUR) * 1000); timeEl.textContent = `${fmt(cur)} / ${fmt(DUR)}`; }
+function tick() {
+  if (!playing) return;
+  cur = (performance.now() - startPerf) / 1000;
+  if (cur >= DUR) { cur = DUR; pause(); }
+  render();
+  if (playing) requestAnimationFrame(tick);
+}
+btn.onclick = () => (playing ? pause() : play());
+cv.onclick = () => (playing ? pause() : play());
+seek.oninput = () => { cur = (seek.value / 1000) * DUR; if (playing) { startPerf = performance.now() - cur * 1000; startAudio(); } render(); };
+sndBtn.onclick = () => { muted = !muted; sndBtn.textContent = muted ? '🔇' : '🔊'; if (playing) startAudio(); };
+
+// Korean webfonts arrive in unicode-range subsets, so preload every string the film draws.
+const ALL_TEXT = LINES.map(l => l.text).join('') + '광고촉촉물광!하루한번,충전함이오래가는수분크림지금만나보세요';
+window.ready = Promise.all([document.fonts.load(`40px 'Jua'`, ALL_TEXT)]).catch(() => {}).then(() => {
+  cur = 9.5; render(); cur = 0;
+  timeEl.textContent = `${fmt(0)} / ${fmt(DUR)}`; seek.value = 0;
+});
+</script>
+</body>
+</html>
