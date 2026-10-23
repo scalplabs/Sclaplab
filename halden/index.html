@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Halden — Objects of Light</title>
+<meta name="description" content="Halden makes objects of light by hand in Seoul. Forty editions a year.">
+<style>
+@font-face{font-family:"Instrument Serif";src:url(fonts/serif.woff2) format("woff2");font-weight:400;font-style:normal;font-display:block}
+@font-face{font-family:"Instrument Serif";src:url(fonts/serif-italic.woff2) format("woff2");font-weight:400;font-style:italic;font-display:block}
+@font-face{font-family:"Inter";src:url(fonts/inter.woff2) format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"JetBrains Mono";src:url(fonts/mono.woff2) format("woff2");font-weight:400;font-display:block}
+
+:root{
+  --ink:#0d0c0a;
+  --ink-2:#14120f;
+  --bone:#ebe5da;
+  --bone-dim:#8b8377;
+  --line:rgba(235,229,218,.08);
+  --line-2:rgba(235,229,218,.16);
+  --tungsten:#ff8a3d;
+  --serif:"Instrument Serif",ui-serif,Georgia,serif;
+  --sans:"Inter",ui-sans-serif,system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+  --gutter:40px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ink);color:var(--bone)}
+body{font-family:var(--sans);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+html.smooth,html.smooth body{overflow:hidden;height:100%}
+html.smooth *{cursor:none}
+a{color:inherit;text-decoration:none}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase}
+.dim{color:var(--bone-dim)}
+
+/* chrome */
+#grain{position:fixed;inset:-50%;z-index:60;pointer-events:none;opacity:.07;mix-blend-mode:overlay}
+#glow{position:fixed;left:0;top:0;width:1100px;height:1100px;margin:-550px 0 0 -550px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,138,61,.20) 0%,rgba(255,110,40,.07) 35%,transparent 65%);
+  pointer-events:none;z-index:1;mix-blend-mode:screen;will-change:transform,opacity}
+#cursor-dot,#cursor-ring{position:fixed;left:0;top:0;pointer-events:none;z-index:80;will-change:transform}
+#cursor-dot{width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:var(--bone)}
+#cursor-ring{border:1px solid rgba(235,229,218,.55);border-radius:999px;display:grid;place-items:center;overflow:hidden}
+#cursor-ring span{font-family:var(--serif);font-style:italic;font-size:22px;color:var(--ink);white-space:nowrap}
+html:not(.smooth) #cursor-dot,html:not(.smooth) #cursor-ring{display:none}
+
+.grid-lines{position:fixed;inset:0 var(--gutter);display:grid;grid-template-columns:repeat(6,1fr);pointer-events:none;z-index:0}
+.grid-lines i{border-left:1px solid var(--line);transform-origin:top}
+.grid-lines i:last-child{border-right:1px solid var(--line)}
+
+header{position:fixed;inset:0 0 auto 0;z-index:50;display:grid;grid-template-columns:repeat(6,1fr);padding:26px var(--gutter);align-items:baseline;mix-blend-mode:difference}
+.wordmark{font-family:var(--serif);font-size:28px;letter-spacing:-.01em;line-height:1}
+.wordmark sup{font-family:var(--mono);font-size:9px;letter-spacing:.06em;vertical-align:top;margin-left:4px;position:relative;top:4px}
+header nav{grid-column:3/5;display:flex;gap:34px}
+header nav a,header .end a{display:inline-block;font-size:13px;letter-spacing:.01em}
+header .clock{grid-column:5}
+header .end{grid-column:6;justify-self:end}
+
+#smooth{position:relative;z-index:2;will-change:transform}
+html.smooth #smooth{position:fixed;inset:0 0 auto 0}
+
+/* hero */
+.hero{position:relative;height:100vh;min-height:720px;padding:0 var(--gutter)}
+.headline{position:absolute;left:var(--gutter);top:19vh;font-family:var(--serif);font-weight:400;font-size:15.6vw;line-height:.86;letter-spacing:-.035em;white-space:nowrap}
+.headline .line{display:block;overflow:hidden;padding:0 .1em .1em;margin:0 -.1em -.1em}
+.headline .ch{display:inline-block;padding:0 .08em;margin:0 -.08em;color:transparent;-webkit-background-clip:text;background-clip:text;background-repeat:no-repeat;will-change:transform}
+.headline .it{font-style:italic}
+.hero .note{position:absolute;right:var(--gutter);top:26vh;width:calc((100vw - 80px)/6*2 - 20px);display:grid;grid-template-columns:auto 1fr;gap:6px 22px}
+.hero .note .rule{grid-column:1/-1;height:1px;background:var(--line-2);margin:4px 0 10px;transform-origin:left}
+.hero .foot{position:absolute;left:var(--gutter);right:var(--gutter);bottom:30px;display:grid;grid-template-columns:repeat(6,1fr);align-items:end}
+.hero .foot p{grid-column:1/3;max-width:300px;font-size:14px;color:var(--bone-dim)}
+.hero .foot p em{font-family:var(--serif);font-size:17px;color:var(--bone)}
+.hero .foot .readout{grid-column:3/5;display:flex;gap:28px}
+.hero .foot .scroll{grid-column:6;justify-self:end;display:flex;align-items:center;gap:12px}
+.hero .foot .scroll b{display:block;width:56px;height:1px;background:var(--line-2);position:relative;overflow:hidden}
+.hero .foot .scroll b::after{content:"";position:absolute;inset:0;background:var(--bone);transform:translateX(var(--sx,-100%))}
+
+/* objects */
+.objects{position:relative}
+.pin{position:relative;height:100vh;overflow:hidden}
+html:not(.smooth) .pin{position:sticky;top:0}
+.objects .side{position:absolute;left:var(--gutter);top:0;bottom:0;width:30vw;padding-top:18vh;z-index:3;display:flex;flex-direction:column}
+.objects .side::before{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:calc(-1 * var(--gutter));right:-5vw;background:linear-gradient(90deg,var(--ink) 78%,rgba(13,12,10,0))}
+.objects h2{font-family:var(--serif);font-weight:400;font-size:9vw;line-height:.85;letter-spacing:-.03em}
+.objects h2 sup{font-family:var(--mono);font-size:12px;letter-spacing:.06em;vertical-align:top;margin-left:10px;position:relative;top:1.4vw;color:var(--bone-dim)}
+.objects .side p{margin-top:34px;max-width:300px;color:var(--bone-dim)}
+.objects .progress{margin-top:auto;margin-bottom:34px;display:flex;align-items:center;gap:14px}
+.objects .progress b{width:140px;height:1px;background:var(--line-2);position:relative;overflow:hidden}
+.objects .progress b i{position:absolute;inset:0;background:var(--bone);transform-origin:left;transform:scaleX(0)}
+.track{position:absolute;top:0;bottom:0;left:0;display:flex;gap:2vw;align-items:center;padding-left:36vw;will-change:transform}
+.card{flex:0 0 29vw;display:block}
+.card .visual{position:relative;height:66vh;background:var(--ink-2);overflow:hidden;transform-style:preserve-3d;will-change:transform}
+.card .wall{position:absolute;inset:0;background:radial-gradient(ellipse 60% 55% at 50% 46%,rgba(255,138,61,.16),transparent 70%);opacity:var(--on)}
+.card .floor{position:absolute;left:0;right:0;bottom:0;height:24%;background:linear-gradient(to bottom,transparent,rgba(0,0,0,.35));border-top:1px solid rgba(235,229,218,.04)}
+.card .tag{position:absolute;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:rgba(235,229,218,.42)}
+.card .tag.tl{left:18px;top:16px}.card .tag.tr{right:18px;top:16px}.card .tag.bl{left:18px;bottom:16px}.card .tag.br{right:18px;bottom:16px}
+.card .lamp{position:absolute;left:50%;top:46%;width:0;height:0;filter:brightness(calc(.62 + .5*var(--on))) saturate(calc(.85 + .25*var(--on)))}
+.card .lamp>*{position:absolute}
+.card .meta{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:baseline;padding-top:16px;border-top:1px solid var(--line-2);margin-top:14px}
+.card .meta h3{font-family:var(--serif);font-weight:400;font-size:34px;line-height:1}
+.card .meta h3 i{font-size:22px;color:var(--bone-dim);margin-left:8px}
+
+.cord{left:-.5px;width:1px;background:linear-gradient(#2c2823,#4a433a)}
+.pool{border-radius:50%;background:radial-gradient(ellipse,rgba(255,150,70,.32),transparent 68%);opacity:calc(.4 + .6*var(--on))}
+.orbe .cord{top:-46vh;height:calc(46vh - 125px)}
+.orbe .body{left:-125px;top:-125px;width:250px;height:250px;border-radius:50%;
+  background:radial-gradient(circle at 42% 36%,#fffaf2 0%,#ffe6bb 16%,#ffb766 42%,#d0631f 74%,#5e240a 100%);
+  box-shadow:0 0 70px 14px rgba(255,160,80,.42),0 0 260px 90px rgba(255,120,40,calc(.08 + .14*var(--on)))}
+.orbe .pool{left:-220px;top:180px;width:440px;height:70px}
+.lune .body{left:-160px;top:-90px;width:320px;height:160px;border-radius:160px 160px 4px 4px;
+  background:radial-gradient(ellipse 70% 120% at 50% 100%,#fff6e4 0%,#ffcb86 30%,#c1621f 72%,#3b1806 100%);
+  box-shadow:0 30px 90px 6px rgba(255,150,70,.38)}
+.lune .stem{left:-1px;top:70px;width:2px;height:150px;background:linear-gradient(#5b4a35,#2a241d)}
+.lune .base{left:-70px;top:218px;width:140px;height:8px;border-radius:4px;background:#2a251f}
+.lune .pool{left:-260px;top:150px;width:520px;height:90px}
+.tige .body{left:-26px;top:-200px;width:52px;height:400px;border-radius:26px;
+  background:linear-gradient(90deg,#6e3210 0%,#e98b44 24%,#ffe9c6 46%,#fffaf0 52%,#ffc27c 72%,#7a3912 100%);
+  box-shadow:0 0 60px 10px rgba(255,150,70,.42),0 0 200px 60px rgba(255,120,40,calc(.06 + .12*var(--on)))}
+.tige .pool{left:-180px;top:200px;width:360px;height:60px}
+.anneau .body{left:-150px;top:-150px;width:300px;height:300px;border-radius:50%;
+  background:radial-gradient(circle,transparent 0 55%,#d36a24 58.5%,#ffe3b8 61.5%,#fffaf0 63%,#ffbf73 66%,#9a4515 69.5%,transparent 72%);
+  box-shadow:0 0 80px 4px rgba(255,150,70,.32),inset 0 0 80px 4px rgba(255,150,70,.22)}
+.anneau .cord{top:-46vh;height:calc(46vh - 148px)}
+.anneau .pool{left:-220px;top:200px;width:440px;height:66px}
+.card.more .visual{display:grid;place-items:center;background:transparent;border:1px solid var(--line-2)}
+.card.more .visual span{font-family:var(--serif);font-size:56px;line-height:1;text-align:center}
+.card.more .visual span i{display:block;font-size:30px;color:var(--bone-dim);margin-top:10px}
+
+/* marquee */
+.marquee{position:relative;padding:12vh 0 8vh;overflow:hidden}
+.marquee .row{display:flex;white-space:nowrap;font-family:var(--serif);font-size:15vw;line-height:.95;letter-spacing:-.03em;will-change:transform}
+.marquee .row span{padding-right:.35em}
+.marquee .row.it{font-style:italic}
+.marquee .row.out{color:transparent;-webkit-text-stroke:1px rgba(235,229,218,.5)}
+.marquee .row em{font-style:normal;font-family:var(--mono);font-size:.08em;letter-spacing:.1em;vertical-align:middle;color:var(--tungsten);margin:0 .6em}
+
+/* closing */
+.closing{position:relative;padding:18vh var(--gutter) 20vh;display:grid;grid-template-columns:repeat(6,1fr)}
+.closing .label{grid-column:1;padding-top:1.4vw}
+.closing p{grid-column:2/7;font-family:var(--serif);font-size:5.4vw;line-height:1.02;letter-spacing:-.02em}
+.closing p .w{display:inline-block;margin-right:.22em}
+.closing p .w.it{font-style:italic}
+footer{position:relative;padding:0 var(--gutter) 0;overflow:hidden}
+footer .cols{display:grid;grid-template-columns:repeat(6,1fr);padding:28px 0;border-top:1px solid var(--line-2)}
+footer .cols div{display:flex;flex-direction:column;gap:6px}
+footer .big{font-family:var(--serif);font-size:33vw;line-height:.74;letter-spacing:-.05em;margin:2vh 0 0 -.04em;color:var(--bone)}
+
+@media (max-width:760px){
+  :root{--gutter:18px}
+  header{grid-template-columns:1fr auto}header nav,header .clock{display:none}
+  .headline{font-size:21vw;top:22vh}
+  .hero .note{display:none}
+  .hero .foot{grid-template-columns:1fr auto}.hero .foot .readout{display:none}.hero .foot p{grid-column:1}.hero .foot .scroll{grid-column:2}
+  .objects .side{position:relative;width:auto;padding-top:12vh}
+  .track{position:relative;padding-left:var(--gutter)}.card{flex-basis:78vw}
+  .closing{grid-template-columns:1fr}.closing p{grid-column:1;font-size:10vw}
+}
+</style>
+</head>
+<body>
+<canvas id="grain"></canvas>
+<div id="glow"></div>
+<div id="cursor-ring"><span></span></div>
+<div id="cursor-dot"></div>
+<div class="grid-lines" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+<header>
+  <a class="wordmark" href="#top" data-intro>Halden<sup>®</sup></a>
+  <nav>
+    <a href="#objects" data-cursor="link" data-intro>Objects</a>
+    <a href="#studio" data-cursor="link" data-intro>Studio</a>
+    <a href="#journal" data-cursor="link" data-intro>Journal</a>
+  </nav>
+  <span class="clock mono" data-intro>Seoul <span id="clock">18:42:07</span></span>
+  <span class="end" data-intro><a href="#cart" data-cursor="link">Bag (0)</a></span>
+</header>
+
+<main id="smooth">
+  <section class="hero" id="top">
+    <h1 class="headline" aria-label="Light, held still.">
+      <span class="line" data-text="Light,"></span>
+      <span class="line"><span class="seg it" data-text="held"></span><span class="seg" data-text=" still."></span></span>
+    </h1>
+    <div class="note mono" data-intro>
+      <span class="dim">Coll.</span><span>N°7 — Autumn / Winter 2026</span>
+      <span class="dim">Ed.</span><span>40 pieces, numbered</span>
+      <span class="dim">Temp.</span><span>2700 K, dimmable</span>
+      <span class="rule"></span>
+      <span class="dim">→</span><span>Objects of light, blown and turned by hand</span>
+    </div>
+    <div class="foot">
+      <p data-intro>A small studio in Seongsu making lamps <em>slowly,</em> in quantities we can still sign by hand.</p>
+      <div class="readout mono dim" data-intro><span id="rx">X 0000</span><span id="ry">Y 0000</span><span id="rs">S 0.000</span></div>
+      <span class="scroll mono" data-intro>Scroll <b></b></span>
+    </div>
+  </section>
+
+  <section class="objects" id="objects">
+    <div class="pin">
+      <div class="side">
+        <h2>Objects<sup>(04)</sup></h2>
+        <p>Four forms for the hours after dark. Opal glass, brushed brass, a single warm source each.</p>
+        <div class="progress mono"><span id="pi">01</span><b><i id="pb"></i></b><span class="dim">04</span></div>
+      </div>
+      <div class="track">
+        <a class="card" href="#orbe" data-cursor="view">
+          <div class="visual"><div class="wall"></div><div class="floor"></div>
+            <div class="lamp orbe"><span class="pool"></span><span class="cord"></span><span class="body"></span></div>
+            <span class="tag tl">N°01</span><span class="tag tr">2700K</span><span class="tag bl">Opal glass / Brass</span><span class="tag br">Ø 250</span>
+          </div>
+          <div class="meta"><span class="mono dim">01</span><h3>Orbe<i>pendant</i></h3><span class="mono">₩ 1,480,000</span></div>
+        </a>
+        <a class="card" href="#lune" data-cursor="view">
+          <div class="visual"><div class="wall"></div><div class="floor"></div>
+            <div class="lamp lune"><span class="pool"></span><span class="stem"></span><span class="base"></span><span class="body"></span></div>
+            <span class="tag tl">N°02</span><span class="tag tr">2400K</span><span class="tag bl">Cast glass / Steel</span><span class="tag br">W 320</span>
+          </div>
+          <div class="meta"><span class="mono dim">02</span><h3>Lune<i>table</i></h3><span class="mono">₩ 960,000</span></div>
+        </a>
+        <a class="card" href="#tige" data-cursor="view">
+          <div class="visual"><div class="wall"></div><div class="floor"></div>
+            <div class="lamp tige"><span class="pool"></span><span class="body"></span></div>
+            <span class="tag tl">N°03</span><span class="tag tr">2700K</span><span class="tag bl">Opal tube / Brass caps</span><span class="tag br">H 400</span>
+          </div>
+          <div class="meta"><span class="mono dim">03</span><h3>Tige<i>floor</i></h3><span class="mono">₩ 1,220,000</span></div>
+        </a>
+        <a class="card" href="#anneau" data-cursor="view">
+          <div class="visual"><div class="wall"></div><div class="floor"></div>
+            <div class="lamp anneau"><span class="pool"></span><span class="cord"></span><span class="body"></span></div>
+            <span class="tag tl">N°04</span><span class="tag tr">3000K</span><span class="tag bl">Bent tube / Linen cord</span><span class="tag br">Ø 300</span>
+          </div>
+          <div class="meta"><span class="mono dim">04</span><h3>Anneau<i>pendant</i></h3><span class="mono">₩ 1,740,000</span></div>
+        </a>
+        <a class="card more" href="#all" data-cursor="link">
+          <div class="visual"><span>All objects<i>→ 12 in total</i></span></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="marquee" aria-hidden="true">
+    <div class="row it" data-dir="-1"></div>
+    <div class="row out" data-dir="1"></div>
+  </section>
+
+  <section class="closing" id="studio">
+    <span class="label mono dim">(Studio)</span>
+    <p data-words="Every piece is switched on for the first time by the *hands* that made it — in a dark room, at the end of a long day."></p>
+  </section>
+
+  <footer>
+    <div class="cols mono">
+      <div><span class="dim">Studio</span><span>Seongsu-dong, Seoul</span></div>
+      <div><span class="dim">Hours</span><span>Thu—Sat, 14—21</span></div>
+      <div></div><div></div>
+      <div><span class="dim">Index</span><span>Instagram / Are.na</span></div>
+      <div style="align-items:flex-end"><span class="dim">©</span><span>2026</span></div>
+    </div>
+    <div class="big">Halden</div>
+  </footer>
+</main>
+
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const easeOutExpo = t => t >= 1 ? 1 : 1 - Math.pow(2, -10 * t);
+  const easeOutCubic = t => 1 - Math.pow(1 - clamp(t, 0, 1), 3);
+  const prog = (t, start, dur) => clamp((t - start) / dur, 0, 1);
+
+  const root = document.documentElement;
+  const fine = matchMedia('(pointer: fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (fine) root.classList.add('smooth');
+
+  // --- split headline into chars
+  const headline = $('.headline');
+  const chars = [];
+  const split = (el, italic) => {
+    for (const c of el.dataset.text) {
+      const s = document.createElement('span');
+      s.className = 'ch' + (italic ? ' it' : '');
+      s.textContent = c === ' ' ? ' ' : c;
+      el.appendChild(s);
+      chars.push({ el: s, x: 0, y: 0, w: 0, h: 0, dy: 0, rot: 0 });
+    }
+  };
+  $$('.headline .line').forEach(line => {
+    if (line.dataset.text) split(line, false);
+    else $$('.seg', line).forEach(seg => split(seg, seg.classList.contains('it')));
+  });
+
+  // --- closing words
+  const wordsEl = $('.closing p');
+  const words = wordsEl.dataset.words.split(' ').map(w => {
+    const s = document.createElement('span');
+    const it = w.startsWith('*');
+    s.className = 'w' + (it ? ' it' : '');
+    s.textContent = w.replace(/\*/g, '');
+    wordsEl.appendChild(s);
+    return s;
+  });
+
+  // --- marquee rows
+  const rows = $$('.marquee .row').map((row, i) => {
+    const text = i === 0 ? 'Made slowly' : 'in small numbers';
+    for (let k = 0; k < 4; k++) {
+      const s = document.createElement('span');
+      s.innerHTML = `${text}<em>N°7</em>`;
+      row.appendChild(s);
+    }
+    return { el: row, dir: +row.dataset.dir, x: 0, unit: 0 };
+  });
+
+  // --- grain tile
+  const grain = $('#grain');
+  const gctx = grain.getContext('2d');
+  const tile = document.createElement('canvas');
+  tile.width = tile.height = 220;
+  {
+    const t = tile.getContext('2d'), img = t.createImageData(220, 220);
+    let seed = 7;
+    const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    for (let i = 0; i < img.data.length; i += 4) {
+      const v = rnd() * 255;
+      img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
+      img.data[i + 3] = 255;
+    }
+    t.putImageData(img, 0, 0);
+  }
+
+  // --- state
+  const smoothEl = $('#smooth');
+  const ring = $('#cursor-ring'), ringLabel = $('span', ring), dot = $('#cursor-dot');
+  const glow = $('#glow');
+  const objects = $('.objects'), pin = $('.pin'), track = $('.track');
+  const cards = $$('.card').map(el => ({ el, visual: $('.visual', el), lamp: $('.lamp', el), on: .55, rx: 0, ry: 0, hover: 0 }));
+  const navLinks = $$('[data-cursor="link"]').map(el => ({ el, mx: 0, my: 0 }));
+  const intro = $$('[data-intro]');
+  const gridLines = $$('.grid-lines i');
+
+  const S = {
+    vw: innerWidth, vh: innerHeight,
+    mouse: { x: innerWidth * .62, y: innerHeight * .58, seen: false },
+    ring: { x: innerWidth * .62, y: innerHeight * .58, w: 36, h: 36, fill: 0, label: 0, scale: 1 },
+    light: { x: innerWidth * .62, y: innerHeight * .58 },
+    scroll: { target: 0, cur: 0, prev: 0, vel: 0, max: 0 },
+    pinStart: 0, pinLen: 0, trackOver: 0,
+    start: performance.now(), last: performance.now(),
+    pulse: 0,
+  };
+
+  function layout() {
+    S.vw = innerWidth; S.vh = innerHeight;
+    grain.width = Math.ceil(S.vw * 2); grain.height = Math.ceil(S.vh * 2);
+    const hw = headline.offsetWidth, hh = headline.offsetHeight;
+    chars.forEach(c => {
+      let x = 0, y = 0, n = c.el;
+      while (n && n !== headline) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
+      c.x = x; c.y = y; c.w = c.el.offsetWidth; c.h = c.el.offsetHeight;
+      c.el.style.backgroundSize = `${hw}px ${hh}px`;
+      c.el.style.backgroundPosition = `${-x}px ${-y}px`;
+    });
+    S.trackOver = Math.max(0, track.scrollWidth - S.vw);
+    if (fine) {
+      objects.style.height = `${S.vh + S.trackOver}px`;
+      S.pinStart = objects.offsetTop;
+      S.pinLen = S.trackOver;
+      S.scroll.max = smoothEl.offsetHeight - S.vh;
+      document.body.style.height = '';
+    } else {
+      objects.style.height = `${S.vh + S.trackOver}px`;
+      S.pinStart = objects.offsetTop; S.pinLen = S.trackOver;
+    }
+    rows.forEach(r => r.unit = r.el.firstElementChild.offsetWidth);
+  }
+
+  // --- input
+  addEventListener('mousemove', e => { S.mouse.x = e.clientX; S.mouse.y = e.clientY; S.mouse.seen = true; });
+  if (fine) {
+    addEventListener('wheel', e => {
+      e.preventDefault();
+      S.scroll.target = clamp(S.scroll.target + e.deltaY, 0, S.scroll.max);
+    }, { passive: false });
+    addEventListener('keydown', e => {
+      const step = { ArrowDown: 120, ArrowUp: -120, PageDown: S.vh * .9, PageUp: -S.vh * .9, ' ': S.vh * .9 }[e.key];
+      if (step) { e.preventDefault(); S.scroll.target = clamp(S.scroll.target + step, 0, S.scroll.max); }
+    });
+  }
+  addEventListener('mousedown', () => { S.pulse = 1; });
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    e.preventDefault();
+    const id = a.getAttribute('href').slice(1);
+    const dest = id === 'top' ? 0 : id === 'objects' ? S.pinStart : id === 'studio' ? $('#studio').offsetTop : null;
+    if (dest == null) return;
+    if (fine) S.scroll.target = clamp(dest, 0, S.scroll.max);
+    else scrollTo({ top: dest, behavior: 'smooth' });
+  });
+  addEventListener('resize', layout);
+
+  const seoul = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+  const clockEl = $('#clock'), rx = $('#rx'), ry = $('#ry'), rs = $('#rs'), pi = $('#pi'), pb = $('#pb');
+  const pad = n => String(Math.round(n)).padStart(4, '0');
+  let frame = 0, lastClock = '';
+
+  function tick(now) {
+    const dt = Math.min(64, now - S.last); S.last = now;
+    const k = f => 1 - Math.pow(1 - f, dt / 16.667);
+    const t = (now - S.start) / 1000;
+    frame++;
+
+    // scroll
+    const sc = S.scroll;
+    if (fine) sc.cur = lerp(sc.cur, sc.target, k(.085));
+    else sc.cur = scrollY;
+    if (Math.abs(sc.cur - sc.target) < .05 && fine) sc.cur = sc.target;
+    sc.vel = lerp(sc.vel, sc.cur - sc.prev, k(.2));
+    sc.prev = sc.cur;
+    if (fine) smoothEl.style.transform = `translate3d(0,${-sc.cur}px,0)`;
+    const vh = S.vh, vw = S.vw;
+    const heroP = clamp(sc.cur / vh, 0, 1);
+
+    // intro
+    intro.forEach((el, i) => {
+      const p = easeOutCubic(prog(t, .55 + i * .06, .9));
+      el.style.opacity = p;
+      el.style.transform = `translate3d(0,${(1 - p) * 14}px,0)`;
+    });
+    gridLines.forEach((el, i) => { el.style.transform = `scaleY(${easeOutExpo(prog(t, .1 + i * .07, 1.6))})`; });
+    $('.hero .note .rule').style.transform = `scaleX(${easeOutExpo(prog(t, 1.1, 1.2))})`;
+
+    // pointer smoothing
+    const m = S.mouse;
+    S.light.x = lerp(S.light.x, m.x, k(.09));
+    S.light.y = lerp(S.light.y, m.y, k(.09));
+
+    // headline: light + ripple
+    const hr = headline.getBoundingClientRect();
+    const lx = S.light.x - hr.left, ly = S.light.y - hr.top;
+    const radius = 560 * (1 - heroP * .5);
+    const g = `radial-gradient(circle ${radius}px at ${lx.toFixed(1)}px ${ly.toFixed(1)}px,#fff4e4 0%,#efe2cf 16%,#9d9283 44%,#4d473f 78%,#3a3530 100%)`;
+    headline.style.setProperty('--g', g);
+    chars.forEach((c, i) => {
+      const cx = hr.left + c.x + c.w / 2, cy = hr.top + c.y + c.h * .55;
+      const d2 = (m.x - cx) ** 2 + (m.y - cy) ** 2;
+      const f = m.seen ? Math.exp(-d2 / (2 * 150 * 150)) : 0;
+      c.dy = lerp(c.dy, -f * 26, k(.12));
+      c.rot = lerp(c.rot, f * clamp((m.x - cx) / 90, -1, 1) * -4, k(.12));
+      const ip = easeOutExpo(prog(t, .15 + i * .045, 1.25));
+      const lineIdx = c.y > c.h * .5 ? 1 : 0;
+      const par = sc.cur * (lineIdx ? .18 : .32);
+      c.el.style.backgroundImage = g;
+      c.el.style.transform = `translate3d(0,${((1 - ip) * 112).toFixed(2)}%,0) translate3d(0,${(c.dy - par).toFixed(2)}px,0) rotate(${((1 - ip) * 7 + c.rot).toFixed(2)}deg)`;
+    });
+    headline.style.opacity = 1 - clamp((heroP - .35) / .55, 0, 1);
+    headline.style.filter = heroP > .3 ? `blur(${((heroP - .3) * 14).toFixed(2)}px)` : '';
+
+    // glow
+    glow.style.transform = `translate3d(${S.light.x}px,${S.light.y}px,0) scale(${1 + Math.sin(t * 1.3) * .03})`;
+    glow.style.opacity = (m.seen ? 1 : .6) * (1 - heroP * .85) * easeOutCubic(prog(t, .3, 1.5));
+
+    // readout + clock
+    rx.textContent = 'X ' + pad(m.x); ry.textContent = 'Y ' + pad(m.y);
+    rs.textContent = 'S ' + (sc.max ? sc.cur / sc.max : 0).toFixed(3);
+    $('.hero .foot .scroll').style.setProperty('--sx', `${((t * .6) % 2 - 1) * 100}%`);
+    const cs = seoul.format(new Date());
+    if (cs !== lastClock) { clockEl.textContent = cs; lastClock = cs; }
+
+    // pinned horizontal track
+    const local = sc.cur - S.pinStart;
+    const pp = S.pinLen ? clamp(local / S.pinLen, 0, 1) : 0;
+    if (fine) pin.style.transform = `translate3d(0,${clamp(local, 0, S.pinLen)}px,0)`;
+    const tx = -pp * S.trackOver;
+    track.style.transform = `translate3d(${tx}px,0,0)`;
+    pb.style.transform = `scaleX(${.25 + pp * .75})`;
+    pi.textContent = '0' + Math.min(4, 1 + Math.floor(pp * 3.999));
+
+    // hover hit-test
+    const hit = m.seen ? document.elementFromPoint(m.x, m.y) : null;
+    const target = hit && hit.closest('[data-cursor]');
+    const mode = target ? target.dataset.cursor : null;
+
+    cards.forEach((c, i) => {
+      const r = c.visual.getBoundingClientRect();
+      const isHover = target === c.el;
+      c.hover = lerp(c.hover, isHover ? 1 : 0, k(.1));
+      const nx = isHover ? ((m.x - r.left) / r.width - .5) : 0;
+      const ny = isHover ? ((m.y - r.top) / r.height - .5) : 0;
+      c.rx = lerp(c.rx, -ny * 9, k(.1));
+      c.ry = lerp(c.ry, nx * 11, k(.1));
+      // enter from the right: scale and settle
+      const cxN = (r.left + r.width / 2) / vw;
+      const enter = clamp((1.15 - cxN) / .45, 0, 1);
+      const sc0 = .86 + .14 * easeOutCubic(enter);
+      if (c.el.classList.contains('more')) { c.visual.style.transform = `scale(${sc0})`; return; }
+      c.on = lerp(c.on, .5 + .5 * c.hover, k(.08));
+      c.el.style.setProperty('--on', (c.on + Math.sin(t * 2 + i) * .015).toFixed(3));
+      c.visual.style.transform = `perspective(1400px) scale(${(sc0 * (1 + .025 * c.hover)).toFixed(4)}) rotateX(${c.rx.toFixed(2)}deg) rotateY(${c.ry.toFixed(2)}deg)`;
+      c.lamp.style.transform = `translate3d(${(c.ry * 2.2 + (cxN - .6) * -50).toFixed(2)}px,${(-c.rx * 1.6).toFixed(2)}px,0)`;
+    });
+
+    // magnetic links
+    navLinks.forEach(n => {
+      const on = target === n.el && !n.el.classList.contains('card');
+      let ox = 0, oy = 0;
+      if (on) {
+        const r = n.el.getBoundingClientRect();
+        ox = (m.x - (r.left + r.width / 2)) * .35; oy = (m.y - (r.top + r.height / 2)) * .35;
+      }
+      n.mx = lerp(n.mx, ox, k(.18)); n.my = lerp(n.my, oy, k(.18));
+      if (!n.el.classList.contains('card') && !n.el.hasAttribute('data-intro')) n.el.style.transform = `translate3d(${n.mx}px,${n.my}px,0)`;
+      else if (!n.el.classList.contains('card')) n.el.style.translate = `${n.mx}px ${n.my}px`;
+    });
+
+    // cursor
+    const R = S.ring;
+    let tw = 36, th = 36, tx2 = m.x, ty2 = m.y, fill = 0, lab = 0;
+    if (mode === 'link' && !target.classList.contains('card')) {
+      const r = target.getBoundingClientRect();
+      tw = r.width + 26; th = r.height + 16; tx2 = r.left + r.width / 2; ty2 = r.top + r.height / 2;
+    } else if (mode === 'view' || (target && target.classList.contains('more'))) {
+      tw = th = 112; fill = 1; lab = 1;
+    }
+    S.pulse = lerp(S.pulse, 0, k(.12));
+    R.x = lerp(R.x, tx2, k(.2)); R.y = lerp(R.y, ty2, k(.2));
+    R.w = lerp(R.w, tw, k(.16)); R.h = lerp(R.h, th, k(.16));
+    R.fill = lerp(R.fill, fill, k(.15)); R.label = lerp(R.label, lab, k(.15));
+    ring.style.width = R.w + 'px'; ring.style.height = R.h + 'px';
+    ring.style.transform = `translate3d(${R.x - R.w / 2}px,${R.y - R.h / 2}px,0) scale(${1 - S.pulse * .18})`;
+    ring.style.background = `rgba(235,229,218,${(R.fill * .96).toFixed(3)})`;
+    ring.style.borderColor = `rgba(235,229,218,${(.55 + R.fill * .45).toFixed(3)})`;
+    ringLabel.textContent = target && target.classList.contains('more') ? 'Open' : 'View';
+    ringLabel.style.opacity = R.label;
+    ringLabel.style.transform = `translateY(${(1 - R.label) * 14}px)`;
+    const dotOn = m.seen && mode !== 'view' ? 1 : 0;
+    dot.style.transform = `translate3d(${m.x}px,${m.y}px,0) scale(${dotOn ? 1 : 0})`;
+    ring.style.opacity = m.seen ? 1 : 0;
+
+    // marquee
+    const skew = clamp(sc.vel * .35, -14, 14);
+    rows.forEach((r, i) => {
+      r.x += (r.dir * (.6 + Math.abs(sc.vel) * .5)) * dt / 16.667;
+      const u = r.unit || 1;
+      const off = ((r.x + (i ? sc.cur * .25 : -sc.cur * .25)) % u + u) % u;
+      r.el.style.transform = `translate3d(${-off}px,0,0) skewX(${(-skew).toFixed(2)}deg)`;
+    });
+
+    // closing words
+    const wr = wordsEl.getBoundingClientRect();
+    const wp = clamp((vh * .85 - wr.top) / (wr.height + vh * .35), 0, 1);
+    words.forEach((w, i) => {
+      const local = clamp(wp * words.length * 1.15 - i, 0, 1);
+      w.style.opacity = (.12 + .88 * local).toFixed(3);
+      w.style.transform = `translate3d(0,${((1 - local) * 10).toFixed(2)}px,0)`;
+    });
+
+    // grain
+    if (frame % 2 === 0) {
+      gctx.fillStyle = gctx.createPattern(tile, 'repeat');
+      gctx.save();
+      gctx.translate((frame * 37) % 220, (frame * 91) % 220);
+      gctx.fillRect(-220, -220, grain.width + 440, grain.height + 440);
+      gctx.restore();
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  document.fonts.ready.then(() => {
+    layout();
+    S.start = S.last = performance.now();
+    requestAnimationFrame(tick);
+    root.dataset.ready = '1';
+  });
+})();
+</script>
+</body>
+</html>
