@@ -1,0 +1,1002 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>하객 주인공 쿠션</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
+<style>
+/* 30s vertical (9:16) B-grade cartoon cushion ad: crashing an ex's wedding, speech-bubble dialogue with babble voices, product hidden behind an "광고" mosaic. */
+:root{color-scheme:dark;--bg:#0e0e10;--panel:#18181c;--fg:#f1f1f1;--muted:#9a9aa3;--accent:#ff6fa8}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:'Jua',system-ui,sans-serif}
+.wrap{max-width:460px;margin:0 auto;padding:16px}
+h1{font-weight:400;font-size:22px;margin:4px 0 12px}
+h1 span{color:var(--accent)}
+canvas{width:100%;max-width:420px;margin:0 auto;aspect-ratio:9/16;display:block;background:#000;border-radius:12px;cursor:pointer}
+.bar{display:flex;gap:8px;align-items:center;margin-top:10px}
+button{font:inherit;font-size:16px;background:var(--panel);color:var(--fg);border:1px solid #2c2c33;border-radius:10px;padding:8px 14px;cursor:pointer;white-space:nowrap}
+button:hover{border-color:#4a4a55}
+input[type=range]{flex:1;accent-color:var(--accent);min-width:0}
+.time{font-variant-numeric:tabular-nums;color:var(--muted);font-size:14px;min-width:84px;text-align:right}
+p.note{color:var(--muted);font-size:14px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>스캘프 랩 애니 <span>하객 주인공 쿠션 (9:16 · 30초)</span></h1>
+  <canvas id="cv"></canvas>
+  <div class="bar">
+    <button id="play">▶ 재생</button>
+    <input id="seek" type="range" min="0" max="1000" value="0">
+    <span class="time" id="time">0:00 / 0:00</span>
+    <button id="snd">🔊</button>
+  </div>
+  <p class="note">화면을 눌러도 재생/정지돼요. 대사는 말풍선, 목소리는 옹알옹알 효과음이에요. 소리는 전부 브라우저에서 합성됩니다.</p>
+</div>
+<script>
+const W = 720, H = 1280;
+const cv = document.getElementById('cv');
+cv.width = W; cv.height = H;
+const g = cv.getContext('2d');
+
+const OUT = '#2a1a26';
+const FONT = "'Jua',sans-serif";
+const BPM = 124, BEAT = 60 / BPM;
+
+// ---------- math ----------
+function rnd(n) { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); }
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const ease = t => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+const easeOut = t => 1 - Math.pow(1 - clamp(t, 0, 1), 3);
+const backOut = t => { t = clamp(t, 0, 1); const c = 2.2; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); };
+
+// ---------- primitives ----------
+function ink(lw = 4) { g.strokeStyle = OUT; g.lineWidth = lw; g.lineJoin = 'round'; g.lineCap = 'round'; }
+function fs(fill, lw = 4) { if (fill) { g.fillStyle = fill; g.fill(); } ink(lw); g.stroke(); }
+function ell(x, y, rx, ry, rot = 0) { g.beginPath(); g.ellipse(x, y, Math.max(rx, 0.1), Math.max(ry, 0.1), rot, 0, Math.PI * 2); }
+function rr(x, y, w, h, r) { g.beginPath(); g.roundRect(x, y, w, h, r); }
+function line(x1, y1, x2, y2, lw = 4) { g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); ink(lw); g.stroke(); }
+
+function popText(txt, x, y, size, fill, rot = 0, sc = 1) {
+  if (sc <= 0) return;
+  g.save(); g.translate(x, y); g.rotate(rot); g.scale(sc, sc);
+  g.font = `${size}px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
+  g.lineWidth = size * 0.22; g.strokeStyle = OUT; g.strokeText(txt, 0, 0);
+  g.lineWidth = size * 0.11; g.strokeStyle = '#fff'; g.strokeText(txt, 0, 0);
+  g.fillStyle = fill; g.fillText(txt, 0, 0);
+  g.restore();
+}
+
+function star(x, y, r, col = '#fff6b0', rot = 0) {
+  g.save(); g.translate(x, y); g.rotate(rot); g.beginPath();
+  for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4, rad = i % 2 ? r * 0.32 : r; g.lineTo(Math.cos(a) * rad, Math.sin(a) * rad); }
+  g.closePath(); fs(col, 3); g.restore();
+}
+function sparkles(cx, cy, rad, n, T, k = 1) {
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2 + T * 0.6, tw = 0.5 + 0.5 * Math.sin(T * 6 + i * 2.1);
+    star(cx + Math.cos(a) * rad * (0.85 + rnd(i) * 0.3), cy + Math.sin(a) * rad * 0.8, (10 + 12 * tw) * k, i % 3 ? '#fff6b0' : '#ffc1dc', T + i);
+  }
+}
+function heart(x, y, s, col) {
+  g.save(); g.translate(x, y); g.scale(s, s); g.beginPath();
+  g.moveTo(0, 8); g.bezierCurveTo(-16, -6, -9, -20, 0, -11); g.bezierCurveTo(9, -20, 16, -6, 0, 8);
+  g.fillStyle = col; g.fill(); g.restore();
+}
+function bow(x, y, s, col) {
+  g.save(); g.translate(x, y); g.scale(s, s);
+  g.beginPath(); g.moveTo(0, 0); g.lineTo(-26, -16); g.lineTo(-26, 16); g.closePath(); fs(col, 3);
+  g.beginPath(); g.moveTo(0, 0); g.lineTo(26, -16); g.lineTo(26, 16); g.closePath(); fs(col, 3);
+  g.beginPath(); g.moveTo(-4, 4); g.lineTo(-12, 28); g.moveTo(4, 4); g.lineTo(12, 28); ink(5); g.strokeStyle = col; g.stroke();
+  ell(0, 0, 7, 7); fs(col, 3);
+  g.restore();
+}
+
+// Product placeholder: pixel mosaic with a "광고" tag, like a blurred-out brand.
+function adBox(x, y, w, h, T, label = 22) {
+  const cell = Math.max(10, Math.round(w / 9)), k = Math.floor(T * 5);
+  const pal = ['#ffc6d6', '#ffe9ef', '#f7a8c0', '#fff', '#e8d6ff', '#ffdbe6', '#d9c2f0'];
+  g.save(); rr(x, y, w, h, 6); g.clip();
+  for (let i = 0; i * cell < w; i++) for (let j = 0; j * cell < h; j++) {
+    g.fillStyle = pal[Math.floor(rnd(i * 17 + j * 31 + k * 0.37) * pal.length)];
+    g.fillRect(x + i * cell, y + j * cell, cell + 1, cell + 1);
+  }
+  g.restore();
+  rr(x, y, w, h, 6); fs(null, 4);
+  g.font = `${label}px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'middle';
+  const tw = g.measureText('광고').width + label;
+  rr(x + w / 2 - tw / 2, y + h / 2 - label * 0.8, tw, label * 1.6, label * 0.4);
+  g.fillStyle = 'rgba(30,20,20,.88)'; g.fill();
+  g.fillStyle = '#fff'; g.fillText('광고', x + w / 2, y + h / 2 + 1);
+}
+
+// ---------- characters ----------
+// Bean-bodied club girls: 루루 (pink twin tails, frills) and 쥬쥬 (black hime cut). Origin = body center, ~240 tall at s=1.
+const GIRL = {
+  ruru: { skin: '#fff1ec', outfit: '#ffb3cf', trim: '#fff', hair: '#ff8fc0', iris: '#c2407a', acc: '#1d1720' },
+  juju: { skin: '#fbefea', outfit: '#2b2430', trim: '#f4f0f6', hair: '#1f1a24', iris: '#7a3a92', acc: '#ff6fa8' },
+  saewoo: { skin: '#ffe9df', outfit: '#ffffff', trim: '#f1e6ff', hair: '#ff8a65', iris: '#c0582e', acc: '#f3c6d6' },
+};
+function shadowBlob(x, y, rx, hop = 0) {
+  g.save(); g.translate(x, y); g.scale(1, 0.2);
+  const r = rx * (1 - hop / 140), gr = g.createRadialGradient(0, 0, 0, 0, 0, r);
+  gr.addColorStop(0, 'rgba(20,0,20,.32)'); gr.addColorStop(1, 'rgba(20,0,20,0)');
+  g.fillStyle = gr; g.beginPath(); g.arc(0, 0, r, 0, Math.PI * 2); g.fill(); g.restore();
+}
+function bodyPath() {
+  g.beginPath(); g.moveTo(0, -120);
+  g.bezierCurveTo(86, -120, 96, -40, 92, 30); g.bezierCurveTo(90, 106, 60, 122, 0, 122);
+  g.bezierCurveTo(-60, 122, -90, 106, -92, 30); g.bezierCurveTo(-96, -40, -86, -120, 0, -120);
+}
+function girl(p) {
+  const c = GIRL[p.who], t = p.t || 0, ph = (t / BEAT) * Math.PI;
+  const hop = p.dance ? Math.abs(Math.sin(ph)) * 26 : p.hop ? Math.abs(Math.sin(t * 7)) * 20 : 0;
+  const sway = p.dance ? Math.sin(ph * 0.5 + (p.who === 'juju' ? 1.5 : 0)) * 0.1 : (p.lean || 0);
+  const sq = 1 + Math.sin(t * 3 + (p.who === 'juju' ? 1 : 0)) * 0.015;
+  if (!p.noShadow) shadowBlob(p.x, p.y + 134 * p.s, 100 * p.s, hop);
+  g.save(); g.translate(p.x, p.y - hop * p.s); g.rotate(sway); g.scale(p.s * (1 + 0.16 * (p.puffy || 0)), p.s * sq);
+  // platform shoes
+  rr(-60, 110, 46, 24, 8); fs(c.acc === '#1d1720' ? '#1d1720' : '#1d1720'); rr(14, 110, 46, 24, 8); fs('#1d1720');
+  // back hair
+  if (p.who === 'ruru') {
+    for (const sd of [-1, 1]) {
+      const sw = Math.sin(t * 4 + sd) * 8;
+      g.beginPath(); g.moveTo(sd * 66, -96);
+      g.bezierCurveTo(sd * 178, -96, sd * (182 + sw), 30, sd * (128 + sw), 120);
+      g.bezierCurveTo(sd * (148 + sw), 40, sd * 124, -36, sd * 60, -62); g.closePath(); fs(c.hair);
+      g.beginPath(); g.moveTo(sd * 120, -60); g.quadraticCurveTo(sd * 150, 0, sd * (136 + sw), 70); ink(2.5); g.stroke();
+    }
+  } else if (p.who === 'saewoo') {
+    // veil
+    g.save(); g.beginPath(); g.moveTo(-50, -126); g.bezierCurveTo(-210, -40, -200, 110, -160, 150); g.lineTo(160, 150); g.bezierCurveTo(200, 110, 210, -40, 50, -126); g.closePath();
+    g.globalAlpha = 0.55; g.fillStyle = '#fff'; g.fill(); g.globalAlpha = 0.5; ink(2.5); g.stroke(); g.restore();
+  } else {
+    g.beginPath(); g.moveTo(-100, -40); g.bezierCurveTo(-112, -152, 112, -152, 100, -40);
+    g.lineTo(110, 112); g.lineTo(-110, 112); g.closePath(); fs(c.hair);
+  }
+  bodyPath(); fs(c.skin);
+  g.save(); bodyPath(); g.clip();
+  g.fillStyle = c.outfit; g.fillRect(-120, 38, 240, 120);
+  g.fillStyle = c.trim;
+  if (p.who === 'ruru') {
+    for (let x = -100; x <= 100; x += 20) { ell(x, 40, 10, 8); g.fill(); ell(x, 112, 10, 8); g.fill(); }
+  } else if (p.who === 'juju') {
+    ell(-24, 46, 24, 14, 0.3); g.fill(); ell(24, 46, 24, 14, -0.3); g.fill();
+  } else {
+    for (let x = -90; x <= 90; x += 30) { ell(x, 74, 5, 5); g.fill(); ell(x + 15, 100, 5, 5); g.fill(); }
+  }
+  if (p.melt) { g.fillStyle = `rgba(255,255,255,${0.12 * p.melt})`; g.fillRect(-120, -130, 240, 168); }
+  g.restore();
+  g.beginPath(); g.moveTo(-90, 38); g.quadraticCurveTo(0, 54, 90, 38); ink(3); g.stroke();
+  bodyPath(); fs(null);
+  bow(0, 58, 0.55, p.who === 'ruru' ? '#1d1720' : p.who === 'saewoo' ? '#f3a6c0' : '#ff6fa8');
+  // arms
+  const armR = p.armR || 0, armL = p.armL || 0;
+  ell(lerp(96, 98, armR), lerp(64, -14, armR), 15, 28, lerp(-0.3, -2.6, armR)); fs(c.outfit);
+  ell(lerp(-96, -98, armL), lerp(64, -14, armL), 15, 28, lerp(0.3, 2.6, armL)); fs(c.outfit);
+  // front hair: scalloped hime bangs + tapered side locks
+  const lock = p.who === 'juju' ? 40 : -14;
+  g.beginPath(); g.moveTo(-96, lock); g.lineTo(-96, -20); g.bezierCurveTo(-104, -164, 104, -164, 96, -20); g.lineTo(96, lock);
+  g.quadraticCurveTo(80, lock - 20, 78, -50);
+  for (let i = 0; i <= 8; i++) { const x = 78 - i * 19.5; g.quadraticCurveTo(x - 10, -50, x - 19.5, -62 + (i % 2 ? 6 : 0)); }
+  g.quadraticCurveTo(-80, lock - 20, -96, lock); g.closePath(); fs(c.hair);
+  if (p.who === 'ruru') { bow(-74, -100, 0.75, '#1d1720'); bow(74, -100, 0.75, '#1d1720'); }
+  else if (p.who === 'juju') { heart(58, -84, 1.1, '#ff6fa8'); }
+  else {
+    // 새우: bun, shrimp feelers, tiara
+    ell(0, -146, 34, 26); fs(c.hair);
+    for (const sd of [-1, 1]) { g.beginPath(); g.moveTo(sd * 14, -166); g.bezierCurveTo(sd * 30, -230, sd * 90, -250, sd * 110, -210); ink(4); g.stroke(); }
+    g.beginPath(); g.moveTo(-40, -112); g.lineTo(-26, -136); g.lineTo(-12, -118); g.lineTo(0, -144); g.lineTo(12, -118); g.lineTo(26, -136); g.lineTo(40, -112); g.closePath(); fs('#ffd84d', 3);
+  }
+  // face
+  const fx = (p.lx || 0) * 7;
+  g.fillStyle = 'rgba(255,140,170,.35)'; ell(-58 + fx, -4, 14, 8); g.fill(); ell(58 + fx, -4, 14, 8); g.fill();
+  if (p.melt) {
+    g.fillStyle = `rgba(30,18,34,${0.65 * p.melt})`; ell(-28 + fx, -34, 22, 24); g.fill(); ell(28 + fx, -34, 22, 24); g.fill();
+  }
+  const blink = ((t * 0.41 + (p.who === 'juju' ? 0.5 : 0)) % 1) < 0.03 && !p.noBlink;
+  [-28, 28].forEach((ex, i) => {
+    const sd = i ? 1 : -1;
+    // 애교살: the red under-eye makeup
+    g.fillStyle = 'rgba(255,70,105,.5)'; ell(ex + fx, -18, 16, 7); g.fill();
+    if (p.puffy > 0.5) {
+      g.fillStyle = 'rgba(90,60,140,.5)'; ell(ex + fx, -20, 20, 11); g.fill();
+      line(ex + fx - 13, -34, ex + fx + 13, -34, 6);
+      return;
+    }
+    const closed = p.happy || blink || (p.wink && i === 1);
+    if (closed) {
+      g.beginPath(); g.arc(ex + fx, -32, 11, p.happy || p.wink ? Math.PI * 1.1 : Math.PI * 0.1, p.happy || p.wink ? Math.PI * 1.9 : Math.PI * 0.9); ink(5); g.stroke();
+    } else {
+      ell(ex + fx, -36, 11, p.big ? 18 : 15); g.fillStyle = '#2a1a2e'; g.fill();
+      ell(ex + fx, -32, 7, 9); g.fillStyle = c.iris; g.fill();
+      ell(ex + fx - 3, -42, 3.6, 3.6); g.fillStyle = '#fff'; g.fill();
+      ell(ex + fx + 3, -29, 1.8, 1.8); g.fill();
+      g.beginPath(); g.arc(ex + fx, -36, 13, Math.PI * 1.08, Math.PI * 1.92); ink(4.5); g.stroke();
+      if (p.who === 'juju') line(ex + fx + sd * 12, -44, ex + fx + sd * 22, -51, 4);
+    }
+    if (p.melt) {
+      g.strokeStyle = '#21162a'; g.lineCap = 'round';
+      for (let k = 0; k < 3; k++) {
+        const len = p.melt * (40 + rnd(k * 5 + i) * 45), x = ex + fx - 7 + k * 7;
+        g.lineWidth = 3.5; g.beginPath(); g.moveTo(x, -24); g.lineTo(x + Math.sin(k + t) * 2, -24 + len); g.stroke();
+        ell(x, -24 + len, 3.5, 4.5); g.fillStyle = '#21162a'; g.fill();
+      }
+    }
+  });
+  if (p.angry) { line(-52, -66, -14, -52, 6); line(52, -66, 14, -52, 6); }
+  if (p.melt > 0.6) { g.globalAlpha = (p.melt - 0.6) / 0.4; g.fillStyle = c.skin; g.fillRect(-48, -60, 96, 10); g.globalAlpha = 1; }
+  const open = p.talk ? 0.3 + 0.7 * Math.abs(Math.sin(t * 16 + Math.sin(t * 5))) : 0;
+  if (open > 0.05) {
+    ell(fx, -4, 9, 3 + 8 * open); fs(p.lips ? '#7a0f24' : '#c2455a', 3);
+    if (p.lips) { ell(fx, -4, 12, 5 + 8 * open); g.strokeStyle = '#e0123c'; g.lineWidth = 4; g.stroke(); }
+  } else if (p.lips) {
+    g.beginPath(); g.moveTo(fx - 13, -8); g.quadraticCurveTo(fx - 7, -16, fx, -10); g.quadraticCurveTo(fx + 7, -16, fx + 13, -8); g.quadraticCurveTo(fx, 5, fx - 13, -8);
+    fs('#e0123c', 3); ell(fx - 4, -10, 3, 1.6); g.fillStyle = 'rgba(255,255,255,.85)'; g.fill();
+  } else if (p.smirk) { g.beginPath(); g.moveTo(fx - 9, -6); g.quadraticCurveTo(fx + 2, -2, fx + 11, -11); ink(4); g.stroke(); }
+  else if (p.shock) { ell(fx, -2, 8, 10); fs('#c2455a', 3); }
+  else if (p.angry) { g.beginPath(); g.arc(fx, 2, 10, Math.PI * 1.15, Math.PI * 1.85); ink(4.5); g.stroke(); }
+  else { g.beginPath(); g.arc(fx, -10, 8, 0.2, Math.PI - 0.2); ink(4); g.stroke(); }
+  if (p.sweat) for (let i = 0; i < p.sweat; i++) {
+    const sd = i % 2 ? -1 : 1, y = -60 + ((t * 0.8 + i * 0.4) % 1) * 60;
+    g.beginPath(); g.moveTo(sd * 96, y - 16); g.quadraticCurveTo(sd * 96 + 10, y + 2, sd * 96, y + 8); g.quadraticCurveTo(sd * 96 - 10, y + 2, sd * 96, y - 16); fs('#9fd8ff', 3);
+  }
+  if (p.glow) {
+    g.globalAlpha = p.glow * 0.85; g.fillStyle = '#fff';
+    ell(-40, -66, 14, 5, -0.4); g.fill(); ell(58, -4, 6, 3.5, -0.4); g.fill();
+    g.globalAlpha = 1;
+  }
+  g.restore();
+  return { x: p.x, y: p.y - (140 + hop) * p.s };
+}
+
+// 오징어 단역
+function squid(p) {
+  const t = p.t || 0;
+  shadowBlob(p.x, p.y + 122 * p.s, 64 * p.s);
+  g.save(); g.translate(p.x, p.y); g.scale(p.s, p.s);
+  for (let i = 0; i < 5; i++) {
+    const x = -36 + i * 18; g.beginPath(); g.moveTo(x, 40);
+    g.quadraticCurveTo(x + Math.sin(t * 6 + i) * 14, 80, x + Math.sin(t * 6 + i + 1) * 10, 118);
+    ink(14); g.stroke(); g.strokeStyle = '#f6e3dc'; g.lineWidth = 8; g.stroke();
+  }
+  g.beginPath(); g.moveTo(-58, -20); g.lineTo(0, -132); g.lineTo(58, -20); g.closePath(); fs('#f6e3dc');
+  ell(0, 6, 52, 58); fs('#f6e3dc');
+  if (p.tux) {
+    g.save(); ell(0, 6, 52, 58); g.clip();
+    g.fillStyle = '#1c1a24'; g.fillRect(-60, 42, 120, 40);
+    g.beginPath(); g.moveTo(-14, 42); g.lineTo(0, 66); g.lineTo(14, 42); g.closePath(); g.fillStyle = '#fff'; g.fill();
+    g.restore(); ell(0, 6, 52, 58); fs(null); bow(0, 46, 0.32, '#1c1a24');
+  }
+  ell(-17, -2, 6, 8); g.fillStyle = OUT; g.fill(); ell(17, -2, 6, 8); g.fill();
+  const open = p.talk ? 0.3 + 0.7 * Math.abs(Math.sin(t * 16)) : 0;
+  if (open > 0.05) { ell(0, 24, 6, 2 + 6 * open); fs('#c2455a', 3); }
+  else if (p.dumb) { ell(0, 26, 8, 11); fs('#7a2a3a', 3); }
+  else { g.beginPath(); g.arc(0, 32, 8, Math.PI * 1.15, Math.PI * 1.85); ink(3); g.stroke(); }
+  if (p.sweat) { ell(56, -40 + ((t * 50) % 40), 6, 9); fs('#9fd8ff', 3); }
+  if (p.cry) { g.fillStyle = '#9fd8ff'; for (const sd of [-1, 1]) { g.fillRect(sd * 17 - 3, 6, 6, 16 + ((t * 40) % 20)); } }
+  ell(-54, 0, 9, 9); g.fillStyle = 'rgba(255,140,170,.4)'; g.fill();
+  g.restore();
+  return { x: p.x, y: p.y - 140 * p.s };
+}
+
+function kissMark(x, y, s, rot = 0, col = '#e0123c') {
+  g.save(); g.translate(x, y); g.rotate(rot); g.scale(s, s); g.fillStyle = col;
+  g.beginPath(); g.moveTo(-16, 0); g.quadraticCurveTo(-10, -12, 0, -5); g.quadraticCurveTo(10, -12, 16, 0); g.quadraticCurveTo(0, -2, -16, 0); g.fill();
+  g.beginPath(); g.moveTo(-16, 3); g.quadraticCurveTo(0, 5, 16, 3); g.quadraticCurveTo(0, 17, -16, 3); g.fill();
+  g.restore();
+}
+
+// 훈남 문어: white shirt so the collar can show (or not show) lip marks
+const MARKS = [[-30, -70, 0.9, -0.3], [34, -20, 1, 0.4], [-40, -10, 0.8, 0.2], [10, -88, 0.8, 0.1], [44, -64, 0.7, -0.5], [-14, 8, 0.7, 0.3], [-26, 46, 0.8, -0.2], [24, 50, 0.7, 0.3]];
+function octo(p) {
+  const t = p.t || 0;
+  g.save(); g.translate(p.x, p.y); g.scale(p.s, p.s);
+  for (let i = 0; i < 6; i++) {
+    const x = -50 + i * 20; g.beginPath(); g.moveTo(x, 80);
+    g.quadraticCurveTo(x + Math.sin(t * 5 + i) * 12, 105, x + Math.sin(t * 5 + i + 1) * 10, 128);
+    ink(14); g.stroke(); g.strokeStyle = '#ff8f86'; g.lineWidth = 8; g.stroke();
+  }
+  g.beginPath(); g.moveTo(-60, 30); g.lineTo(60, 30); g.lineTo(70, 98); g.lineTo(-70, 98); g.closePath(); fs('#fdfdfd');
+  line(0, 56, 0, 96, 2); ell(0, 70, 2.5, 2.5); g.fillStyle = OUT; g.fill(); ell(0, 86, 2.5, 2.5); g.fill();
+  ell(0, -40, 74, 82); fs('#ff8f86');
+  g.fillStyle = '#ff6f68'; ell(-40, -84, 9, 6); g.fill(); ell(46, -70, 7, 5); g.fill(); ell(30, -100, 6, 4); g.fill();
+  // swoop of "hair"
+  g.beginPath(); g.moveTo(-30, -112); g.quadraticCurveTo(10, -140, 40, -108); g.quadraticCurveTo(14, -118, -6, -104); fs('#ff6f68', 3);
+  line(-38, -62, -14, -66, 5); line(38, -62, 14, -66, 5);
+  for (const ex of [-24, 24]) { ell(ex, -38, 7, p.big ? 13 : 10); g.fillStyle = '#2a1a2e'; g.fill(); ell(ex - 2, -42, 2.5, 2.5); g.fillStyle = '#fff'; g.fill(); }
+  if (p.blush) { g.fillStyle = `rgba(255,40,80,${0.55 * p.blush})`; ell(-42, -14, 17, 9); g.fill(); ell(42, -14, 17, 9); g.fill(); }
+  const open = p.talk ? 0.3 + 0.7 * Math.abs(Math.sin(t * 16)) : 0;
+  if (open > 0.05) { ell(0, -4, 8, 3 + 7 * open); fs('#c2455a', 3); }
+  else if (p.sad) { g.beginPath(); g.arc(0, 4, 9, Math.PI * 1.15, Math.PI * 1.85); ink(4); g.stroke(); }
+  else { g.beginPath(); g.arc(0, -10, 9, 0.2, Math.PI - 0.2); ink(4); g.stroke(); }
+  for (const sd of [-1, 1]) { g.beginPath(); g.moveTo(0, 32); g.lineTo(sd * 30, 30); g.lineTo(sd * 22, 58); g.closePath(); fs('#fff', 3); }
+  for (let i = 0; i < (p.marks || 0); i++) { const [mx, my, ms, mr] = MARKS[i % MARKS.length]; kissMark(mx, my, ms, mr); }
+  g.restore();
+  if (p.clean) { star(p.x - 30 * p.s, p.y + 40 * p.s, 16, '#fff6b0', t); star(p.x + 50 * p.s, p.y - 60 * p.s, 12, '#fff', t * 1.3); star(p.x + 30 * p.s, p.y + 50 * p.s, 10, '#fff6b0', -t); }
+  return { x: p.x, y: p.y - 132 * p.s };
+}
+
+function sojuBottle(x, y, rot) {
+  g.save(); g.translate(x, y); g.rotate(rot);
+  rr(-14, -40, 28, 70, 8); fs('#3fae5a', 3); rr(-7, -62, 14, 24, 4); fs('#3fae5a', 3);
+  g.fillStyle = '#fff'; g.fillRect(-12, -16, 24, 18);
+  g.restore();
+}
+
+// ---------- sets ----------
+// Lighting helpers: additive bokeh, light shafts. Colors are 'rgba(r,g,b,A)' templates.
+function bokeh(n, seed, cols, T, y0 = 0, y1 = H, rmax = 40, a = 0.35) {
+  g.save(); g.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < n; i++) {
+    const x = rnd(seed + i * 3.1) * W + Math.sin(T * 0.5 + i) * 10, y = lerp(y0, y1, rnd(seed + i * 7.7));
+    const r = rmax * (0.4 + rnd(seed + i * 1.3) * 0.6), tw = 0.7 + 0.3 * Math.sin(T * 2 + i), c = cols[i % cols.length];
+    const gr = g.createRadialGradient(x, y, 0, x, y, r);
+    gr.addColorStop(0, c.replace('A', (a * tw).toFixed(3))); gr.addColorStop(0.7, c.replace('A', (a * 0.55 * tw).toFixed(3))); gr.addColorStop(1, c.replace('A', '0'));
+    g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill();
+  }
+  g.restore();
+}
+function shaft(x1, y1, x2, y2, x3, y3, x4, y4, col, k = 0.32) {
+  g.save(); g.globalCompositeOperation = 'lighter';
+  const gr = g.createLinearGradient(x1, y1, (x3 + x4) / 2, (y3 + y4) / 2);
+  gr.addColorStop(0, col.replace('A', String(k))); gr.addColorStop(1, col.replace('A', '0'));
+  g.fillStyle = gr; g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.lineTo(x3, y3); g.lineTo(x4, y4); g.closePath(); g.fill();
+  g.restore();
+}
+function glowDot(x, y, r, col) {
+  const gr = g.createRadialGradient(x, y, 0, x, y, r);
+  gr.addColorStop(0, col.replace('A', '0.9')); gr.addColorStop(0.25, col.replace('A', '0.45')); gr.addColorStop(1, col.replace('A', '0'));
+  g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill();
+}
+function flower(x, y, r, col) {
+  for (let k = 0; k < 5; k++) { const a = k * Math.PI * 0.4; ell(x + Math.cos(a) * r * 0.5, y + Math.sin(a) * r * 0.5, r * 0.55, r * 0.55); g.fillStyle = col; g.fill(); }
+  ell(x, y, r * 0.3, r * 0.3); g.fillStyle = '#ffe29a'; g.fill();
+}
+
+// Beauty-creator studio: blurred shelves, big ring light
+function studio(T) {
+  const gr = g.createRadialGradient(360, 560, 40, 360, 640, 900);
+  gr.addColorStop(0, '#ffe1ec'); gr.addColorStop(0.45, '#e07a9e'); gr.addColorStop(1, '#3a1233');
+  g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  g.filter = 'blur(7px)';
+  for (const y of [300, 520]) {
+    g.fillStyle = '#f7d0dc'; g.fillRect(-20, y, 230, 14); g.fillRect(510, y, 230, 14);
+    for (let i = 0; i < 4; i++) {
+      const cols = ['#fff', '#ffb3c8', '#ffd9a0', '#d6b8ff'];
+      rr(10 + i * 50, y - 60 - (i % 2) * 20, 30, 60 + (i % 2) * 20, 8); g.fillStyle = cols[i]; g.fill();
+      rr(530 + i * 50, y - 50 - ((i + 1) % 2) * 26, 30, 50 + ((i + 1) % 2) * 26, 8); g.fillStyle = cols[3 - i]; g.fill();
+    }
+  }
+  g.filter = 'none';
+  // ring light
+  g.save(); g.shadowColor = '#fff'; g.shadowBlur = 60;
+  g.beginPath(); g.arc(360, 640, 270, 0, Math.PI * 2); g.lineWidth = 36; g.strokeStyle = '#fffaf5'; g.stroke();
+  g.restore();
+  const rg = g.createRadialGradient(360, 640, 200, 360, 640, 330);
+  rg.addColorStop(0, 'rgba(255,255,255,0)'); rg.addColorStop(0.5, 'rgba(255,255,255,.35)'); rg.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = rg; g.beginPath(); g.arc(360, 640, 330, 0, Math.PI * 2); g.fill();
+  g.fillStyle = '#2a1426'; g.fillRect(354, 910, 12, 400);
+  bokeh(14, 11, ['rgba(255,220,235,A)', 'rgba(255,255,255,A)', 'rgba(255,180,210,A)'], T, 60, 1250, 46, 0.3);
+}
+
+// Morning-after bedroom: perspective floor, sheer curtains, sun shafts, invitation on the nightstand
+function bedroomMorning(T) {
+  const wg = g.createLinearGradient(0, 0, 0, 820); wg.addColorStop(0, '#f2ddd3'); wg.addColorStop(1, '#e8cbbd');
+  g.fillStyle = wg; g.fillRect(0, 0, W, 820);
+  // window
+  rr(360, 150, 290, 380, 8); g.fillStyle = '#fff'; g.fill();
+  const sky = g.createLinearGradient(0, 165, 0, 515); sky.addColorStop(0, '#a9d8ff'); sky.addColorStop(1, '#fff1d2');
+  g.fillStyle = sky; g.fillRect(374, 164, 262, 352);
+  g.fillStyle = '#fff'; g.fillRect(500, 164, 10, 352); g.fillRect(374, 330, 262, 10);
+  g.fillStyle = 'rgba(255,255,255,.8)'; ell(430, 220, 36, 12); g.fill(); ell(590, 270, 30, 10); g.fill();
+  // sheer curtains
+  for (const [x0, sd] of [[350, 1], [660, -1]]) {
+    g.save(); g.globalAlpha = 0.75;
+    const cg = g.createLinearGradient(x0, 0, x0 + sd * 90, 0); cg.addColorStop(0, '#ffd6e2'); cg.addColorStop(1, 'rgba(255,214,226,.4)');
+    g.fillStyle = cg; g.beginPath(); g.moveTo(x0 - sd * 20, 120);
+    for (let y = 120; y <= 600; y += 40) g.lineTo(x0 + sd * (70 + Math.sin(y * 0.05 + T) * 10), y);
+    g.lineTo(x0 - sd * 20, 600); g.closePath(); g.fill();
+    g.strokeStyle = 'rgba(230,150,180,.5)'; g.lineWidth = 2;
+    for (let k = 1; k < 4; k++) { g.beginPath(); g.moveTo(x0 + sd * k * 18, 130); g.lineTo(x0 + sd * k * 20, 590); g.stroke(); }
+    g.restore();
+  }
+  g.fillStyle = '#c9a38a'; g.fillRect(320, 112, 380, 10);
+  // perspective wood floor
+  const fg = g.createLinearGradient(0, 820, 0, H); fg.addColorStop(0, '#c99367'); fg.addColorStop(1, '#a8714a');
+  g.fillStyle = fg; g.fillRect(0, 820, W, H - 820);
+  g.save(); g.beginPath(); g.rect(0, 820, W, H - 820); g.clip(); g.strokeStyle = 'rgba(90,50,25,.35)'; g.lineWidth = 2;
+  for (let i = -12; i <= 24; i++) { const xb = i * 60; g.beginPath(); g.moveTo(lerp(360, xb, 0), 420); g.lineTo(xb, H); g.stroke(); }
+  for (const y of [860, 920, 1000, 1110, 1260]) { g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke(); }
+  g.restore();
+  g.fillStyle = '#f3e4da'; g.fillRect(0, 806, W, 16);
+  // sun shafts
+  shaft(374, 164, 636, 164, 520, 1280, -200, 1280, 'rgba(255,236,190,A)', 0.16);
+  // bed (left foreground)
+  rr(-80, 560, 360, 200, 36); fs('#e9a7bd', 4);
+  rr(-60, 680, 330, 70, 30); fs('#fff', 3); rr(-40, 650, 150, 70, 30); fs('#fff6fa', 3);
+  g.beginPath(); g.moveTo(-80, 740); g.bezierCurveTo(100, 720, 260, 730, 330, 760); g.lineTo(360, 1010); g.bezierCurveTo(200, 1040, 40, 1030, -80, 1010); g.closePath();
+  const dg = g.createLinearGradient(0, 740, 0, 1010); dg.addColorStop(0, '#fff'); dg.addColorStop(1, '#f1dfe8');
+  g.fillStyle = dg; g.fill(); ink(4); g.stroke();
+  g.strokeStyle = 'rgba(200,160,180,.6)'; g.lineWidth = 3;
+  for (const [a, b] of [[40, 960], [160, 980], [250, 940]]) { g.beginPath(); g.moveTo(a, 790); g.quadraticCurveTo(a + 30, 880, b / 4, b); g.stroke(); }
+  // nightstand + lamp + empty soju + invitation
+  rr(530, 760, 180, 170, 10); fs('#b47b52', 4); line(530, 840, 710, 840, 3); ell(620, 880, 6, 6); fs('#f2c94c', 2);
+  g.beginPath(); g.moveTo(585, 640); g.lineTo(655, 640); g.lineTo(680, 710); g.lineTo(560, 710); g.closePath(); fs('#fff1d6', 3);
+  line(620, 710, 620, 758, 5); glowDot(620, 680, 120, 'rgba(255,220,160,A)');
+  sojuBottle(560, 744, -1.4); sojuBottle(700, 726, 0.1);
+  g.save(); g.translate(640, 740); g.rotate(-0.08);
+  rr(-46, -30, 92, 60, 4); fs('#fffaf0', 3); rr(-40, -24, 80, 48, 3); g.strokeStyle = '#d4a94a'; g.lineWidth = 2; g.stroke();
+  g.font = `15px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#b8892f'; g.fillText('Wedding', 0, -6);
+  heart(0, 14, 0.6, '#d64545');
+  g.restore();
+  bokeh(8, 31, ['rgba(255,240,210,A)'], T, 150, 700, 10, 0.5);
+}
+
+// Luxe product stage: satin, rim light, pedestal
+function productStage(T, pedestal = true) {
+  const gr = g.createRadialGradient(360, 520, 30, 360, 600, 900);
+  gr.addColorStop(0, '#ffd1e2'); gr.addColorStop(0.35, '#b04d7c'); gr.addColorStop(1, '#16060f');
+  g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  for (let i = 0; i < 6; i++) shaft(330 + i * 12, -40, 390 + i * 12, -40, 720 + (i - 3) * 260, 1280, -40 + (i - 3) * 260, 1280, 'rgba(255,210,230,A)');
+  // satin waves
+  for (let k = 0; k < 3; k++) {
+    const y = 900 + k * 90, ph = T * 0.6 + k;
+    const sg = g.createLinearGradient(0, y - 80, 0, y + 120); sg.addColorStop(0, k % 2 ? '#ff9cc0' : '#ffc1d6'); sg.addColorStop(0.5, '#e8608f'); sg.addColorStop(1, '#7a1f48');
+    g.fillStyle = sg; g.beginPath(); g.moveTo(-20, y + Math.sin(ph) * 30);
+    g.bezierCurveTo(200, y - 90 + Math.sin(ph + 1) * 30, 480, y + 90 + Math.sin(ph + 2) * 30, 740, y - 20 + Math.sin(ph + 3) * 30);
+    g.lineTo(740, H); g.lineTo(-20, H); g.closePath(); g.fill();
+  }
+  if (pedestal) {
+    const side = g.createLinearGradient(190, 0, 530, 0); side.addColorStop(0, '#e9c9d5'); side.addColorStop(0.45, '#fff'); side.addColorStop(1, '#d4a9bb');
+    g.fillStyle = side; g.fillRect(190, 760, 340, 90); ell(360, 850, 170, 40); g.fill();
+    ell(360, 760, 170, 40); const top = g.createRadialGradient(330, 750, 10, 360, 760, 180); top.addColorStop(0, '#fff'); top.addColorStop(1, '#f2d6e0'); g.fillStyle = top; g.fill();
+    ell(360, 760, 170, 40); g.strokeStyle = 'rgba(255,255,255,.9)'; g.lineWidth = 3; g.stroke();
+  }
+  bokeh(16, 51, ['rgba(255,230,240,A)', 'rgba(255,200,220,A)', 'rgba(255,255,255,A)'], T, 40, 1250, 44, 0.28);
+}
+
+// Wedding hall in one-point perspective: arched windows, chandeliers, flower arch, aisle runner, chair rows
+const BW = { x1: 210, x2: 510, y1: 290, y2: 650 };
+function weddingHall(T, blur = 0, opt = {}) {
+  if (blur) g.filter = `blur(${blur}px)`;
+  const cg = g.createLinearGradient(0, 0, 0, BW.y1); cg.addColorStop(0, '#b99a80'); cg.addColorStop(1, '#e2cdb8');
+  g.fillStyle = cg; g.beginPath(); g.moveTo(0, 0); g.lineTo(W, 0); g.lineTo(BW.x2, BW.y1); g.lineTo(BW.x1, BW.y1); g.closePath(); g.fill();
+  g.strokeStyle = 'rgba(160,120,90,.35)'; g.lineWidth = 3;
+  for (let i = 0; i <= 6; i++) { g.beginPath(); g.moveTo(i * 120, 0); g.lineTo(lerp(BW.x1, BW.x2, i / 6), BW.y1); g.stroke(); }
+  const bg = g.createLinearGradient(0, BW.y1, 0, BW.y2); bg.addColorStop(0, '#f3e4d4'); bg.addColorStop(1, '#e2c9b4');
+  g.fillStyle = bg; g.fillRect(BW.x1, BW.y1, BW.x2 - BW.x1, BW.y2 - BW.y1);
+  for (const [side, x0] of [[-1, 0], [1, W]]) {
+    const xb = side < 0 ? BW.x1 : BW.x2;
+    const wg = g.createLinearGradient(x0, 0, xb, 0); wg.addColorStop(0, '#d9bfa8'); wg.addColorStop(1, '#ecdcca');
+    g.fillStyle = wg; g.beginPath(); g.moveTo(x0, 0); g.lineTo(xb, BW.y1); g.lineTo(xb, BW.y2); g.lineTo(x0, 1060); g.closePath(); g.fill();
+    // arched windows along the wall
+    for (let k = 0; k < 3; k++) {
+      const u0 = 0.12 + k * 0.3, u1 = u0 + 0.18;
+      const P = (u, v) => { const x = lerp(x0, xb, u), top = lerp(0, BW.y1, u), bot = lerp(1060, BW.y2, u); return [x, lerp(top, bot, v)]; };
+      const [ax, ay] = P(u0, 0.3), [bx, by] = P(u1, 0.3), [cx, cy] = P(u1, 0.78), [dx, dy] = P(u0, 0.78);
+      const lg = g.createLinearGradient(0, ay, 0, dy); lg.addColorStop(0, '#fffaf0'); lg.addColorStop(1, '#ffe7c4');
+      g.fillStyle = lg; g.beginPath(); g.moveTo(dx, dy); g.lineTo(ax, ay); g.quadraticCurveTo((ax + bx) / 2, Math.min(ay, by) - 70 * (1 - k * 0.25), bx, by); g.lineTo(cx, cy); g.closePath(); g.fill();
+      g.strokeStyle = '#d8bfa4'; g.lineWidth = 5 - k; g.stroke();
+      if (!opt.noShafts) shaft(ax, ay, bx, by, 360 + side * -40, 1280, 360 + side * -260, 1280, 'rgba(255,230,190,A)', 0.12);
+    }
+  }
+  // marble floor
+  const fg = g.createLinearGradient(0, BW.y2, 0, H); fg.addColorStop(0, '#d9cabd'); fg.addColorStop(1, '#f1e8e0');
+  g.fillStyle = fg; g.beginPath(); g.moveTo(0, 1060); g.lineTo(BW.x1, BW.y2); g.lineTo(BW.x2, BW.y2); g.lineTo(W, 1060); g.lineTo(W, H); g.lineTo(0, H); g.closePath(); g.fill();
+  g.save(); g.clip(); g.strokeStyle = 'rgba(170,140,120,.25)'; g.lineWidth = 2;
+  for (let i = -6; i <= 12; i++) { g.beginPath(); g.moveTo(lerp(BW.x1, BW.x2, i / 6), BW.y2); g.lineTo(360 + (i - 3) * 260, H + 200); g.stroke(); }
+  for (const y of [680, 730, 800, 900, 1040, 1230]) { g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke(); }
+  g.restore();
+  // aisle runner + petals
+  g.beginPath(); g.moveTo(330, BW.y2); g.lineTo(390, BW.y2); g.lineTo(600, H); g.lineTo(120, H); g.closePath();
+  const ag = g.createLinearGradient(0, BW.y2, 0, H); ag.addColorStop(0, '#fff3f6'); ag.addColorStop(1, '#ffffff'); g.fillStyle = ag; g.fill();
+  g.strokeStyle = '#f4b6c8'; g.lineWidth = 4; g.stroke();
+  for (let i = 0; i < 40; i++) {
+    const v = rnd(i * 3.3), y = lerp(BW.y2 + 10, H, v * v), half = lerp(30, 240, (y - BW.y2) / (H - BW.y2)), x = 360 + (rnd(i * 5.1) * 2 - 1) * half;
+    ell(x, y, 4 + 8 * v, 2.5 + 5 * v, rnd(i) * 3); g.fillStyle = i % 3 ? '#ff9fbd' : '#ffd1dc'; g.fill();
+  }
+  // flower arch
+  g.save(); g.strokeStyle = '#c9a46a'; g.lineWidth = 6;
+  g.beginPath(); g.moveTo(260, BW.y2); g.lineTo(260, 470); g.arc(360, 470, 100, Math.PI, 0); g.lineTo(460, BW.y2); g.stroke(); g.restore();
+  for (let i = 0; i <= 26; i++) {
+    const a = Math.PI + (i / 26) * Math.PI, x = 360 + Math.cos(a) * 100, y = 470 + Math.sin(a) * 100;
+    ell(x + 10, y + 6, 16, 9, a); g.fillStyle = '#8fbf8a'; g.fill();
+    flower(x, y, 14 + (i % 3) * 4, ['#ffc1d3', '#fff', '#ffd9b8'][i % 3]);
+  }
+  for (const x of [260, 460]) for (let k = 0; k < 6; k++) flower(x + (k % 2 ? 8 : -8), 500 + k * 26, 13, ['#ffc1d3', '#fff', '#ffd9b8'][k % 3]);
+  // chair rows (white covers, pink sashes); guests seen from behind on some
+  for (let k = 0; k < 4; k++) {
+    const u = k / 3, y = lerp(680, 900, u * u), sc = lerp(0.28, 0.75, u), half = lerp(36, 150, u);
+    for (const sd of [-1, 1]) for (let c = 0; c < 3; c++) {
+      const x = 360 + sd * (half + c * 120 * sc + 20 * sc);
+      rr(x - 30 * sc, y - 70 * sc, 60 * sc, 90 * sc, 10 * sc); g.fillStyle = '#fff6ee'; g.fill(); g.strokeStyle = '#c9a46a'; g.lineWidth = 3; g.stroke();
+      g.fillStyle = '#f5a9c0'; g.fillRect(x - 30 * sc, y - 34 * sc, 60 * sc, 12 * sc);
+      if (!opt.empty && rnd(k * 7 + c * 3 + sd) > 0.35) {
+        rr(x - 34 * sc, y - 86 * sc, 68 * sc, 56 * sc, 24 * sc); g.fillStyle = GUEST_COL[(k * 3 + c) % GUEST_COL.length]; g.fill();
+        ell(x, y - 104 * sc, 30 * sc, 30 * sc); g.fillStyle = ['#3a2a26', '#5a3b2e', '#1f1a24', '#8a5a3a'][(k + c) % 4]; g.fill();
+      }
+    }
+  }
+  // chandeliers
+  for (const [x, y, s] of [[160, 110, 0.8], [360, 70, 1], [560, 110, 0.8]]) {
+    line(x, 0, x, y - 20 * s, 2);
+    glowDot(x, y + 20 * s, 150 * s, 'rgba(255,225,170,A)');
+    g.strokeStyle = '#d4a94a'; g.lineWidth = 3; g.beginPath(); g.ellipse(x, y, 60 * s, 16 * s, 0, 0, Math.PI); g.stroke();
+    for (let i = 0; i < 7; i++) { const xx = x - 54 * s + i * 18 * s; ell(xx, y + 18 * s + (i % 2) * 8 * s, 4 * s, 7 * s); g.fillStyle = '#fff8e6'; g.fill(); }
+  }
+  bokeh(18, 71, ['rgba(255,230,190,A)', 'rgba(255,245,230,A)', 'rgba(255,200,215,A)'], T, 20, 700, 40, 0.3);
+  g.filter = 'none';
+}
+
+// Simple wedding guest bean
+const GUEST_COL = ['#7fb3ff', '#ffd166', '#9be7c4', '#c3a6ff', '#ff9f9f', '#f4a261'];
+function guest(p) {
+  const t = p.t || 0, sd = p.seed || 0;
+  shadowBlob(p.x, p.y + 130 * p.s, 90 * p.s);
+  g.save(); g.translate(p.x, p.y); g.scale(p.s, p.s);
+  rr(-56, 110, 44, 22, 8); fs('#3a2a30'); rr(12, 110, 44, 22, 8); fs('#3a2a30');
+  bodyPath(); fs(p.oily ? '#fff6ee' : '#ffe2d2');
+  g.save(); bodyPath(); g.clip();
+  g.fillStyle = GUEST_COL[sd % GUEST_COL.length]; g.fillRect(-120, 36, 240, 120);
+  g.fillStyle = ['#3a2a26', '#5a3b2e', '#1f1a24', '#8a5a3a'][sd % 4]; g.fillRect(-120, -140, 240, 70 + (sd % 3) * 10);
+  if (p.oily) { g.fillStyle = 'rgba(255,255,255,.55)'; g.fillRect(-120, -70, 240, 106); }
+  g.restore();
+  bodyPath(); fs(null);
+  const lx = (p.lx || 0) * 8;
+  for (const ex of [-26, 26]) { ell(ex + lx, -30, 7, p.gasp ? 12 : 9); g.fillStyle = '#2a1a2e'; g.fill(); }
+  g.fillStyle = 'rgba(255,140,160,.35)'; ell(-52 + lx, -4, 13, 7); g.fill(); ell(52 + lx, -4, 13, 7); g.fill();
+  const open = p.talk ? 0.3 + 0.7 * Math.abs(Math.sin(t * 16)) : 0;
+  if (open > 0.05) { ell(lx, -2, 8, 3 + 7 * open); fs('#c2455a', 3); }
+  else if (p.gasp) { ell(lx, 0, 7, 9); fs('#7a2a3a', 3); }
+  else { g.beginPath(); g.arc(lx, -8, 8, 0.2, Math.PI - 0.2); ink(3); g.stroke(); }
+  if (p.oily) { g.fillStyle = '#fff'; ell(-30, -70, 22, 8, -0.3); g.fill(); ell(40, -10, 9, 5); g.fill(); }
+  g.restore();
+  return { x: p.x, y: p.y - 132 * p.s };
+}
+
+function bouquet(x, y, s, rot) {
+  g.save(); g.translate(x, y); g.rotate(rot); g.scale(s, s);
+  g.beginPath(); g.moveTo(-10, 20); g.lineTo(0, 80); g.lineTo(10, 20); g.closePath(); fs('#8fbf8a', 3);
+  bow(0, 30, 0.5, '#f3a6c0');
+  for (let i = 0; i < 9; i++) { const a = i * 0.7; flower(Math.cos(a) * 24 * (i % 3) * 0.6, -10 + Math.sin(a) * 18 * (i % 3) * 0.6, 14, ['#fff', '#ffc1d3', '#ffd9b8'][i % 3]); }
+  g.restore();
+}
+
+// Camera viewfinder overlay for the group photo
+function viewfinder(T, box) {
+  g.save(); g.strokeStyle = 'rgba(255,255,255,.9)'; g.lineWidth = 5;
+  const m = 46;
+  for (const [x, y, dx, dy] of [[m, 120, 1, 1], [W - m, 120, -1, 1], [m, H - 160, 1, -1], [W - m, H - 160, -1, -1]]) {
+    g.beginPath(); g.moveTo(x, y + dy * 60); g.lineTo(x, y); g.lineTo(x + dx * 60, y); g.stroke();
+  }
+  if (Math.floor(T * 2) % 2 === 0) { ell(W - 150, 150, 10, 10); g.fillStyle = '#ff3b3b'; g.fill(); }
+  g.font = `28px ${FONT}`; g.textAlign = 'right'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText('REC', W - 70, 151);
+  g.textAlign = 'left'; g.fillText('ISO 800  1/125', 70, H - 190);
+  if (box) { g.strokeStyle = '#7cff9a'; g.lineWidth = 4; const [bx, by, bw, bh] = box; g.strokeRect(bx, by, bw, bh); }
+  g.restore();
+}
+
+// Night 포장마차: orange tent, string lights, city bokeh through the door flap
+function pocha(T) {
+  const ng = g.createLinearGradient(0, 300, 0, 700); ng.addColorStop(0, '#120c2a'); ng.addColorStop(1, '#3a1f4a');
+  g.fillStyle = ng; g.fillRect(0, 0, W, H);
+  bokeh(22, 91, ['rgba(255,200,120,A)', 'rgba(140,180,255,A)', 'rgba(255,120,170,A)'], T, 330, 690, 30, 0.6);
+  g.save();
+  g.beginPath(); g.rect(0, 0, W, H); g.roundRect(200, 330, 320, 380, [160, 160, 0, 0]);
+  const tg = g.createLinearGradient(0, 0, 0, H); tg.addColorStop(0, '#ff9a4a'); tg.addColorStop(0.6, '#e8622a'); tg.addColorStop(1, '#a8381a');
+  g.fillStyle = tg; g.fill('evenodd');
+  g.restore();
+  g.strokeStyle = 'rgba(255,220,180,.35)'; g.lineWidth = 3;
+  for (let x = 60; x < W; x += 110) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x + (x - 360) * 0.15, H); g.stroke(); }
+  // canopy scallops
+  g.fillStyle = '#ffb36b';
+  for (let x = 0; x < W + 60; x += 60) { g.beginPath(); g.arc(x, 40, 30, 0, Math.PI); g.fill(); }
+  g.fillRect(0, 0, W, 40);
+  // string lights
+  for (const [y0, sag, ph] of [[150, 70, 0], [250, 60, 1]]) {
+    g.strokeStyle = '#3a2016'; g.lineWidth = 2; g.beginPath();
+    for (let x = -20; x <= W + 20; x += 20) { const u = (x + 20) / (W + 40); g.lineTo(x, y0 + Math.sin(u * Math.PI) * sag); }
+    g.stroke();
+    for (let i = 0; i < 10; i++) {
+      const x = 20 + i * 76, u = (x + 20) / (W + 40), y = y0 + Math.sin(u * Math.PI) * sag + 10;
+      glowDot(x, y, 60, 'rgba(255,214,140,A)'); ell(x, y, 8, 11); g.fillStyle = '#fff1c4'; g.fill();
+    }
+  }
+  // menu banner
+  rr(560, 380, 120, 260, 6); fs('#fff3e0', 3);
+  g.font = `32px ${FONT}`; g.fillStyle = '#c0392b'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  ['소', '주', '♡', '닭', '발'].forEach((ch, i) => g.fillText(ch, 620, 420 + i * 46));
+}
+function pochaTable(T) {
+  ell(360, 1120, 380, 110); const sg = g.createLinearGradient(0, 1010, 0, 1230); sg.addColorStop(0, '#e9ecef'); sg.addColorStop(1, '#a9b0b6');
+  g.fillStyle = sg; g.fill(); ink(4); g.stroke();
+  ell(360, 1080, 120, 32); fs('#fff', 3); ell(360, 1074, 96, 22); g.fillStyle = '#d63a2a'; g.fill();
+  for (let i = 0; i < 3; i++) { g.beginPath(); const sx = 330 + i * 30; for (let k = 0; k <= 10; k++) g.lineTo(sx + Math.sin(T * 4 + k * 0.8 + i) * 8, 1060 - k * 12); g.strokeStyle = 'rgba(255,255,255,.7)'; g.lineWidth = 4; g.stroke(); }
+  sojuBottle(140, 1060, 0); sojuBottle(590, 1070, 0.05);
+}
+
+// ---------- speech bubbles ----------
+function wrap(text, maxW) {
+  const out = []; let cur = '';
+  for (const w of text.split(' ')) {
+    const test = cur ? cur + ' ' + w : w;
+    if (cur && g.measureText(test).width > maxW) { out.push(cur); cur = w; } else cur = test;
+  }
+  out.push(cur); return out;
+}
+function speechBubble(text, ax, ay, side, k) {
+  if (k <= 0) return;
+  g.save();
+  g.font = `40px ${FONT}`;
+  const lines = wrap(text, 470), tw = Math.max(...lines.map(l => g.measureText(l).width));
+  const bw = tw + 56, bh = lines.length * 48 + 34;
+  const bx = clamp(ax + side * (bw / 2 - 40), bw / 2 + 16, W - bw / 2 - 16), by = Math.max(ay - 40 - bh / 2, bh / 2 + 70);
+  g.translate(bx, by); g.scale(k, k);
+  const tx = clamp(ax - bx, -bw / 2 + 30, bw / 2 - 30);
+  g.beginPath(); g.moveTo(tx - 20, bh / 2 - 4); g.lineTo(ax - bx, ay - by); g.lineTo(tx + 20, bh / 2 - 4); g.closePath(); fs('#fff');
+  rr(-bw / 2, -bh / 2, bw, bh, 36); fs('#fff');
+  g.fillStyle = '#fff'; g.fillRect(tx - 17, bh / 2 - 8, 34, 8);
+  g.fillStyle = '#2a1a26'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  lines.forEach((l, i) => g.fillText(l, 0, 3 + (i - (lines.length - 1) / 2) * 48));
+  g.restore();
+}
+
+// ---------- script ----------
+// lines: [start, end, who, text, side] (shot-local seconds). who r 루루, j 쥬쥬, s 오징어. side: bubble leans left(-1)/right(1)
+// sfx: [time, type, duration, arg]
+const SHOTS = [
+  { d: 2.0, sfx: [[0.1, 'sparkle'], [0.3, 'pop']], lines: [[0.2, 1.95, 'r', '전남친 결혼식 가서 신부 박살낸다', -1]], draw(t, T, say) {
+    const a = {};
+    studio(T);
+    a.r = girl({ who: 'ruru', x: 300, y: 930, s: 1.6, t: T, talk: say('r'), smirk: !say('r'), lips: true, armR: 0.9, glow: 1 });
+    g.save(); g.translate(565, 720); g.rotate(0.12 + Math.sin(T * 4) * 0.05); adBox(-62, -62, 124, 124, T, 24); g.restore();
+    sparkles(565, 720, 110, 5, T, 0.8);
+    popText('하객룩 끝판왕 쿠션', 360, 250, 74, '#ff3f7a', -0.04, backOut((t - 0.3) / 0.3));
+    return a;
+  } },
+  { d: 3.0, sfx: [[0.1, 'doom']], lines: [[0.2, 1.4, 'j', '니 얼굴 찐빵 됐는데?ㅋ', 1], [1.5, 3.0, 'r', '아 씨발 결혼식 오늘인데', -1]], draw(t, T, say) {
+    const a = {};
+    g.save(); g.filter = 'blur(2.5px)'; bedroomMorning(T); g.restore(); g.filter = 'none';
+    a.r = girl({ who: 'ruru', x: 200, y: 900, s: 1.15, t: T, talk: say('r'), puffy: 1, lx: 1, noBlink: true });
+    a.j = girl({ who: 'juju', x: 530, y: 900, s: 1.1, t: T, talk: say('j'), smirk: !say('j'), lx: -1 });
+    popText('퉁퉁', 200, 600, 70, '#b07cff', -0.15, backOut((t - 0.2) / 0.25));
+    return a;
+  } },
+  { d: 3.0, push: 0.02, sfx: [[0.8, 'pat'], [1.15, 'pat'], [1.5, 'pat'], [1.85, 'pat'], [2.1, 'sparkle'], [2.2, 'ding']], draw(t, T) {
+    productStage(T, false);
+    const heal = ease((t - 0.8) / 1.3);
+    girl({ who: 'ruru', x: 360, y: 1010, s: 1.9, t: T, puffy: 1 - heal, lips: heal > 0.6, glow: heal, happy: heal > 0.95, noBlink: true, noShadow: true });
+    const patting = t > 0.6 && t < 2.1, bob = patting ? Math.abs(Math.sin((t - 0.6) * Math.PI / 0.35)) : 0;
+    g.save(); g.translate(560 - bob * 40, 880 - bob * 20); g.rotate(-0.3); adBox(-48, -48, 96, 96, T, 20); g.restore();
+    for (const [k, x, y] of [[0.8, 600, 760], [1.15, 520, 700], [1.5, 640, 680], [1.85, 560, 640]]) if (t > k && t < k + 0.5) popText('퍽', x, y, 64, '#fff', 0.2, backOut((t - k) / 0.15));
+    if (heal > 0) sparkles(360, 860, 280, 10, T, 1.3 * heal);
+    popText('3초 커버 · 붓기 실종', 360, 170, 60, '#fff', 0, backOut((t - 2.1) / 0.3));
+    popText('하루종일 광채', 360, 260, 84, '#ff6fa8', -0.04, backOut((t - 2.3) / 0.3));
+    return {};
+  } },
+  { d: 4.0, push: 0.07, sfx: [[0, 'march', 11], [0.1, 'whoosh'], [0.5, 'gasp']], lines: [[0.6, 2.0, 'g', '신부보다 예쁜데…?', 1], [2.2, 3.8, 'j', 'ㅋㅋ 시작부터 박살', -1]], draw(t, T, say) {
+    const a = {}, u = ease(t / 4);
+    weddingHall(T);
+    girl({ who: 'saewoo', x: 360, y: 560, s: 0.42, t: T, angry: true, lx: 0 });
+    a.j = girl({ who: 'juju', x: 190, y: lerp(770, 800, u), s: lerp(0.62, 0.7, u), t: T * 0.5, talk: say('j'), smirk: !say('j'), lx: 0.5 });
+    // spotlight on the aisle
+    g.save(); g.globalCompositeOperation = 'lighter'; const sg = g.createRadialGradient(360, 900, 20, 360, 900, 300);
+    sg.addColorStop(0, 'rgba(255,240,220,.35)'); sg.addColorStop(1, 'rgba(255,240,220,0)'); g.fillStyle = sg; g.fillRect(0, 500, W, 800); g.restore();
+    girl({ who: 'ruru', x: 360, y: lerp(760, 880, u), s: lerp(0.78, 1.0, u), t: T * 0.5, lips: true, glow: 1, smirk: true });
+    sparkles(360, lerp(720, 840, u), 170, 7, T, 0.9);
+    guest({ x: 80, y: 1090, s: 0.9, t: T, seed: 1, lx: 1, gasp: t > 0.5 });
+    a.g = guest({ x: 640, y: 1090, s: 0.9, t: T, seed: 3, lx: -1, gasp: t > 0.5 && !say('g'), talk: say('g') });
+    for (let i = 0; i < 10; i++) { const ph = (T * 0.25 + rnd(i)) % 1; ell(rnd(i * 3) * W + Math.sin(T * 2 + i) * 30, ph * H, 6, 3.5, T + i); g.fillStyle = '#ffb3c8'; g.fill(); }
+    return a;
+  } },
+  { d: 3.0, sfx: [[0.1, 'doom']], lines: [[0.2, 1.3, 's', '루, 루루야…?', 1], [1.5, 3.0, 'r', '결혼 축하해ㅋ 잘 살아라', -1]], draw(t, T, say) {
+    const a = {};
+    withHallBlur(T, 1.5, 360, 520, 7);
+    a.s = squid({ x: 470, y: 860, s: 1.7, t: T, tux: true, talk: say('s'), dumb: !say('s'), sweat: true });
+    a.r = girl({ who: 'ruru', x: 150, y: 1040, s: 1.05, t: T, talk: say('r'), smirk: !say('r'), lips: true, glow: 1, lx: 1, wink: t > 2.6 });
+    return a;
+  } },
+  { d: 4.0, sfx: [[1.4, 'whoosh'], [2.2, 'pop'], [2.3, 'gasp']], lines: [[0.2, 1.3, 'b', '저년 누구야?!', 1], [2.4, 4.0, 'j', '미친 부케까지 털었네', -1]], draw(t, T, say) {
+    const a = {};
+    withHallBlur(T, 1.25, 360, 600, 3);
+    a.b = girl({ who: 'saewoo', x: 500, y: 840, s: 1.0, t: T, talk: say('b'), angry: true, big: true, lx: -1, armR: t > 1.0 && t < 1.6 ? 1 : 0 });
+    girl({ who: 'ruru', x: 180, y: 880, s: 1.05, t: T, lips: true, glow: 1, lx: 1, armR: t > 2.0 ? 1 : 0, smirk: t > 2.3 });
+    a.j = girl({ who: 'juju', x: 600, y: 1090, s: 0.72, t: T, talk: say('j'), big: true, lx: -0.6 });
+    if (t > 1.4) {
+      const u = clamp((t - 1.4) / 0.8, 0, 1), x = lerp(600, 290, u), y = lerp(760, 800, u) - Math.sin(u * Math.PI) * 330;
+      bouquet(t > 2.2 ? 290 : x, t > 2.2 ? 800 : y, 1.0, t > 2.2 ? 0.3 : u * 9);
+      if (t > 2.2) sparkles(290, 800, 70, 5, T, 0.7);
+    } else bouquet(600, 760, 1.0, 0.3);
+    if (t > 2.3) popText('나이스 캐치', 360, 260, 84, '#ffd84d', -0.06, backOut((t - 2.3) / 0.3));
+    return a;
+  } },
+  { d: 4.0, push: 0.02, sfx: [[0.8, 'shutter'], [1.9, 'shutter'], [2.9, 'shutter']], draw(t, T) {
+    withHallBlur(T, 1.15, 360, 640, 4, true);
+    const flashes = [0.8, 1.9, 2.9], since = Math.min(...flashes.map(f => (t >= f ? t - f : 9))), oily = t > 0.8;
+    guest({ x: 90, y: 860, s: 0.8, t: T, seed: 2, oily, gasp: oily });
+    squid({ x: 230, y: 870, s: 0.95, t: T, tux: true, dumb: true });
+    guest({ x: 630, y: 860, s: 0.8, t: T, seed: 4, oily, gasp: oily });
+    girl({ who: 'saewoo', x: 500, y: 870, s: 0.82, t: T, angry: true, melt: oily ? 0.35 : 0 });
+    girl({ who: 'ruru', x: 360, y: 930, s: 0.98, t: T, lips: true, glow: 1, wink: oily, armR: 0.7 });
+    if (oily) sparkles(360, 860, 140, 6, T, 0.9);
+    g.fillStyle = `rgba(255,255,255,${clamp(1 - since / 0.25, 0, 1) * 0.92})`; g.fillRect(0, 0, W, H);
+    viewfinder(T, [250, 700, 220, 260]);
+    if (t > 2.0) popText('플래시 받아도 안 뜸', 360, 270, 70, '#ff3f7a', -0.04, backOut((t - 2.0) / 0.3));
+    return {};
+  } },
+  { d: 4.0, sfx: [[0, 'bustle', 4], [2.0, 'clink']], lines: [[0.2, 1.8, 'j', '씨발 오늘 너가 주인공이었음', 1], [2.0, 3.8, 'r', '원래 내가 주인공이지ㅋ', -1]], draw(t, T, say) {
+    const a = {};
+    pocha(T);
+    const cheers = t > 1.8 && t < 2.6;
+    a.j = girl({ who: 'juju', x: 190, y: 900, s: 1.1, t: T, talk: say('j'), lx: 1, armR: cheers ? 1 : 0.2 });
+    a.r = girl({ who: 'ruru', x: 530, y: 900, s: 1.1, t: T, talk: say('r'), smirk: !say('r'), lips: true, glow: 1, lx: -1, armL: cheers ? 1 : 0.2 });
+    if (cheers) { star(360, 760, 26, '#fff6b0', T * 3); }
+    pochaTable(T);
+    return a;
+  } },
+  { d: 3.0, push: 0.03, sfx: [[0.1, 'ding'], [0.1, 'sparkle'], [0.9, 'stamp']], draw(t, T) {
+    productStage(T, true);
+    const k = backOut(t / 0.4);
+    g.save(); g.translate(360, 640 + Math.sin(T * 2) * 6); g.scale(k, k); adBox(-120, -110, 240, 200, T, 40); g.restore();
+    sparkles(360, 620, 230, 8, T, 1);
+    if (t > 0.9) {
+      const s2 = backOut((t - 0.9) / 0.25);
+      g.save(); g.translate(560, 450); g.rotate(-0.2); g.scale(s2, s2);
+      ell(0, 0, 70, 70); fs('#e0123c', 5); g.font = `52px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText('1+1', 0, 4);
+      g.restore();
+    }
+    popText('남의 결혼식에서도,', 360, 200, 64, '#fff', 0, backOut((t - 0.15) / 0.3));
+    popText('주인공은 나', 360, 300, 100, '#ff6fa8', -0.04, backOut((t - 0.3) / 0.3));
+    g.globalAlpha = clamp((t - 0.6) / 0.25, 0, 1);
+    rr(90, 940, 540, 78, 39); fs('#ff3f7a', 4);
+    g.font = `36px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.fillText('지금 1+1 · 프로필 링크 클릭', 360, 981);
+    g.globalAlpha = 1;
+    return {};
+  } },
+];
+
+// Wedding hall seen through a tighter lens: zoomed + defocused so characters pop.
+function withHallBlur(T, z, cx, cy, blur, empty = false) {
+  g.save(); g.translate(W / 2, H / 2); g.scale(z, z); g.translate(-cx, -cy);
+  weddingHall(T, blur, { empty });
+  g.restore();
+}
+
+// Gibberish "옹알옹알" speech: one blip per Hangul syllable, pauses at spaces/punctuation.
+function babblePlan(text, d) {
+  const toks = Array.from(text).map(c => (/[가-힣]/.test(c) ? c : /[\s,…~.]/.test(c) ? ' ' : null)).filter(Boolean);
+  const units = toks.reduce((n, c) => n + (c === ' ' ? 0.6 : 1), 0);
+  const step = Math.min(0.115, (d - 0.15) / Math.max(units, 1));
+  let at = 0; const syl = [];
+  for (const c of toks) { if (c === ' ') at += step * 0.6; else { syl.push({ c, at }); at += step; } }
+  return { syl, step, dur: at };
+}
+
+let acc = 0;
+const LINES = [], EVENTS = [];
+for (const s of SHOTS) {
+  s.t0 = acc;
+  (s.lines || []).forEach(([a, b, who, text, side]) => {
+    LINES.push({ t0: acc + a, t1: acc + b, talk1: acc + a + babblePlan(text, b - a).dur, who, text, side: side || 1 });
+    EVENTS.push({ t: acc + a, type: 'babble', who, text, d: b - a });
+  });
+  (s.sfx || []).forEach(([a, type, d, arg]) => EVENTS.push({ t: acc + a, type, d, arg }));
+  acc += s.d;
+}
+const DUR = acc;
+
+const GRAIN = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const x = c.getContext('2d'), id = x.createImageData(256, 256);
+  for (let i = 0; i < id.data.length; i += 4) { const v = rnd(i * 0.37) * 255; id.data[i] = id.data[i + 1] = id.data[i + 2] = v; id.data[i + 3] = 255; }
+  x.putImageData(id, 0, 0); return g.createPattern(c, 'repeat');
+})();
+
+function drawFrame(T) {
+  T = clamp(T, 0, DUR - 1e-3);
+  let shot = SHOTS[0];
+  for (const s of SHOTS) if (T >= s.t0) shot = s;
+  const t = T - shot.t0, say = who => LINES.some(l => l.who === who && T >= l.t0 && T < l.talk1);
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  g.fillStyle = '#000'; g.fillRect(0, 0, W, H);
+  // slow camera push-in on every shot
+  const z = 1 + (shot.push ?? 0.045) * ease(t / shot.d), cx = W / 2, cy = shot.pushY ?? H * 0.55;
+  g.save(); g.translate(cx, cy); g.scale(z, z); g.translate(-cx, -cy);
+  const anchors = shot.draw(t, T, say) || {};
+  g.restore();
+  // vignette + film grain
+  const vg = g.createRadialGradient(W / 2, H * 0.48, H * 0.3, W / 2, H * 0.48, H * 0.78);
+  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(10,0,10,.42)');
+  g.fillStyle = vg; g.fillRect(0, 0, W, H);
+  g.save(); g.globalAlpha = 0.06; g.globalCompositeOperation = 'overlay';
+  g.translate(-rnd(Math.floor(T * 24)) * 256, -rnd(Math.floor(T * 24) + 0.5) * 256);
+  g.fillStyle = GRAIN; g.fillRect(0, 0, W + 256, H + 256); g.restore();
+  for (const l of LINES) {
+    if (T < l.t0 || T >= l.t1 || !anchors[l.who]) continue;
+    const a = anchors[l.who], k = Math.min(backOut((T - l.t0) / 0.2), clamp((l.t1 - T) / 0.1, 0, 1));
+    speechBubble(l.text, cx + (a.x - cx) * z, cy + (a.y - cy) * z, l.side, k);
+  }
+  g.font = `22px ${FONT}`; rr(18, 16, 64, 34, 8); g.fillStyle = 'rgba(30,20,20,.75)'; g.fill();
+  g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('광고', 50, 34);
+}
+
+// ---------- audio ----------
+const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+function noiseBuf(ac) {
+  if (ac._noise) return ac._noise;
+  const b = ac.createBuffer(1, ac.sampleRate * 2, ac.sampleRate), d = b.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  return (ac._noise = b);
+}
+function env(ac, out, t, a, hold, rel, peak) {
+  const gn = ac.createGain();
+  gn.gain.setValueAtTime(0, t); gn.gain.linearRampToValueAtTime(peak, t + a);
+  gn.gain.setValueAtTime(peak, t + a + hold); gn.gain.exponentialRampToValueAtTime(0.0001, t + a + hold + rel);
+  gn.connect(out); return gn;
+}
+function tone(ac, out, t, type, f0, f1, dur, peak) {
+  const o = ac.createOscillator(); o.type = type;
+  o.frequency.setValueAtTime(f0, t); if (f1 !== f0) o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+  o.connect(env(ac, out, t, 0.008, dur * 0.4, dur * 0.6, peak)); o.start(t); o.stop(t + dur + 0.05);
+}
+function noise(ac, out, t, dur, ftype, freq, q, peak, a = 0.01) {
+  const s = ac.createBufferSource(); s.buffer = noiseBuf(ac); s.loop = true;
+  const f = ac.createBiquadFilter(); f.type = ftype; f.frequency.value = freq; f.Q.value = q;
+  s.connect(f); f.connect(env(ac, out, t, a, dur * 0.5, dur * 0.5, peak)); s.start(t); s.stop(t + dur + 0.05);
+  return f;
+}
+
+const PITCH = { r: 480, j: 330, s: 230, o: 270, g: 300, b: 430 };
+const SYNTH = {
+  babble(ac, out, t, e) {
+    // vowel formants (F1, F2) by Hangul medial vowel; sawtooth through two band-passes reads as a cute "voice"
+    const F = { a: [850, 1300], e: [520, 1900], eo: [620, 1050], o: [460, 820], u: [350, 900], eu: [400, 1450], i: [320, 2300] };
+    const MED = ['a', 'e', 'a', 'e', 'eo', 'e', 'eo', 'e', 'o', 'a', 'e', 'e', 'o', 'u', 'eo', 'e', 'i', 'u', 'eu', 'i', 'i'];
+    const base = PITCH[e.who], end = /[?]/.test(e.text) ? 1.35 : /!/.test(e.text) ? 1.15 : /[…~]/.test(e.text) ? 0.85 : 1;
+    const { syl, step } = babblePlan(e.text, e.d);
+    syl.forEach(({ c, at }, i) => {
+      const code = c.charCodeAt(0) - 0xac00, [f1, f2] = F[MED[Math.floor((code % 588) / 28)]];
+      const last = i === syl.length - 1, p = base * (1 + 0.1 * Math.sin(i * 1.9) + (rnd(code) - 0.5) * 0.12) * (last ? end : 1);
+      const st = t + at, dur = step * 0.92;
+      const o = ac.createOscillator(); o.type = 'sawtooth';
+      o.frequency.setValueAtTime(p * (last && end > 1 ? 0.92 : 1.05), st); o.frequency.linearRampToValueAtTime(p * (last && end > 1 ? 1.08 : 0.95), st + dur);
+      const amp = env(ac, out, st, 0.012, dur * 0.45, dur * 0.5, 0.55);
+      for (const [f, q, gn] of [[f1 * 1.15, 6, 1], [f2 * 1.15, 9, 0.5]]) {
+        const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = q;
+        const gg = ac.createGain(); gg.gain.value = gn; o.connect(bp); bp.connect(gg); gg.connect(amp);
+      }
+      o.start(st); o.stop(st + dur + 0.05);
+      tone(ac, out, st, 'sine', p, p * 0.97, dur, 0.07);
+      if (code % 28) tone(ac, out, st + dur * 0.55, 'sine', p * 0.9, p * 0.85, dur * 0.4, 0.06); // 받침: soft hum ("옹")
+    });
+  },
+  pop(ac, out, t) { tone(ac, out, t, 'sine', 400, 1000, 0.12, 0.35); },
+  ding(ac, out, t) { tone(ac, out, t, 'sine', 1568, 1568, 1.0, 0.22); tone(ac, out, t, 'sine', 2349, 2349, 0.8, 0.1); },
+  sparkle(ac, out, t) { [76, 81, 84, 88, 91, 96].forEach((m, i) => tone(ac, out, t + i * 0.06, 'sine', mtof(m), mtof(m), 0.35, 0.09)); },
+  whoosh(ac, out, t) { const f = noise(ac, out, t, 0.5, 'bandpass', 600, 1.2, 0.35, 0.15); f.frequency.setValueAtTime(400, t); f.frequency.exponentialRampToValueAtTime(2400, t + 0.5); },
+  pat(ac, out, t) { noise(ac, out, t, 0.07, 'lowpass', 900, 1, 0.7, 0.002); tone(ac, out, t, 'sine', 220, 110, 0.07, 0.4); },
+  gasp(ac, out, t) {
+    const f = noise(ac, out, t, 0.9, 'bandpass', 900, 2.5, 0.45, 0.25); f.frequency.setValueAtTime(700, t); f.frequency.linearRampToValueAtTime(1300, t + 0.5);
+    [300, 360, 420].forEach((fr, i) => tone(ac, out, t + i * 0.04, 'triangle', fr, fr * 1.3, 0.6, 0.05));
+  },
+  shutter(ac, out, t) { noise(ac, out, t, 0.03, 'highpass', 3000, 1, 0.6, 0.001); noise(ac, out, t + 0.07, 0.03, 'highpass', 2500, 1, 0.5, 0.001); tone(ac, out, t, 'sine', 2400, 5200, 0.3, 0.03); },
+  clink(ac, out, t) { tone(ac, out, t, 'sine', 2637, 2637, 0.5, 0.18); tone(ac, out, t, 'sine', 3520, 3520, 0.35, 0.1); },
+  bustle(ac, out, t, e) {
+    noise(ac, out, t, e.d, 'bandpass', 500, 0.7, 0.12, 0.4);
+    for (let i = 0; i < 6; i++) tone(ac, out, t + rnd(i * 3.7) * e.d, 'sine', 2900 + rnd(i) * 600, 2900, 0.15, 0.04);
+  },
+  march(ac, out, t, e) {
+    // Bridal Chorus on a soft organ
+    const beat = 0.5, mel = [[60, 1], [65, .75], [65, .25], [65, 2], [60, 1], [67, .75], [64, .25], [65, 2], [60, 1], [65, .75], [69, .25], [72, 1.5], [69, .5], [65, 1], [62, .75], [65, .25], [67, 2]];
+    let at = 0;
+    while (at < e.d) for (const [m, b] of mel) {
+      if (at >= e.d) break;
+      const nt = t + at, dur = b * beat * 0.95, fade = clamp((e.d - at) / 1.2, 0, 1);
+      if (nt >= ac.currentTime + 0.02) {
+        tone(ac, out, nt, 'triangle', mtof(m), mtof(m), dur, 0.08 * fade); tone(ac, out, nt, 'sine', mtof(m + 12), mtof(m + 12), dur, 0.03 * fade);
+        if (b >= 1) tone(ac, out, nt, 'triangle', mtof(m - 12), mtof(m - 12), dur, 0.05 * fade);
+      }
+      at += b * beat;
+    }
+  },
+  doom(ac, out, t) { tone(ac, out, t, 'sine', 110, 50, 0.45, 0.8); tone(ac, out, t + 0.35, 'sine', 100, 45, 0.6, 0.8); noise(ac, out, t + 0.35, 0.3, 'lowpass', 200, 1, 0.4); },
+  stamp(ac, out, t) { noise(ac, out, t, 0.12, 'lowpass', 500, 1, 0.8, 0.002); tone(ac, out, t, 'sine', 90, 50, 0.15, 0.6); },
+  kiss(ac, out, t) { tone(ac, out, t, 'sine', 500, 1500, 0.1, 0.25); tone(ac, out, t + 0.1, 'sine', 1400, 300, 0.07, 0.3); },
+  slam(ac, out, t) { noise(ac, out, t, 0.35, 'lowpass', 300, 1, 1.0, 0.002); tone(ac, out, t, 'sine', 80, 40, 0.3, 0.8); },
+  drip(ac, out, t) { for (let i = 0; i < 3; i++) tone(ac, out, t + i * 0.32, 'sine', 900 - i * 120, 260, 0.28, 0.22); },
+  birds(ac, out, t, e) { for (let i = 0; i < 9; i++) { const st = t + rnd(i * 9) * e.d; tone(ac, out, st, 'sine', 2600, 3600, 0.06, 0.08); tone(ac, out, st + 0.09, 'sine', 2800, 3900, 0.05, 0.07); } },
+  club(ac, out, t, e) {
+    // four-on-the-floor house loop; 'muf' = heard through the bathroom wall
+    const muf = e.arg === 'muf';
+    let dest = out;
+    if (muf) { const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 280; lp.connect(out); dest = lp; }
+    const bass = [36, 36, 39, 41];
+    for (let i = 0; i * BEAT / 2 < e.d; i++) {
+      const nt = t + (i * BEAT) / 2;
+      if (nt < ac.currentTime + 0.02) continue;
+      const bar = Math.floor(i / 8) % 4;
+      if (i % 2 === 0) tone(ac, dest, nt, 'sine', 150, 45, 0.22, muf ? 0.9 : 0.75);
+      if (!muf && i % 2 === 1) noise(ac, dest, nt, 0.05, 'highpass', 8000, 1, 0.12, 0.002);
+      if (i % 2 === 1) tone(ac, dest, nt, 'sawtooth', mtof(bass[bar]), mtof(bass[bar]), BEAT * 0.4, muf ? 0.12 : 0.07);
+      if (!muf && i % 8 === 3) [60, 63, 67].forEach(n => tone(ac, dest, nt, 'square', mtof(n + bass[bar] - 36), mtof(n + bass[bar] - 36), 0.12, 0.025));
+    }
+  },
+};
+
+function schedule(ac, out, base, from) {
+  for (const e of EVENTS) {
+    if (!SYNTH[e.type]) continue;
+    if (['club', 'march', 'bustle'].includes(e.type) ? e.t + e.d < from : e.t < from) continue;
+    SYNTH[e.type](ac, out, base + e.t, e);
+  }
+}
+function master(ac) {
+  const comp = ac.createDynamicsCompressor(), gn = ac.createGain();
+  gn.gain.value = 0.9; gn.connect(comp); comp.connect(ac.destination); return gn;
+}
+
+window.renderAudioWav = async () => {
+  const sr = 44100, oac = new OfflineAudioContext(2, Math.ceil(sr * DUR), sr);
+  schedule(oac, master(oac), 0, 0);
+  const buf = await oac.startRendering();
+  const n = buf.length, L = buf.getChannelData(0), R = buf.getChannelData(1);
+  const out = new DataView(new ArrayBuffer(44 + n * 4));
+  const str = (o, s) => [...s].forEach((c, i) => out.setUint8(o + i, c.charCodeAt(0)));
+  str(0, 'RIFF'); out.setUint32(4, 36 + n * 4, true); str(8, 'WAVEfmt '); out.setUint32(16, 16, true);
+  out.setUint16(20, 1, true); out.setUint16(22, 2, true); out.setUint32(24, sr, true); out.setUint32(28, sr * 4, true);
+  out.setUint16(32, 4, true); out.setUint16(34, 16, true); str(36, 'data'); out.setUint32(40, n * 4, true);
+  for (let i = 0; i < n; i++) {
+    out.setInt16(44 + i * 4, clamp(L[i], -1, 1) * 32767, true);
+    out.setInt16(46 + i * 4, clamp(R[i], -1, 1) * 32767, true);
+  }
+  const bytes = new Uint8Array(out.buffer); let s = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(s);
+};
+window.drawFrame = drawFrame;
+window.DUR = DUR;
+
+// ---------- player ----------
+const btn = document.getElementById('play'), seek = document.getElementById('seek'), timeEl = document.getElementById('time'), sndBtn = document.getElementById('snd');
+let playing = false, cur = 0, startPerf = 0, ac = null, muted = false;
+const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+
+function stopAudio() { if (ac) { ac.close(); ac = null; } }
+function startAudio() {
+  stopAudio();
+  if (muted) return;
+  ac = new (window.AudioContext || window.webkitAudioContext)();
+  schedule(ac, master(ac), ac.currentTime + 0.05 - cur, cur);
+}
+function play() {
+  if (cur >= DUR - 0.05) cur = 0;
+  playing = true; startPerf = performance.now() - cur * 1000; btn.textContent = '⏸ 정지';
+  startAudio(); requestAnimationFrame(tick);
+}
+function pause() { playing = false; btn.textContent = '▶ 재생'; stopAudio(); }
+function render() { drawFrame(cur); seek.value = Math.round((cur / DUR) * 1000); timeEl.textContent = `${fmt(cur)} / ${fmt(DUR)}`; }
+function tick() {
+  if (!playing) return;
+  cur = (performance.now() - startPerf) / 1000;
+  if (cur >= DUR) { cur = DUR; pause(); }
+  render();
+  if (playing) requestAnimationFrame(tick);
+}
+btn.onclick = () => (playing ? pause() : play());
+cv.onclick = () => (playing ? pause() : play());
+seek.oninput = () => { cur = (seek.value / 1000) * DUR; if (playing) { startPerf = performance.now() - cur * 1000; startAudio(); } render(); };
+sndBtn.onclick = () => { muted = !muted; sndBtn.textContent = muted ? '🔇' : '🔊'; if (playing) startAudio(); };
+
+// Korean webfonts arrive in unicode-range subsets, so preload every string the film draws.
+const ALL_TEXT = LINES.map(l => l.text).join('') + '광고하객룩끝판왕쿠션퉁퉁3초커버·붓기실종하루종일광채퍽나이스캐치플래시받아도안뜸남의결혼식에서도,주인공은나지금1+1프로필링크클릭청첩장WeddingRECISO소주닭발♡';
+window.ready = Promise.all([document.fonts.load(`40px 'Jua'`, ALL_TEXT)]).catch(() => {}).then(() => {
+  cur = 10.5; render(); cur = 0;
+  timeEl.textContent = `${fmt(0)} / ${fmt(DUR)}`; seek.value = 0;
+});
+</script>
+</body>
+</html>
