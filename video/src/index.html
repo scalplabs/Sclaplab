@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>색칠공부 책 만들기</title>
+<style>
+@font-face{font-family:Jua;src:url(fonts/jua.ttf)}
+@font-face{font-family:Pre;src:url(fonts/pre-Regular.woff2);font-weight:400}
+@font-face{font-family:Pre;src:url(fonts/pre-Bold.woff2);font-weight:700}
+@font-face{font-family:Pre;src:url(fonts/pre-ExtraBold.woff2);font-weight:800}
+:root{--ink:#1d1a17;--bg:#FFF5DC;--accent:#FF6B4A;--blue:#3D7BFF}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--bg);font-family:Pre,sans-serif;color:var(--ink)}
+.scene{position:absolute;inset:0;opacity:0}
+/* dotted paper bg */
+body::before{content:"";position:absolute;inset:0;background-image:radial-gradient(#00000014 3px,transparent 3.5px);background-size:44px 44px}
+
+/* svg styling */
+.photo .sky{fill:var(--sky,#BFE6FF)}
+.photo .s{fill:var(--c)}
+.photo .l{stroke:var(--c);stroke-width:9;fill:none;stroke-linecap:round}
+.photo .k{fill:#2a1d17}
+.photo .m{stroke:#7a3b2a;stroke-width:4;fill:none;stroke-linecap:round}
+.photo .bl{fill:#FF9EAA;opacity:.7}
+.line .sky,.line .bl{display:none}
+.line .s{fill:#fff;stroke:var(--ink);stroke-width:5;stroke-linejoin:round}
+.line .l{stroke:var(--ink);stroke-width:6;fill:none;stroke-linecap:round}
+.line .k{fill:var(--ink)}
+.line .m{stroke:var(--ink);stroke-width:5;fill:none;stroke-linecap:round}
+.draw .s,.draw .l,.draw .m{stroke-dasharray:1 1;animation:draw 1300ms ease-out both;animation-delay:var(--d)}
+.draw .k{animation:pop 300ms both;animation-delay:calc(var(--d) + 900ms)}
+@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes pop{from{opacity:0}to{opacity:1}}
+
+/* photo->line wipe */
+.flip{position:relative;overflow:hidden}
+.flip svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.flip .ph{animation:wipe 700ms ease-in-out both;animation-delay:var(--d)}
+.flip .bar{position:absolute;top:0;bottom:0;width:14px;left:-14px;background:linear-gradient(90deg,transparent,#fff 40%,#FFE14D 60%,transparent);box-shadow:0 0 40px 14px #fff8;animation:bar 700ms ease-in-out both;animation-delay:var(--d)}
+@keyframes wipe{from{clip-path:inset(0 0 0 0)}to{clip-path:inset(0 0 0 100%)}}
+@keyframes bar{0%{left:-14px;opacity:1}95%{opacity:1}100%{left:100%;opacity:0}}
+
+/* common text */
+.step{position:absolute;left:0;right:0;top:150px;text-align:center}
+.badge{display:inline-block;font:800 40px Pre;color:#fff;background:var(--ink);padding:12px 30px;border-radius:999px;letter-spacing:1px}
+.title{font-family:Jua;font-size:86px;line-height:1.18;margin-top:26px}
+.title em{font-style:normal;color:var(--accent)}
+.anim-up{animation:up 520ms cubic-bezier(.2,1.4,.4,1) both;animation-delay:var(--d)}
+@keyframes up{from{opacity:0;transform:translateY(60px) scale(.9)}to{opacity:1;transform:none}}
+.anim-pop{animation:pop2 520ms cubic-bezier(.2,1.6,.4,1) both;animation-delay:var(--d)}
+@keyframes pop2{from{opacity:0;transform:scale(.4) rotate(var(--r0,0deg))}to{opacity:1;transform:scale(1) rotate(var(--r,0deg))}}
+
+/* S1 hook */
+#s1 .h1{position:absolute;top:210px;left:0;right:0;text-align:center;font-family:Jua;font-size:104px;line-height:1.15}
+#s1 .h2{position:absolute;top:1430px;left:0;right:0;text-align:center;font-family:Jua;font-size:100px;line-height:1.18}
+#s1 .h2 em{font-style:normal;color:#fff;background:var(--accent);padding:0 22px;border-radius:24px;display:inline-block;transform:rotate(-2deg)}
+.pol{position:absolute;width:330px;background:#fff;padding:18px 18px 64px;box-shadow:0 18px 40px #0003;border-radius:10px}
+.pol .flip{width:294px;height:294px;border-radius:4px}
+
+/* S2 chat */
+.chat{position:absolute;left:60px;right:60px;top:430px;height:1380px;background:#fff;border-radius:48px;box-shadow:0 30px 70px #0002;overflow:hidden}
+.chat .hd{height:110px;border-bottom:2px solid #eee;display:flex;align-items:center;gap:20px;padding:0 40px;font:700 38px Pre}
+.chat .hd i{width:54px;height:54px;border-radius:50%;background:conic-gradient(#FF6B4A,#FFC93C,#5BD08A,#3D7BFF,#FF6B4A)}
+.msgs{padding:36px 40px;display:flex;flex-direction:column;gap:26px}
+.me{align-self:flex-end;max-width:82%}
+.bub{background:#EEF3FF;border-radius:36px 36px 8px 36px;padding:24px 32px;font:500 35px/1.45 Pre}
+.bub b{color:var(--blue)}
+.ai{align-self:flex-start;display:flex;gap:18px;align-items:flex-start}
+.ai .av{width:64px;height:64px;border-radius:50%;flex:none;background:conic-gradient(#FF6B4A,#FFC93C,#5BD08A,#3D7BFF,#FF6B4A)}
+.imgbub{width:330px;height:330px;border-radius:28px;overflow:hidden}
+.imgbub svg{width:100%;height:100%;display:block}
+.aipage{width:470px;height:665px;background:#fff;border:3px solid #e8e8e8;border-radius:22px;position:relative;overflow:hidden;box-shadow:0 10px 30px #0001}
+.aipage svg{position:absolute;left:12px;top:40px;width:446px;height:446px}
+.aipage .cap{position:absolute;bottom:60px;left:0;right:0;text-align:center;font:600 24px Pre;color:#333}
+.dots{display:flex;gap:12px;padding:30px 34px;background:#F4F4F4;border-radius:36px}
+.dots span{width:18px;height:18px;border-radius:50%;background:#aaa;animation:blink 600ms infinite alternate}
+.dots span:nth-child(2){animation-delay:200ms}.dots span:nth-child(3){animation-delay:400ms}
+@keyframes blink{from{opacity:.25}to{opacity:1}}
+.caret{display:inline-block;width:4px;height:38px;background:var(--blue);vertical-align:-6px;margin-left:2px}
+
+/* pages */
+.page{position:absolute;background:#fff;border-radius:14px;box-shadow:0 16px 40px #0002;overflow:hidden}
+.page .flip{position:absolute;left:4%;right:4%;top:6%;aspect-ratio:1}
+.page .cap{position:absolute;left:0;right:0;bottom:7%;text-align:center;font:600 21px Pre;color:#222;opacity:0;animation:pop 400ms both;animation-delay:var(--d)}
+
+/* cover */
+.cover .ct{position:absolute;top:70px;left:0;right:0;text-align:center;font-family:Jua;font-size:92px;color:#fff;-webkit-text-stroke:5px var(--ink);paint-order:stroke fill;letter-spacing:2px}
+.cover svg{position:absolute;left:60px;right:60px;top:200px;width:calc(100% - 120px)}
+.cover .nm{position:absolute;bottom:70px;left:0;right:0;text-align:center;font:700 40px Pre}
+.cover .nm span{display:inline-block;width:300px;height:70px;border:5px dashed var(--ink);border-radius:16px;vertical-align:middle;margin-left:16px;position:relative}
+.colorin{animation:colorIn 350ms ease-out both;animation-delay:var(--d)}
+@keyframes colorIn{from{fill:#fff}to{fill:var(--c2)}}
+.crayon{position:absolute;width:56px;height:260px;left:0;top:0;transform-origin:50% 0;z-index:5;filter:drop-shadow(0 10px 10px #0003)}
+
+/* S5 */
+#s5 .h{position:absolute;top:170px;left:0;right:0;text-align:center;font-family:Jua;font-size:100px;line-height:1.2}
+#s5 .h em{font-style:normal;color:var(--accent)}
+.drop{animation:drop 600ms cubic-bezier(.2,1.3,.4,1) both;animation-delay:var(--d)}
+@keyframes drop{from{opacity:0;transform:translateY(-500px) rotate(calc(var(--r) - 25deg))}to{opacity:1;transform:rotate(var(--r))}}
+.save{position:absolute;bottom:170px;left:50%;transform:translateX(-50%);white-space:nowrap;background:var(--ink);color:#fff;font:800 50px Pre;padding:32px 56px;border-radius:999px}
+.save .anim-in{display:inline-block}
+.save svg{width:44px;height:44px;vertical-align:-6px;margin-right:12px}
+.ring{position:absolute;left:-60px;top:-30px;width:70px;height:20px;border-radius:10px;background:#888}
+</style></head>
+<body>
+
+<div class="scene" id="s1"></div>
+<div class="scene" id="s2"></div>
+<div class="scene" id="s3"></div>
+<div class="scene" id="s4"></div>
+<div class="scene" id="s5"></div>
+
+<script>
+const SKIN='#F6C9A3',HAIR='#4A2E1F',PANTS='#3D5A99';
+const s=(tag,a,c)=>`<${tag} class="s" pathLength="1" style="--c:${c}" ${a}/>`;
+const l=(d,c)=>`<path class="l" pathLength="1" style="--c:${c}" d="${d}"/>`;
+
+function head(cx,cy,closed=false){
+  return s('circle',`cx="${cx}" cy="${cy-4}" r="46"`,HAIR)+
+   s('circle',`cx="${cx}" cy="${cy+4}" r="40"`,SKIN)+
+   s('path',`d="M${cx-42} ${cy} Q${cx-34} ${cy-48} ${cx} ${cy-46} Q${cx+36} ${cy-48} ${cx+44} ${cy} Q${cx+22} ${cy-20} ${cx+4} ${cy-16} Q${cx-18} ${cy-24} ${cx-42} ${cy}Z"`,HAIR)+
+   (closed? `<path class="m" pathLength="1" d="M${cx-22} ${cy+8} q8 6 16 0 M${cx+6} ${cy+8} q8 6 16 0"/>`
+          : `<circle class="k" cx="${cx-14}" cy="${cy+7}" r="5.5"/><circle class="k" cx="${cx+14}" cy="${cy+7}" r="5.5"/>`)+
+   `<circle class="bl" cx="${cx-24}" cy="${cy+20}" r="7"/><circle class="bl" cx="${cx+24}" cy="${cy+20}" r="7"/>`+
+   `<path class="m" pathLength="1" d="M${cx-10} ${cy+22} Q${cx} ${cy+31} ${cx+10} ${cy+22}"/>`;
+}
+const arm=(x,y,ang,len=72)=>s('rect',`x="${x-11}" y="${y}" width="22" height="${len}" rx="11" transform="rotate(${ang} ${x} ${y})"`,SKIN);
+function standing(x,shirt,armL=20,armR=-20){
+  return arm(x-30,170,armL)+arm(x+30,170,armR)+
+   s('rect',`x="${x-26}" y="236" width="22" height="62" rx="8"`,PANTS)+
+   s('rect',`x="${x+4}" y="236" width="22" height="62" rx="8"`,PANTS)+
+   s('ellipse',`cx="${x-18}" cy="300" rx="20" ry="11"`,'#fff')+
+   s('ellipse',`cx="${x+18}" cy="300" rx="20" ry="11"`,'#fff')+
+   s('rect',`x="${x-34}" y="160" width="68" height="84" rx="20"`,shirt)+
+   head(x,116);
+}
+const ground=(c='#8FD18B')=>s('path',`d="M-10 290 Q200 262 410 290 L410 410 L-10 410Z"`,c);
+const sun=()=>s('circle',`cx="335" cy="62" r="30"`,'#FFD54A')+s('path',`d="M40 80 q0-26 30-26 q10-20 34-12 q24-4 30 20 q22 2 18 18Z"`,'#fff');
+const sky=(c)=>`<rect class="sky" style="--sky:${c||'#BFE6FF'}" width="400" height="400"/>`;
+
+const SCENES=[
+ // bike
+ ()=>sky()+sun()+ground()+
+  s('circle','cx="105" cy="318" r="52"','#333')+s('circle','cx="105" cy="318" r="36"','#EDEDED')+
+  s('circle','cx="295" cy="318" r="52"','#333')+s('circle','cx="295" cy="318" r="36"','#EDEDED')+
+  l('M105 318 L175 248 L205 318 Z M175 248 L268 236 L295 318 M205 318 L268 236','#E53935')+
+  l('M250 210 L268 236 M240 208 L262 206','#555')+
+  arm(170,166,-62,92)+
+  s('rect','x="168" y="226" width="26" height="70" rx="10" transform="rotate(-20 181 230)"',PANTS)+
+  s('ellipse','cx="214" cy="300" rx="20" ry="11"','#fff')+
+  s('ellipse','cx="176" cy="248" rx="26" ry="9"','#222')+
+  s('rect','x="146" y="150" width="64" height="88" rx="20" transform="rotate(12 178 194)"','#FF8A3D')+
+  arm(196,166,-70,90)+s('circle','cx="262" cy="206" r="11"',SKIN)+
+  head(170,108),
+ // slide
+ ()=>sky()+sun()+ground()+
+  l('M58 160 L58 300 M100 160 L100 300 M58 195 L100 195 M58 230 L100 230 M58 265 L100 265','#5C6BC0')+
+  s('rect','x="50" y="150" width="80" height="16" rx="6"','#5C6BC0')+
+  s('path','d="M120 150 L150 150 Q250 230 360 290 L330 306 Q230 250 120 168Z"','#FF7043')+
+  `<g transform="translate(-40 -88) scale(.82)">`+arm(210,170,160)+arm(250,170,-160)+
+  s('rect','x="196" y="236" width="56" height="34" rx="12"',PANTS)+
+  s('rect','x="196" y="160" width="68" height="84" rx="20"','#29B6F6')+head(230,116)+`</g>`,
+ // sleeping w/ cat
+ ()=>sky('#FFE3B8')+s('circle','cx="330" cy="70" r="26"','#FFF6C9')+
+  s('rect','x="20" y="250" width="360" height="140" rx="20"','#C8A2FF')+
+  s('ellipse','cx="120" cy="250" rx="90" ry="40"','#fff')+
+  `<g transform="rotate(-12 120 210)">`+head(120,208,true)+`</g>`+
+  s('ellipse','cx="255" cy="262" rx="70" ry="42"','#FFA94D')+
+  s('path','d="M290 230 L300 196 L318 222Z M330 230 L344 198 L352 232Z"','#FFA94D')+
+  s('circle','cx="322" cy="246" r="34"','#FFA94D')+
+  `<path class="m" pathLength="1" d="M305 246 q6 5 12 0 M327 246 q6 5 12 0"/>`+
+  s('path','d="M326 260 l-4 4 l-4 -4Z"','#FF7A8A')+
+  s('rect','x="150" y="250" width="130" height="24" rx="12" transform="rotate(-6 150 262)"',SKIN)+
+  s('path','d="M20 300 Q200 270 380 300 L380 390 L20 390Z"','#9D7BEA'),
+ // balloon
+ ()=>sky()+sun()+ground()+
+  l('M262 102 Q250 150 238 174','#666')+
+  s('ellipse','cx="275" cy="62" rx="44" ry="52"','#FF4D6D')+s('path','d="M268 112 l7 10 l7 -10Z"','#FF4D6D')+
+  standing(190,'#FFD23F',22,-150)+s('circle','cx="240" cy="166" r="11"',SKIN),
+ // ball
+ ()=>sky()+sun()+ground()+
+  standing(170,'#5BD08A',40,-40)+
+  s('circle','cx="275" cy="290" r="36"','#fff')+
+  s('path','d="M275 272 l15 11 l-6 18 h-18 l-6 -18Z"','#222'),
+];
+const COVER=()=>standing(200,'#fff',20,-160)+s('circle','cx="214" cy="104" r="11"',SKIN)+
+  s('path','d="M60 300 Q200 280 340 300"','#fff')+
+  s('path','d="M60 90 l8 18 l20 2 l-15 13 l5 20 l-18 -10 l-18 10 l5 -20 l-15 -13 l20 -2Z"','#fff')+
+  s('path','d="M320 160 l6 14 l15 1 l-11 10 l4 15 l-14 -8 l-14 8 l4 -15 l-11 -10 l15 -1Z"','#fff');
+const CAPS=['민준이가 집 앞에서 자전거를 타요.','민준이가 미끄럼틀을 타요.','민준이가 고양이를 안고 자요.','민준이가 풍선을 들고 있어요.','민준이가 공놀이를 해요.'];
+
+const svg=(i,cls,extra='')=>`<svg viewBox="0 0 400 400" class="${cls}" ${extra}>${SCENES[i]()}</svg>`;
+const flip=(i,d,style='')=>`<div class="flip" style="--d:${d}ms;${style}">${svg(i,'line')}${svg(i,'photo ph')}<div class="bar"></div></div>`;
+
+// ---------- S1 hook (0-2300)
+{
+ const pos=[[80,560,-8],[660,540,7],[370,700,-2],[60,1010,5],[690,990,-6]];
+ let h=`<div class="h1 anim-up" style="--d:80ms">우리 아이 사진 5장이</div>`;
+ pos.forEach(([x,y,r],i)=>{h+=`<div class="pol anim-pop" style="left:${x}px;top:${y}px;--r:${r}deg;--r0:${r*3}deg;--d:${300+i*140}ms">${flip(i,1350+i*110)}</div>`});
+ h+=`<div class="h2 anim-up" style="--d:1250ms">아이가 주인공인<br><em>색칠공부 책</em>으로!</div>`;
+ s1.innerHTML=h;
+}
+// ---------- S2 chat (2300-7000)
+const PROMPT='이 사진을 <b>5세</b> 어린이용 색칠공부 도안으로 바꿔줘. 흰 배경에 굵은 검은 윤곽선만, 회색 음영 없이. 아이 얼굴·자세·옷은 사진대로. A4 세로로.';
+s2.innerHTML=`
+ <div class="step"><div class="badge anim-up" style="--d:2350ms">STEP 1</div>
+ <div class="title anim-up" style="--d:2450ms">사진 올리고 <em>프롬프트</em> 붙여넣기</div></div>
+ <div class="chat anim-up" style="--d:2400ms">
+  <div class="hd"><i></i>AI 채팅</div>
+  <div class="msgs">
+   <div class="me anim-up" style="--d:2700ms"><div class="imgbub">${svg(0,'photo')}</div></div>
+   <div class="me" id="pmsg" style="display:none"><div class="bub" id="ptxt"></div></div>
+   <div class="ai" id="aimsg" style="display:none"><div class="av"></div>
+     <div class="dots" id="dots"><span></span><span></span><span></span></div>
+     <div class="aipage" id="aipage" style="display:none">${svg(0,'line draw','style="--d:5250ms"')}<div class="cap anim-up" style="--d:6300ms">${CAPS[0]}</div></div>
+   </div>
+  </div>
+ </div>`;
+// ---------- S3 pages (7000-9800)
+{
+ let h=`<div class="step"><div class="badge anim-up" style="--d:7050ms">STEP 2</div>
+ <div class="title anim-up" style="--d:7150ms">같은 대화에서<br><em>나머지 4장</em>도 똑같이</div></div>`;
+ const W=440,H=622,g=[[70,560,-3],[570,560,3],[70,1230,2],[570,1230,-2]];
+ // first page already line art, others flip
+ g.forEach(([x,y,r],k)=>{const i=k+1,d=7700+k*260;
+  h+=`<div class="page anim-pop" style="left:${x}px;top:${y}px;width:${W}px;height:${H}px;--r:${r}deg;--d:${7300+k*120}ms">${flip(i,d)}<div class="cap" style="--d:${d+600}ms">${CAPS[i]}</div></div>`});
+ s3.innerHTML=h;
+}
+// ---------- S4 cover (9800-12300)
+s4.innerHTML=`<div class="step"><div class="badge anim-up" style="--d:9850ms">STEP 3</div>
+ <div class="title anim-up" style="--d:9950ms">아이 <em>이름</em> 넣은 표지까지</div></div>
+ <div class="page cover anim-pop" id="cov" style="left:140px;top:500px;width:800px;height:1130px;--r:0deg;--d:10050ms">
+  <div class="ct">민준이의 색칠공부</div>
+  <svg viewBox="0 0 400 400" class="line" id="covsvg">${COVER()}</svg>
+  <div class="nm">이름 <span><b id="nmw" style="position:absolute;inset:0;font:400 52px Jua;line-height:60px;opacity:0">민준</b></span></div>
+ </div>
+ <svg class="crayon" id="crayon" viewBox="0 0 56 260"><path d="M28 0 L46 50 H10Z" fill="#E8453C"/><path d="M28 0 L34 17 H22Z" fill="#a52a22"/><rect x="8" y="48" width="40" height="210" rx="6" fill="#FF6B4A"/><rect x="8" y="90" width="40" height="22" fill="#d84a2c"/><rect x="8" y="200" width="40" height="22" fill="#d84a2c"/></svg>`;
+// color-in: shirt, pants, hair parts, stars
+{
+ const shapes=[...covsvg.querySelectorAll('.s')];
+ const plan=[[6,'#FFD23F'],[2,'#3D7BFF'],[3,'#3D7BFF'],[12,'#FF6B4A'],[13,'#5BD08A'],[8,'#F6C9A3'],[7,HAIR],[9,HAIR],[1,'#F6C9A3'],[10,'#F6C9A3']];
+ window.COLOR_PLAN=plan.map(([i,c],k)=>{const el=shapes[i];el.classList.add('colorin');el.style.setProperty('--c2',c);el.style.setProperty('--d',(10900+k*150)+'ms');return el});
+}
+// ---------- S5 finish (12300-14600)
+{
+ const pg=(i,x,y,r,d)=>`<div class="page drop" style="left:${x}px;top:${y}px;width:520px;height:735px;--r:${r}deg;--d:${d}ms">${`<div class="flip" style="position:absolute;left:4%;right:4%;top:6%;aspect-ratio:1">${svg(i,'line')}</div>`}<div class="cap" style="opacity:1;animation:none;font-size:25px">${CAPS[i]}</div></div>`;
+ let h=`<div class="h anim-up" style="--d:12350ms">A4로 출력해서<br><em>묶으면 끝!</em></div>`;
+ h+=pg(4,330,640,9,12450)+pg(2,250,620,-7,12530)+pg(1,300,600,4,12610)+pg(0,270,610,-3,12690);
+ h+=`<div class="page cover drop" style="left:280px;top:590px;width:520px;height:735px;--r:1deg;--d:12800ms">
+   <div class="ct" style="font-size:58px;top:42px;-webkit-text-stroke:4px var(--ink)">민준이의 색칠공부</div>
+   <svg viewBox="0 0 400 400" class="line" style="left:40px;right:40px;top:120px;width:calc(100% - 80px)">${COVER()}</svg>
+   <div class="nm" style="font-size:28px;bottom:44px">이름 <span style="width:190px;height:50px;border-width:4px;font:400 36px/40px Jua">민준</span></div></div>`;
+ h+=`<div class="save anim-pop" style="--d:13300ms;transform:translateX(-50%)"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z" fill="#FFD23F"/></svg>저장해두고 주말에 같이 만들어봐</div>`;
+ s5.innerHTML=h;
+ // keep translate on save pill while popping
+ const sv=s5.querySelector('.save');sv.classList.remove('anim-pop');sv.innerHTML=`<span class="anim-pop" style="--d:13300ms;display:inline-block">${sv.innerHTML}</span>`;
+ sv.style.background='transparent';sv.style.padding='0';
+ sv.firstChild.style.cssText+=';background:var(--ink);padding:32px 56px;border-radius:999px';
+}
+
+// ---------- timeline
+const SC=[[s1,0,2300],[s2,2300,7000],[s3,7000,9800],[s4,9800,12300],[s5,12300,15000]];
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+const plain=PROMPT.replace(/<[^>]+>/g,'');
+function typed(n){ // render first n plain chars keeping <b>
+  let out='',c=0,i=0;while(i<PROMPT.length&&c<n){if(PROMPT[i]=='<'){const j=PROMPT.indexOf('>',i);out+=PROMPT.slice(i,j+1);i=j+1;continue}out+=PROMPT[i++];c++}
+  if(out.includes('<b>')&&!out.slice(out.lastIndexOf('<b>')).includes('</b>'))out+='</b>';return out;
+}
+window.seek=function(t){
+  for(const [el,a,b] of SC){const fi=200,o=Math.min(clamp((t-a)/fi+ (a==0?1:0)),clamp((b-t)/fi));el.style.opacity=o;el.style.display=(t>=a-50&&t<=b+50)?'block':'none'}
+  // typing
+  const T0=3000,T1=4500;
+  pmsg.style.display=t>=T0-150?'block':'none';
+  const n=Math.round(clamp((t-T0)/(T1-T0))*plain.length);
+  ptxt.innerHTML=typed(n)+(t<T1+250?'<span class="caret"></span>':'');
+  aimsg.style.display=t>=4750?'flex':'none';
+  dots.style.display=t<5200?'flex':'none';
+  aipage.style.display=t>=5200?'block':'none';
+  // crayon path through color plan
+  const cr=crayon;
+  if(t>=10750&&t<12250){
+    cr.style.display='block';
+    const k=clamp((t-10900)/150,0,COLOR_PLAN.length-1),i0=Math.floor(k),i1=Math.min(i0+1,COLOR_PLAN.length-1),f=ease(k-i0);
+    const p=e=>{const r=e.getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2]};
+    const a=p(COLOR_PLAN[i0]),b=p(COLOR_PLAN[i1]);
+    const wig=Math.sin(t/28)*14;
+    let x=a[0]+(b[0]-a[0])*f+wig,y=a[1]+(b[1]-a[1])*f+Math.cos(t/33)*8;
+    const enter=clamp((t-10750)/200),leave=clamp((12250-t)/250);
+    x+= (1-enter)*400+(1-leave)*400; y+=(1-enter)*300+(1-leave)*300;
+    cr.style.transform=`translate(${x-28}px,${y}px) rotate(-28deg)`;
+  } else cr.style.display='none';
+  nmw.style.opacity=clamp((t-12000)/200);
+  document.getAnimations().forEach(an=>{an.pause();an.currentTime=t});
+};
+seek(0);
+</script>
+</body></html>
