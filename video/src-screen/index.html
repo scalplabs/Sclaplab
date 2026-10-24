@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>색칠공부 화면 녹화</title>
+<style>
+@font-face{font-family:Jua;src:url(fonts/jua.ttf)}
+@font-face{font-family:Pre;src:url(fonts/pre-Regular.woff2);font-weight:400}
+@font-face{font-family:Pre;src:url(fonts/pre-Bold.woff2);font-weight:700}
+@font-face{font-family:Pre;src:url(fonts/pre-ExtraBold.woff2);font-weight:800}
+:root{--ink:#1d1a17;--blue:#2F6BFF}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#fff;font-family:Pre,sans-serif;color:#111}
+.abs{position:absolute}
+.scr{position:absolute;inset:0;display:none;overflow:hidden}
+
+/* svg styles (shared with scenes.js) */
+.photo .sky{fill:var(--sky,#BFE6FF)}
+.photo .s{fill:var(--c)}
+.photo .l{stroke:var(--c);stroke-width:9;fill:none;stroke-linecap:round}
+.photo .k{fill:#2a1d17}
+.photo .m{stroke:#7a3b2a;stroke-width:4;fill:none;stroke-linecap:round}
+.photo .bl{fill:#FF9EAA;opacity:.7}
+.line .sky,.line .bl{display:none}
+.line .s{fill:#fff;stroke:var(--ink);stroke-width:5;stroke-linejoin:round}
+.line .l{stroke:var(--ink);stroke-width:6;fill:none;stroke-linecap:round}
+.line .k{fill:var(--ink)}
+.line .m{stroke:var(--ink);stroke-width:5;fill:none;stroke-linecap:round}
+svg{display:block}
+
+/* status bar */
+.sb{position:absolute;top:0;left:0;right:0;height:96px;display:flex;align-items:center;justify-content:space-between;padding:12px 70px 0;font:700 40px Pre;z-index:50}
+.sb .ic{display:flex;gap:14px;align-items:center}
+.sb .bat{width:62px;height:30px;border:3px solid currentColor;border-radius:9px;padding:3px;position:relative}
+.sb .bat::after{content:"";display:block;height:100%;width:80%;background:currentColor;border-radius:4px}
+.sb .sig{display:flex;gap:4px;align-items:flex-end}.sb .sig i{width:8px;background:currentColor;border-radius:2px}
+
+/* home */
+#home{background:linear-gradient(160deg,#9AD0FF,#C9B6FF 55%,#FFC7D9)}
+.app{position:absolute;width:190px;text-align:center;color:#fff;font:600 30px Pre;text-shadow:0 2px 6px #0004}
+.app .ico{width:170px;height:170px;border-radius:42px;margin:0 auto 12px;box-shadow:0 8px 20px #0002;display:flex;align-items:center;justify-content:center}
+.dock{position:absolute;left:40px;right:40px;bottom:50px;height:230px;border-radius:70px;background:#ffffff55;backdrop-filter:blur(10px)}
+.aiico{background:conic-gradient(from 200deg,#FF6B4A,#FFC93C,#5BD08A,#3D7BFF,#FF6B4A)}
+.aiico::after{content:"";width:70px;height:70px;border-radius:50%;background:#fff}
+
+/* chat */
+#chat{background:#fff}
+.hdr{position:absolute;top:96px;left:0;right:0;height:120px;display:flex;align-items:center;justify-content:center;font:700 44px Pre;border-bottom:2px solid #f0f0f0;background:#fff;z-index:10}
+.hdr .mn{position:absolute;left:50px;width:56px}.hdr .mn i{display:block;height:6px;background:#222;border-radius:3px;margin:9px 0}
+.hdr .nw{position:absolute;right:50px;width:56px;height:56px;border:5px solid #222;border-radius:14px}
+.greet{position:absolute;top:780px;left:0;right:0;text-align:center;font:700 58px Pre;color:#222}
+.greet .aiico{width:120px;height:120px;border-radius:50%;margin:0 auto 40px;display:flex;align-items:center;justify-content:center}
+.greet .aiico::after{width:50px;height:50px}
+.comp{position:absolute;left:30px;right:30px;bottom:60px;background:#F3F4F6;border-radius:60px;padding:22px 26px;z-index:20}
+.comp .row{display:flex;align-items:flex-end;gap:20px}
+.plus{width:96px;height:96px;flex:none;border-radius:50%;background:#fff;border:2px solid #ddd;position:relative}
+.plus::before,.plus::after{content:"";position:absolute;left:50%;top:50%;width:40px;height:6px;background:#222;border-radius:3px;transform:translate(-50%,-50%)}
+.plus::after{transform:translate(-50%,-50%) rotate(90deg)}
+.inp{flex:1;min-height:96px;font:400 38px/1.45 Pre;color:#999;padding:22px 6px;}
+.inp.on{color:#111}
+.send{width:96px;height:96px;flex:none;border-radius:50%;background:#ccc;position:relative}
+.send.on{background:#111}
+.send::after{content:"";position:absolute;left:50%;top:50%;width:26px;height:26px;border-left:7px solid #fff;border-top:7px solid #fff;transform:translate(-50%,-30%) rotate(45deg)}
+.att{width:190px;height:190px;border-radius:26px;overflow:hidden;margin:0 0 16px 6px;position:relative}
+.att svg{width:100%;height:100%}
+.att .x{position:absolute;right:10px;top:10px;width:40px;height:40px;border-radius:50%;background:#000a}
+.caret{display:inline-block;width:4px;height:44px;background:var(--blue);vertical-align:-8px}
+.paste{position:absolute;background:#2b2b2b;color:#fff;font:600 36px Pre;padding:24px 40px;border-radius:24px;z-index:30;box-shadow:0 10px 30px #0004}
+.paste::after{content:"";position:absolute;left:60px;bottom:-16px;border:16px solid transparent;border-bottom:0;border-top-color:#2b2b2b}
+.paste span{opacity:.5;margin-left:36px}
+
+/* sheet */
+.dim{position:absolute;inset:0;background:#0006;z-index:40}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:50px 50px 0 0;z-index:41}
+.opt{display:flex;align-items:center;gap:36px;padding:34px 60px;font:600 42px Pre}
+.opt i{width:84px;height:84px;border-radius:24px;display:block}
+.grab{width:120px;height:10px;background:#ddd;border-radius:5px;margin:22px auto 10px}
+
+/* gallery */
+.gal .gh{display:flex;justify-content:space-between;align-items:center;padding:20px 50px 30px;font:600 40px Pre}
+.gal .gh b{font-weight:800;color:#111}
+.gal .gh .add{color:var(--blue);font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(3,356px);gap:6px}
+.cell{width:356px;height:356px;position:relative;overflow:hidden}
+.cell svg{width:100%;height:100%}
+.chk{position:absolute;right:16px;bottom:16px;width:58px;height:58px;border-radius:50%;border:4px solid #fff;background:#0002}
+.chk.on{background:var(--blue)}
+.chk.on::after{content:"";position:absolute;left:16px;top:9px;width:14px;height:26px;border-right:6px solid #fff;border-bottom:6px solid #fff;transform:rotate(45deg)}
+
+/* messages */
+.feed{position:absolute;left:0;right:0;top:0;z-index:1}
+.ub{position:absolute;right:40px;background:#F1F3F7;border-radius:40px 40px 10px 40px;padding:26px 34px;font:400 35px/1.5 Pre;max-width:780px}
+.ub b{color:var(--blue)}
+.uimg{position:absolute;right:40px;border-radius:34px;overflow:hidden}
+.uimg svg{width:100%;height:100%}
+.av{position:absolute;left:40px;width:66px;height:66px;border-radius:50%}
+.av::after{width:26px!important;height:26px!important}
+.gen{position:absolute;left:130px;border-radius:28px;overflow:hidden;background:#EDEEF1}
+.gen .sh{position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,#ffffffcc 50%,transparent 70%);background-size:200% 100%;animation:shim 1100ms linear infinite}
+@keyframes shim{from{background-position:150% 0}to{background-position:-50% 0}}
+.gen .lb{position:absolute;left:36px;top:30px;font:600 32px Pre;color:#777}
+.gen .res{position:absolute;inset:0;animation:reveal 900ms ease-out both;animation-delay:var(--d)}
+@keyframes reveal{from{clip-path:inset(0 0 100% 0);filter:blur(24px)}60%{filter:blur(8px)}to{clip-path:inset(0 0 0 0);filter:blur(0)}}
+.a4{position:absolute;inset:0;background:#fff;border:2px solid #e6e6e6;border-radius:inherit}
+.a4 svg{position:absolute;left:4%;width:92%;top:5%}
+.a4 .cp{position:absolute;left:0;right:0;bottom:7%;text-align:center;color:#222;font-weight:600}
+.a4 .ct{position:absolute;left:0;right:0;text-align:center;font-family:Jua;color:#fff;paint-order:stroke fill}
+.a4 .nm{position:absolute;left:0;right:0;text-align:center;font-weight:700}
+.a4 .nm span{display:inline-block;border:4px dashed #222;border-radius:12px;vertical-align:middle}
+
+/* context menu / share */
+.ctx{position:absolute;background:#fff;border-radius:30px;width:520px;z-index:45;box-shadow:0 20px 60px #0004;overflow:hidden}
+.ctx div{padding:32px 40px;font:500 38px Pre;border-bottom:2px solid #eee;display:flex;justify-content:space-between}
+.share .apps{display:flex;gap:40px;padding:30px 60px}
+.share .apps div{text-align:center;font:500 28px Pre;width:140px}
+.share .apps i{display:block;width:130px;height:130px;border-radius:34px;margin:0 auto 12px}
+.share .acts div{padding:34px 60px;font:500 40px Pre;border-top:2px solid #eee;display:flex;align-items:center;gap:30px}
+.printer{width:60px;height:46px;border:6px solid #222;border-radius:10px;position:relative}
+.printer::before{content:"";position:absolute;left:8px;right:8px;top:-22px;height:18px;border:6px solid #222;border-bottom:0}
+
+/* print screen */
+#print{background:#F2F2F7}
+#print .ph{position:absolute;top:96px;left:0;right:0;height:120px;display:flex;align-items:center;justify-content:center;font:700 44px Pre}
+#print .ph .l{position:absolute;left:50px;color:var(--blue);font-weight:500}
+#print .ph .r{position:absolute;right:50px;color:var(--blue);font-weight:800}
+.pset{margin:20px 40px;background:#fff;border-radius:30px}
+.pset div{display:flex;justify-content:space-between;padding:34px 40px;font:500 38px Pre;border-bottom:2px solid #eee}
+.pset div span{color:#888}
+.strip{position:absolute;top:740px;left:0;right:0;height:640px;overflow:hidden}
+.strip .tr{position:absolute;left:180px;top:20px;display:flex;gap:40px}
+.thumb{width:400px;height:566px;position:relative;box-shadow:0 10px 30px #0002;border-radius:6px;flex:none}
+.pn{text-align:center;font:500 30px Pre;color:#888;margin-top:14px}
+.pbtn{position:absolute;left:60px;right:60px;bottom:110px;height:130px;border-radius:40px;background:var(--blue);color:#fff;font:800 46px Pre;display:flex;align-items:center;justify-content:center}
+.toast{position:absolute;left:50%;top:1360px;transform:translateX(-50%);background:#222e;color:#fff;font:600 38px Pre;padding:28px 50px;border-radius:999px;white-space:nowrap;z-index:60}
+
+/* overlays */
+.tap{position:absolute;width:110px;height:110px;margin:-55px 0 0 -55px;border-radius:50%;background:#9a9a9acc;border:5px solid #ffffffdd;box-shadow:0 0 0 2px #fff8,0 6px 18px #0003;z-index:200;display:none}
+.rip{position:absolute;width:110px;height:110px;margin:-55px 0 0 -55px;border-radius:50%;border:5px solid #ffffffcc;z-index:199;display:none}
+.capt{position:absolute;left:50%;top:230px;transform:translateX(-50%);z-index:150;background:#111d;color:#fff;font:400 54px Jua;padding:22px 44px;border-radius:30px;white-space:nowrap;display:none;box-shadow:0 10px 30px #0003}
+.capt em{font-style:normal;color:#FFD84D}
+.ff{position:absolute;right:40px;top:230px;z-index:160;background:#FF5A3C;color:#fff;font:800 36px Pre;padding:14px 26px;border-radius:20px;display:none}
+.end{position:absolute;inset:0;z-index:300;background:#FFF5DCee;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.end h1{font:400 92px/1.25 Jua}
+.end h1 em{font-style:normal;color:#FF6B4A}
+.end p{font:700 46px Pre;margin-top:40px;background:#111;color:#fff;padding:26px 50px;border-radius:999px}
+.pop{animation:pop2 450ms cubic-bezier(.2,1.5,.4,1) both;animation-delay:var(--d)}
+@keyframes pop2{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+.up{animation:up 380ms cubic-bezier(.2,1,.3,1) both;animation-delay:var(--d)}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+.fade{animation:fd 250ms both;animation-delay:var(--d)}
+@keyframes fd{from{opacity:0}to{opacity:1}}
+</style></head>
+<body>
+<script src="scenes.js"></script>
+
+<!-- HOME -->
+<div class="scr" id="home"></div>
+<!-- CHAT -->
+<div class="scr" id="chat">
+  <div class="hdr"><div class="mn"><i></i><i style="width:70%"></i></div>AI 채팅<div class="nw"></div></div>
+  <div class="greet" id="greet"><div class="aiico"></div>무엇을 도와드릴까요?</div>
+  <div class="abs" style="left:0;right:0;top:216px;bottom:0;overflow:hidden" id="vp"><div class="feed" id="feed"></div></div>
+  <div class="comp" id="comp"><div id="attw"></div><div class="row"><div class="plus"></div><div class="inp" id="inp">메시지 입력</div><div class="send" id="send"></div></div></div>
+  <div class="paste" id="paste" style="display:none">붙여넣기<span>|</span><span style="margin-left:24px">전체 선택</span></div>
+  <div id="sheet1" style="display:none"><div class="dim fade" style="--d:1950ms"></div>
+    <div class="sheet up" style="--d:1950ms;padding-bottom:80px"><div class="grab"></div>
+      <div class="opt"><i style="background:#555"></i>카메라</div>
+      <div class="opt"><i style="background:linear-gradient(135deg,#FFB443,#FF5E7E,#7B6BFF)"></i>사진</div>
+      <div class="opt"><i style="background:#3D9BFF"></i>파일</div></div></div>
+  <div id="gal" style="display:none"><div class="dim"></div>
+    <div class="sheet gal up" style="--d:2550ms;top:340px;overflow:hidden"><div class="grab"></div>
+      <div class="gh"><span style="color:var(--blue)">취소</span><b>최근 항목</b><span class="add" id="addb">추가</span></div>
+      <div class="grid" id="grid"></div></div></div>
+  <div id="ctxw" style="display:none"><div class="dim fade" style="--d:11650ms;background:#0008;backdrop-filter:blur(6px)"></div>
+    <div class="ctx pop" style="--d:11650ms;left:130px;top:1330px"><div>사진에 저장</div><div>복사</div><div style="border:0">공유</div></div></div>
+  <div id="shw" style="display:none"><div class="dim"></div>
+    <div class="sheet share up" style="--d:12230ms;padding-bottom:70px"><div class="grab"></div>
+      <div style="font:700 40px Pre;padding:20px 60px">이미지 공유</div>
+      <div class="apps"><div><i style="background:#FEE500"></i>메시지</div><div><i style="background:#3CCB6A"></i>메일</div><div><i style="background:#7B6BFF"></i>드라이브</div><div><i style="background:#FF8A3D"></i>노트</div></div>
+      <div class="acts"><div>복사</div><div>사진에 저장</div><div id="prow"><div class="printer"></div>프린트</div></div></div></div>
+</div>
+<!-- PRINT -->
+<div class="scr" id="print">
+  <div class="ph"><span class="l">취소</span>옵션<span class="r">프린트</span></div>
+  <div class="abs" style="top:216px;left:0;right:0">
+   <div class="pset"><div>프린터<span>거실 프린터 ›</span></div><div>매수<span>1부</span></div><div>용지 크기<span>A4</span></div><div style="border:0">흑백<span style="color:#34C759;font-weight:700">켬</span></div></div>
+  </div>
+  <div class="strip"><div class="tr" id="strip"></div></div>
+  <div class="pbtn">프린트 · 6페이지</div>
+</div>
+
+<div class="sb" id="sb"><span>9:41</span><span class="ic"><span class="sig"><i style="height:12px"></i><i style="height:18px"></i><i style="height:24px"></i><i style="height:30px"></i></span><span class="bat"></span></span></div>
+<div class="capt" id="capt"></div>
+<div class="ff" id="ff">▶▶ 빠르게</div>
+<div class="rip" id="rip"></div><div class="tap" id="tap"></div>
+<div class="end" id="end"><h1 class="pop" style="--d:14350ms">아이가 주인공인<br><em>색칠공부 책</em> 완성!</h1><p class="pop" style="--d:14600ms">저장해두고 주말에 같이 만들어봐</p></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const svg=(i,cls)=>`<svg viewBox="0 0 400 400" class="${cls}" style="width:100%;height:100%">${SCENES[i]()}</svg>`;
+// A4 coloring page as html, width w
+function a4(i,w){
+  const h=Math.round(w*1.414);
+  if(i==='cover') return `<div class="a4"><div class="ct" style="top:${h*.05}px;font-size:${w*.105}px;-webkit-text-stroke:${w*.008}px #1d1a17">민준이의 색칠공부</div>
+   <svg viewBox="0 0 400 400" class="line" style="top:${h*.15}px">${COVER()}</svg>
+   <div class="nm" style="bottom:${h*.07}px;font-size:${w*.045}px">이름 <span style="width:${w*.36}px;height:${w*.09}px;margin-left:${w*.02}px"></span></div></div>`;
+  return `<div class="a4"><svg viewBox="0 0 400 400" class="line" style="top:${h*.06}px">${SCENES[i]()}</svg><div class="cp" style="font-size:${w*.034}px">${CAPS[i]}</div></div>`;
+}
+// ---------- home
+{
+ const names=[['사진','linear-gradient(135deg,#FFB443,#FF5E7E,#7B6BFF)'],['카메라','#4b4b4b'],['메시지','#3CCB6A'],['캘린더','#fff'],
+  ['지도','#6CC4FF'],['AI 채팅','AI'],['메모','#FFD84D'],['날씨','#4A9BFF'],['설정','#8E8E93'],['시계','#111'],['음악','#FF3B5C'],['메일','#2F80FF'],
+  ['계산기','#FF9500'],['파일','#3D9BFF'],['건강','#fff'],['책','#FF7A00']];
+ let h='';const xs=[50,300,550,800];
+ names.forEach(([n,c],k)=>{const x=xs[k%4]+5,y=220+Math.floor(k/4)*290;
+  h+=`<div class="app" style="left:${x}px;top:${y}px"><div class="ico ${c=='AI'?'aiico':''}" ${c=='AI'?'id="aiapp"':''} style="${c!='AI'?'background:'+c:''}"></div>${n}</div>`});
+ h+=`<div class="dock"></div>`;
+ ['#3CCB6A','#2F80FF','linear-gradient(135deg,#FFB443,#FF5E7E,#7B6BFF)','#FF3B5C'].forEach((c,k)=>h+=`<div class="app" style="left:${xs[k]+5}px;top:1677px"><div class="ico" style="background:${c}"></div></div>`);
+ $('home').innerHTML=h;
+}
+// ---------- gallery grid: kid photo at cell 4 (row1,col1)
+{
+ const filler=(a,b,shape)=>`<svg viewBox="0 0 100 100" style="width:100%;height:100%"><rect width="100" height="100" fill="${a}"/>${shape.replace(/C/g,b)}</svg>`;
+ const F=[filler('#FFE7C2','#FF9F43','<circle cx="50" cy="55" r="28" fill="C"/>'),filler('#D7F0FF','#4CAF50','<path d="M0 70 Q50 50 100 70 V100 H0Z" fill="C"/>'),
+  filler('#2b2d42','#FFD166','<circle cx="70" cy="30" r="12" fill="C"/>'),filler('#FCE4EC','#EC407A','<rect x="25" y="30" width="50" height="40" rx="8" fill="C"/>'),
+  filler('#E8F5E9','#81C784','<circle cx="35" cy="60" r="18" fill="C"/><circle cx="65" cy="55" r="22" fill="C"/>'),filler('#FFF3E0','#8D6E63','<rect x="20" y="45" width="60" height="30" rx="15" fill="C"/>')];
+ const cells=[F[0],svg(3,'photo'),F[1],F[2],svg(0,'photo'),svg(1,'photo'),F[3],svg(2,'photo'),F[4],svg(4,'photo'),F[5],F[1]];
+ $('grid').innerHTML=cells.map((c,k)=>`<div class="cell">${c}<div class="chk" ${k==4?'id="chk"':''}></div></div>`).join('');
+}
+// ---------- feed (chat messages), y positions in content coordinates
+const P1='이 사진을 <b>5세</b> 어린이용 색칠공부 도안으로 바꿔줘. 흰 배경에 굵은 검은 윤곽선만 사용하고, 빗금이나 회색 음영은 넣지 마. A4 세로 비율로.';
+const P2=i=>`이전 페이지와 같은 그림체로 바꿔줘. 아래에 이 문장을 넣어줘: <b>${CAPS[i]}</b>`;
+const P3=`같은 그림체로 표지를 만들어줘. 큰 제목은 <b>‘민준이의 색칠공부’</b>, 손 흔드는 모습과 이름 빈칸도.`;
+const GW=640,GH=Math.round(GW*1.414);
+let fh='',y=40;const GEN=[];
+function pair(img,text,res,uh,d){
+  if(img!=null){fh+=`<div class="uimg" style="top:${y}px;width:${uh}px;height:${uh}px">${svg(img,'photo')}</div>`;y+=uh+20}
+  fh+=`<div class="ub" style="top:${y}px">${text}</div>`;y+=text.length>70?270:200;
+  fh+=`<div class="av aiico" style="top:${y}px"></div><div class="gen" style="top:${y}px;width:${GW}px;height:${GH}px"><div class="sh"></div><div class="lb">이미지 생성 중…</div><div class="res" style="--d:${d}ms">${a4(res,GW)}</div></div>`;
+  GEN.push(y);y+=GH+70;
+}
+pair(0,P1,0,460,6700);
+for(let i=1;i<5;i++)pair(i,P2(i),i,300,0);
+pair(null,P3,'cover',0,10450);
+$('feed').innerHTML=fh;
+$('strip').innerHTML=['cover',0,1,2,3,4].map((r,k)=>`<div><div class="thumb">${a4(r,400)}</div><div class="pn">${k+1}페이지</div></div>`).join('');
+
+// ---------- timeline
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const lerp=(a,b,f)=>a+(b-a)*f;
+const TAPS=[ // t, x, y, hold(ms)
+ [700,415,595,120],[1700,94,1764,110],[2250,150,1610,110],[3000,540,1032,110],[3450,980,400,110],
+ [3950,520,1760,520],[4800,220,1490,110],[5350,986,1764,110],
+ [11100,450,1290,520],[12050,390,1600,110],[12800,300,1755,110],[13650,540,1745,110]];
+const CAPS_T=[[0,2500,'① AI 앱 열고 <em>+ <span style="font-family:Pre;font-weight:800">→</span> 사진</em>'],[2500,3900,'② 밝고 선명한 사진 <em>1장 선택</em>'],[3900,5600,'③ 프롬프트 <em>붙여넣고 전송</em>'],
+ [5600,7600,'④ 색칠공부 도안 <em>완성!</em>'],[7600,10200,'⑤ 같은 대화에서 <em>나머지 4장</em>'],[10200,11000,'⑥ 이름 넣은 <em>표지</em>까지'],
+ [11000,12850,'⑦ 길게 눌러 <em>공유 <span style="font-family:Pre;font-weight:800">→</span> 프린트</em>'],[12850,14300,'⑧ <em>A4</em>로 출력하면 끝!']];
+const plainLen=s=>s.replace(/<[^>]+>/g,'').length;
+function scrollAt(t){
+  // content offset (negative = scrolled down)
+  const vpH=1920-216-60-140; // visible area above composer
+  const toShow=k=>-(GEN[k]+GH+40-vpH);
+  if(t<6000)return 0;
+  if(t<6400)return lerp(0,toShow(0),ease(clamp((t-6000)/400)));
+  if(t<7800)return toShow(0);
+  if(t<10100)return lerp(toShow(0),toShow(5),ease(clamp((t-7800)/2300)));
+  return toShow(5);
+}
+window.seek=function(t){
+  const show=(id,on)=>$(id).style.display=on?(id=='end'?'flex':'block'):'none';
+  show('home',t<1150);show('chat',t>=1000&&t<12900);show('print',t>=12900);
+  // app open zoom
+  const ch=$('chat');
+  if(t<1300){const f=ease(clamp((t-1000)/300));ch.style.transform=`translate(${(415-540)*(1-f)}px,${(595-960)*(1-f)}px) scale(${lerp(.16,1,f)})`;ch.style.borderRadius=`${(1-f)*200}px`}else{ch.style.transform='';ch.style.borderRadius=''}
+  $('sb').style.color=t<1150?'#fff':'#111';
+  show('sheet1',t>=1950&&t<2350);
+  show('gal',t>=2550&&t<3550);
+  $('chk').classList.toggle('on',t>=3050);
+  $('addb').textContent=t>=3050?'추가 (1)':'추가';
+  // composer state
+  const hasAtt=t>=3550&&t<5400, typed=t>=4880&&t<5400;
+  $('attw').innerHTML=hasAtt?`<div class="att">${svg(0,'photo')}<div class="x"></div></div>`:'';
+  const inp=$('inp');
+  if(typed){inp.className='inp on';inp.innerHTML=P1.replace(/<\/?b>/g,'')}
+  else if(t>=3950&&t<5400){inp.className='inp';inp.innerHTML=(t>=4100?'<span class="caret"></span>':'')+'메시지 입력'}
+  else{inp.className='inp';inp.innerHTML='메시지 입력'}
+  // later prompts flash in composer during fast-forward
+  $('send').className='send'+(typed?' on':'');
+  show('paste',t>=4500&&t<4880);
+  $('paste').style.left='120px';$('paste').style.top=(1450)+'px';
+  show('greet',t<5400);
+  // feed: reveal messages progressively
+  const feed=$('feed');feed.style.display=t>=5400?'block':'none';
+  feed.style.transform=`translateY(${scrollAt(t)}px)`;
+  // during first gen only first pair visible; hide later pairs before fast-forward
+  [...feed.children].forEach(el=>{const top=parseFloat(el.style.top);el.style.visibility=(t<7800&&top>GEN[0]+GH)?'hidden':'visible'});
+  // first gen reveal pre: placeholders for pairs 1-4 always done
+  show('ctxw',t>=11650&&t<12230);
+  show('shw',t>=12230&&t<12900);
+  // tap indicator
+  const tp=$('tap'),rp=$('rip');tp.style.display='none';rp.style.display='none';
+  for(const [tt,x,yy,hold] of TAPS){
+    if(t>=tt-60&&t<=tt+hold+80){tp.style.display='block';tp.style.left=x+'px';tp.style.top=yy+'px';
+      const f=clamp((t-tt+60)/60),g=clamp((tt+hold+80-t)/80);tp.style.opacity=Math.min(f,g);tp.style.transform=`scale(${lerp(1.25,1,f)*(hold>300?1+.12*clamp((t-tt)/hold):1)})`}
+    if(t>=tt&&t<=tt+450){rp.style.display='block';rp.style.left=x+'px';rp.style.top=yy+'px';const f=(t-tt)/450;rp.style.transform=`scale(${1+f*1.4})`;rp.style.opacity=1-f}
+  }
+  // caption
+  const c=CAPS_T.find(([a,b])=>t>=a&&t<b);const cp=$('capt');
+  if(c&&t<14300){cp.style.display='block';cp.innerHTML=c[2];const f=clamp((t-c[0])/180);cp.style.opacity=f;cp.style.transform=`translateX(-50%) translateY(${(1-f)*-20}px)`}else cp.style.display='none';
+  show('ff',t>=7800&&t<10100);
+  // print strip scroll + toast
+  $('strip').style.transform=`translateX(${-ease(clamp((t-13000)/600))*120}px)`;
+  let toast=document.querySelector('.toast');
+  if(t>=13750&&t<14300){if(!toast){toast=document.createElement('div');toast.className='toast';$('print').appendChild(toast)}toast.textContent='프린트 중… 1 / 6';toast.style.display='block'}else if(toast)toast.style.display='none';
+  show('end',t>=14250);$('end').style.opacity=clamp((t-14250)/250);
+  document.getAnimations().forEach(an=>{an.pause();an.currentTime=t});
+};
+seek(0);
+</script>
+</body></html>
