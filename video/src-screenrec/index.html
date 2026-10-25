@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>맥북 제미나이 시연</title>
+<style>
+@font-face{font-family:Jua;src:url(fonts/jua.ttf)}
+@font-face{font-family:Pre;src:url(fonts/pre-Regular.woff2);font-weight:400}
+@font-face{font-family:Pre;src:url(fonts/pre-Bold.woff2);font-weight:700}
+@font-face{font-family:Pre;src:url(fonts/pre-ExtraBold.woff2);font-weight:800}
+:root{--ink:#1d1a17;--g:#1A73E8}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;font-family:Pre,sans-serif;color:#1f1f1f;background:linear-gradient(170deg,#EAE6FF,#FFF1E6 60%,#FFE9EF)}
+.abs{position:absolute}
+svg{display:block}
+/* coloring svg */
+.photo .sky{fill:var(--sky,#BFE6FF)}.photo .s{fill:var(--c)}.photo .l{stroke:var(--c);stroke-width:9;fill:none;stroke-linecap:round}
+.photo .k{fill:#2a1d17}.photo .m{stroke:#7a3b2a;stroke-width:4;fill:none;stroke-linecap:round}.photo .bl{fill:#FF9EAA;opacity:.7}
+.line .sky,.line .bl{display:none}.line .s{fill:#fff;stroke:var(--ink);stroke-width:5;stroke-linejoin:round}
+.line .l{stroke:var(--ink);stroke-width:6;fill:none;stroke-linecap:round}.line .k{fill:var(--ink)}.line .m{stroke:var(--ink);stroke-width:5;fill:none;stroke-linecap:round}
+.a4{position:absolute;inset:0;background:#fff;border:1px solid #e3e3e3;border-radius:inherit}
+.a4 svg{position:absolute;left:4%;width:92%;top:5%}
+.a4 .cp{position:absolute;left:0;right:0;bottom:7%;text-align:center;color:#222;font-weight:600}
+.a4 .ct{position:absolute;left:0;right:0;text-align:center;font-family:Jua;color:#fff;paint-order:stroke fill}
+.a4 .nm{position:absolute;left:0;right:0;text-align:center;font-weight:700}
+.a4 .nm span{display:inline-block;border:2px dashed #222;border-radius:6px;vertical-align:middle}
+
+/* camera + macbook */
+#cam{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:0 0}
+.lid{position:absolute;left:30px;top:650px;width:1020px;height:654px;background:#0d0d0f;border-radius:34px;box-shadow:0 0 0 3px #9a9ca3,0 40px 80px #0003}
+.base{position:absolute;left:-20px;top:1302px;width:1120px;height:30px;background:linear-gradient(#d9dadf,#a8aab1);border-radius:4px 4px 30px 30px}
+.base::after{content:"";position:absolute;left:470px;width:180px;height:10px;background:#9b9da4;border-radius:0 0 12px 12px}
+#scr{position:absolute;left:50px;top:670px;width:1280px;height:800px;transform:scale(.765625);transform-origin:0 0;overflow:hidden;background:linear-gradient(135deg,#4B79E0,#9B6DE0 50%,#F07FA0);border-radius:12px}
+.notch{position:absolute;left:600px;top:0;width:80px;height:24px;background:#0d0d0f;border-radius:0 0 10px 10px;z-index:90}
+.menubar{position:absolute;top:0;left:0;right:0;height:26px;background:#ffffffb8;backdrop-filter:blur(20px);display:flex;align-items:center;gap:18px;padding:0 16px;font:500 13px Pre;z-index:80}
+.menubar b{font-weight:800}
+.menubar .r{margin-left:auto}
+.dock{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);height:62px;padding:7px 10px;display:flex;gap:8px;background:#ffffff59;border-radius:20px;border:1px solid #fff6;z-index:5}
+.dock i{width:48px;height:48px;border-radius:12px;display:block}
+/* chrome */
+.win{position:absolute;left:8px;top:34px;width:1264px;height:690px;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 20px 50px #0005;z-index:10}
+.tabs{height:38px;background:#DFE3EA;display:flex;align-items:flex-end;padding-left:80px;position:relative}
+.tl{position:absolute;left:14px;top:13px;display:flex;gap:8px}.tl i{width:12px;height:12px;border-radius:50%;display:block}
+.tab{width:230px;height:30px;background:#fff;border-radius:9px 9px 0 0;display:flex;align-items:center;gap:8px;padding:0 12px;font:500 12.5px Pre}
+.tool{height:40px;display:flex;align-items:center;gap:14px;padding:0 12px;border-bottom:1px solid #e6e6e6}
+.tool .n{width:16px;height:16px;border-radius:50%;border:2px solid #777}
+.omni{flex:1;height:30px;background:#EEF1F5;border-radius:15px;display:flex;align-items:center;padding:0 16px;font:400 14px Pre;color:#222;gap:8px}
+.omni .lock{width:10px;height:12px;border:2px solid #666;border-radius:3px}
+.prog{position:absolute;left:0;top:77px;height:3px;background:var(--g);z-index:3}
+#content{position:absolute;left:0;top:78px;width:1264px;height:612px;overflow:hidden;background:#fff}
+.pg{position:absolute;inset:0;display:none;background:#fff}
+/* new tab */
+.nt .sb{position:absolute;left:332px;top:250px;width:600px;height:46px;border-radius:23px;border:1px solid #ddd;box-shadow:0 2px 8px #0001;font:400 15px Pre;color:#888;display:flex;align-items:center;padding:0 22px}
+.nt .tiles{position:absolute;left:392px;top:340px;display:flex;gap:30px}.nt .tiles i{width:48px;height:48px;border-radius:50%;background:#F1F3F4;display:block}
+/* gemini */
+.gtop{position:absolute;left:0;right:0;top:0;height:56px;display:flex;align-items:center;padding-left:76px;font:500 20px Pre;color:#444;z-index:3;background:#fff}
+.gtop .mdl{font-size:13px;color:#555;background:#F0F4F9;border-radius:14px;padding:5px 12px;margin-left:12px}
+.gtop .av{position:absolute;right:20px;width:34px;height:34px;border-radius:50%;background:#7B61FF;color:#fff;font:700 15px Pre;display:flex;align-items:center;justify-content:center}
+.side{position:absolute;left:0;top:0;bottom:0;width:64px;background:#F8FAFD;z-index:4}
+.side i{display:block;width:20px;height:2px;background:#555;margin:0 auto;box-shadow:0 6px #555,0 -6px #555;position:relative;top:28px}
+.side b{display:block;width:18px;height:18px;border:2px solid #555;border-radius:4px;margin:66px auto 0}
+.greet{position:absolute;left:0;right:0;top:170px;text-align:center;font:500 34px Pre}
+.greet span{background:linear-gradient(90deg,#4285F4,#9B72CB 45%,#D96570);-webkit-background-clip:text;color:transparent}
+.ibox{position:absolute;left:252px;width:760px;border-radius:28px;background:#fff;border:1px solid #dadce0;box-shadow:0 2px 12px #0000000f;padding:16px 20px 12px;z-index:5}
+.ibox .tx{font:400 16px/1.55 Pre;color:#777;min-height:28px;padding:0 6px}
+.ibox .tx.on{color:#1f1f1f}
+.ibox .bt{display:flex;align-items:center;gap:12px;margin-top:12px}
+.ibox .pl{width:36px;height:36px;border-radius:50%;position:relative}
+.ibox .pl::before,.ibox .pl::after{content:"";position:absolute;left:50%;top:50%;width:16px;height:2px;background:#444;transform:translate(-50%,-50%)}
+.ibox .pl::after{transform:translate(-50%,-50%) rotate(90deg)}
+.ibox .chipt{font:500 14px Pre;color:#444;padding:6px 12px;border-radius:16px}
+.ibox .mic{margin-left:auto;width:36px;height:36px;border-radius:50%;position:relative}
+.ibox .mic::after{content:"";position:absolute;left:13px;top:8px;width:10px;height:16px;border:2px solid #444;border-radius:6px}
+.ibox .snd{margin-left:auto;width:36px;height:36px;border-radius:50%;background:#1f1f1f;display:none;position:relative}
+.ibox .snd::after{content:"";position:absolute;left:12px;top:14px;width:10px;height:10px;border-left:2.5px solid #fff;border-top:2.5px solid #fff;transform:rotate(45deg)}
+.thumbchip{width:64px;height:64px;border-radius:12px;overflow:hidden;margin:0 0 10px 6px;position:relative}
+.menu{position:absolute;left:262px;top:130px;width:230px;background:#fff;border-radius:14px;box-shadow:0 6px 24px #0003;padding:6px 0;z-index:20;display:none}
+.menu div{padding:9px 18px;font:400 14.5px Pre;display:flex;align-items:center;gap:12px}
+.menu div i{width:18px;height:18px;border-radius:4px;border:2px solid #555;display:block}
+.menu .hv{background:#F0F4F9}
+/* chat */
+.feed{position:absolute;left:0;right:0;top:56px}
+.ub{position:absolute;right:252px;background:#F0F4F9;border-radius:20px 4px 20px 20px;padding:12px 18px;font:400 15px/1.6 Pre;max-width:520px}
+.ub b{color:var(--g);font-weight:700}
+.uimg{position:absolute;right:252px;border-radius:16px;overflow:hidden}
+.spk{position:absolute;left:256px;width:28px;height:28px}
+.rtx{position:absolute;left:300px;font:400 15.5px/1.6 Pre;color:#1f1f1f}
+.gen{position:absolute;left:300px;border-radius:14px;overflow:hidden;background:#EEF1F6}
+.gen .sh{position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,#ffffffcc 50%,transparent 70%);background-size:200% 100%;animation:shim 1100ms linear infinite}
+@keyframes shim{from{background-position:150% 0}to{background-position:-50% 0}}
+.gen .lb{position:absolute;left:18px;top:14px;font:500 13px Pre;color:#777}
+.gen .res{position:absolute;inset:0;animation:reveal 900ms ease-out both;animation-delay:var(--d)}
+@keyframes reveal{from{clip-path:inset(0 0 100% 0);filter:blur(16px)}60%{filter:blur(5px)}to{clip-path:inset(0 0 0 0);filter:blur(0)}}
+.dlb{position:absolute;right:10px;top:10px;width:34px;height:34px;border-radius:50%;background:#ffffffee;box-shadow:0 2px 6px #0003;display:none;z-index:2}
+.dlb::before{content:"";position:absolute;left:16px;top:8px;width:2px;height:13px;background:#333}
+.dlb::after{content:"";position:absolute;left:12px;top:14px;width:7px;height:7px;border-right:2px solid #333;border-bottom:2px solid #333;transform:rotate(45deg)}
+.dlpop{position:absolute;right:16px;top:76px;width:300px;background:#fff;border-radius:12px;box-shadow:0 6px 24px #0003;padding:14px 16px;z-index:30;font:500 13px Pre;display:none}
+.dlpop .r{display:flex;gap:12px;align-items:center}
+.dlpop .r i{width:36px;height:46px;border:1px solid #ddd;border-radius:4px;display:block;overflow:hidden;position:relative}
+.dlpop small{color:#188038;font-weight:600;display:block;margin-top:3px}
+/* finder dialog */
+.fd{position:absolute;left:290px;top:140px;width:700px;height:450px;background:#F6F6F6;border-radius:12px;box-shadow:0 20px 60px #0006;z-index:40;overflow:hidden;display:none}
+.fd .fs{position:absolute;left:0;top:0;bottom:0;width:150px;background:#E9E7EC;padding:46px 10px;font:500 13px Pre;color:#333}
+.fd .fs div{padding:6px 10px;border-radius:6px}.fd .fs .on{background:#D4D2D8}
+.fd .fs small{display:block;color:#999;font-size:11px;margin:0 0 4px 10px}
+.fd .ft{position:absolute;left:150px;right:0;top:0;height:40px;display:flex;align-items:center;justify-content:center;font:700 13px Pre;border-bottom:1px solid #e2e2e2;background:#fafafa}
+.fd .cell{position:absolute;width:112px;text-align:center;font:400 11.5px Pre;color:#333}
+.fd .cell .th{width:112px;height:112px;border-radius:6px;overflow:hidden;border:3px solid transparent}
+.fd .cell.sel .th{border-color:#2F7BF5}
+.fd .cell.sel span{background:#2F7BF5;color:#fff;border-radius:4px;padding:1px 6px}
+.fd .fb{position:absolute;right:20px;bottom:16px;display:flex;gap:10px}
+.fd .fb div{width:76px;height:30px;border-radius:7px;font:500 13.5px/30px Pre;text-align:center;background:#fff;border:1px solid #d6d6d6}
+.fd .fb .op{background:#2F7BF5;color:#fff;border:0}
+/* preview + print */
+.pv{position:absolute;left:120px;top:60px;width:1040px;height:640px;background:#ECECEC;border-radius:10px;box-shadow:0 20px 50px #0005;z-index:50;overflow:hidden;display:none}
+.pv .tb{height:44px;background:#E2E2E2;border-bottom:1px solid #d0d0d0;display:flex;align-items:center;padding-left:80px;font:700 13px Pre}
+.pv .tl{top:16px}
+.pv .sd{position:absolute;left:0;top:44px;bottom:0;width:150px;background:#E4E4E4;padding:14px 0;display:flex;flex-direction:column;align-items:center;gap:12px}
+.pv .sd .t{width:72px;height:102px;position:relative}
+.pv .sd .t.on{outline:3px solid #2F7BF5;outline-offset:3px;border-radius:2px}
+.pv .mn{position:absolute;left:390px;top:70px;width:400px;height:566px}
+.ps{position:absolute;left:260px;top:44px;width:760px;height:500px;background:#F5F5F5;border-radius:0 0 12px 12px;box-shadow:0 20px 60px #0006;z-index:60;display:none}
+.ps .pp{position:absolute;left:30px;top:30px;width:290px;height:410px}
+.ps .pt{position:absolute;left:96px;top:450px;font:500 12px Pre;color:#666}
+.ps .rows{position:absolute;left:360px;top:36px;right:30px}
+.ps .rows div{display:flex;justify-content:space-between;align-items:center;padding:11px 0;font:500 13.5px Pre;color:#333}
+.ps .rows span{background:#fff;border:1px solid #d3d3d3;border-radius:6px;padding:5px 12px;min-width:190px;font-weight:500}
+.ps .bb{position:absolute;right:24px;bottom:20px;display:flex;gap:10px}
+.ps .bb div{width:80px;height:30px;border-radius:7px;font:500 13.5px/30px Pre;text-align:center;background:#fff;border:1px solid #d6d6d6}
+.ps .bb .op{background:#2F7BF5;color:#fff;border:0}
+.prq{position:absolute;right:20px;top:40px;width:280px;background:#fffffff2;border-radius:14px;box-shadow:0 8px 30px #0003;padding:14px 16px;font:600 13px Pre;z-index:85;display:none}
+.prq .bar{height:6px;background:#e5e5e5;border-radius:3px;margin-top:10px;overflow:hidden}.prq .bar i{display:block;height:100%;background:#2F7BF5}
+/* cursor */
+#cur{position:absolute;left:0;top:0;width:26px;height:38px;z-index:200;filter:drop-shadow(0 2px 3px #0005)}
+.clk{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;border:3px solid #2F7BF5;z-index:199;display:none}
+
+/* overlays (video coords) */
+.ttl{position:absolute;left:0;right:0;top:150px;text-align:center;z-index:300}
+.ttl div{display:inline-block;font:400 66px/1.25 Jua;color:#1d1a17;background:#ffffffe6;padding:18px 40px;border-radius:30px;box-shadow:0 10px 30px #0001}
+.ttl em{font-style:normal;color:#FF6B4A}
+.capt{position:absolute;left:50%;top:1500px;transform:translateX(-50%);z-index:300;background:#111e;color:#fff;font:400 58px Jua;padding:24px 48px;border-radius:32px;white-space:nowrap;display:none;box-shadow:0 10px 30px #0003}
+.capt em{font-style:normal;color:#FFD84D}
+.kc{position:absolute;left:50%;top:1680px;transform:translateX(-50%);z-index:300;display:none;gap:16px}
+.kc div{min-width:110px;height:110px;padding:0 24px;background:#fff;border-radius:22px;box-shadow:0 8px 0 #c9c9cf,0 14px 30px #0003;font:700 56px/110px Pre;text-align:center}
+.ff{position:absolute;right:50px;top:1360px;z-index:300;background:#FF5A3C;color:#fff;font:800 38px Pre;padding:14px 28px;border-radius:20px;display:none}
+.end{position:absolute;inset:0;z-index:400;background:#FFF5DCf2;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.end h1{font:400 96px/1.25 Jua}.end h1 em{font-style:normal;color:#FF6B4A}
+.end p{font:700 46px Pre;margin-top:40px;background:#111;color:#fff;padding:26px 50px;border-radius:999px}
+.pop{animation:pop2 450ms cubic-bezier(.2,1.5,.4,1) both;animation-delay:var(--d)}
+@keyframes pop2{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+
+html,body{width:1920px!important;height:1080px!important;background:#000!important}
+.lid,.base,.notch,.ttl,.capt,.kc,.ff,.end{display:none!important}
+#cam{transform:none!important;width:1920px;height:1080px}
+#scr{left:0!important;top:0!important;height:720px!important;transform:scale(1.5)!important;border-radius:0!important}
+.win{height:610px!important}
+#content{height:532px!important}
+.pv{height:600px!important}
+.pv .mn{left:420px!important;top:50px!important;width:360px!important;height:509px!important}
+.clk{border-color:#000a!important;border-width:2.5px!important}
+</style></head>
+<body>
+<script src="scenes.js"></script>
+<div id="cam">
+ <div class="lid"></div><div class="base"></div>
+ <div id="scr">
+  <div class="notch"></div>
+  <div class="menubar"><b>Chrome</b><span>파일</span><span>편집</span><span>보기</span><span>방문 기록</span><span>북마크</span><span>창</span><span>도움말</span><span class="r">10월 25일 (토) 오전 10:30</span></div>
+  <div class="win">
+   <div class="tabs"><div class="tl"><i style="background:#FF5F57"></i><i style="background:#FEBC2E"></i><i style="background:#28C840"></i></div>
+     <div class="tab" id="tab"></div></div>
+   <div class="tool"><span class="n"></span><span class="n"></span><span class="n"></span><div class="omni"><span class="lock"></span><span id="url"></span></div></div>
+   <div class="prog" id="prog"></div>
+   <div class="dlpop" id="dlpop"><div class="r"><i id="dlth"></i><div>민준이의_색칠공부.png<small>다운로드 완료 · 6개 파일</small></div></div></div>
+   <div id="content">
+    <div class="pg nt" id="pgNT"><div class="sb">검색어 또는 URL 입력</div><div class="tiles"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+    <div class="pg" id="pgG">
+     <div class="side"><i></i><b></b></div>
+     <div class="gtop">Gemini<span class="mdl">▾</span><div class="av">민</div></div>
+     <div class="greet" id="greet"><span>안녕하세요, 민준맘님</span></div>
+     <div class="feed" id="feed"></div>
+     <div class="ibox" id="ibox"><div id="chip"></div><div class="tx" id="itx">Gemini에게 물어보기</div>
+       <div class="bt"><div class="pl"></div><div class="chipt">도구</div><div class="mic" id="mic"></div><div class="snd" id="snd"></div></div></div>
+     <div class="menu" id="menu"><div class="hv" id="mUp"><i></i>파일 업로드</div><div><i></i>Drive에서 추가</div><div><i></i>사진 가져오기</div></div>
+    </div>
+   </div>
+  </div>
+  <div class="fd" id="fd">
+   <div class="fs"><small>즐겨찾기</small><div>최근 항목</div><div>데스크탑</div><div>다운로드</div><div class="on">사진</div></div>
+   <div class="ft">사진</div><div id="fcells"></div>
+   <div class="fb"><div>취소</div><div class="op">열기</div></div>
+  </div>
+  <div class="pv" id="pv"><div class="tb"><div class="tl"><i style="background:#FF5F57"></i><i style="background:#FEBC2E"></i><i style="background:#28C840"></i></div>미리보기 — 색칠공부 (6페이지)</div>
+   <div class="sd" id="pvsd"></div><div class="mn" id="pvmn"></div></div>
+  <div class="ps" id="ps"><div class="pp" id="pspp"></div><div class="pt">1 / 6 페이지</div>
+   <div class="rows"><div>프린터<span>거실 프린터 ▾</span></div><div>프리셋<span>기본 설정 ▾</span></div><div>매수<span>1</span></div><div>페이지<span>모두 ▾</span></div><div>용지 크기<span>A4 ▾</span></div><div>방향<span>세로 ▾</span></div><div>컬러<span>흑백 ▾</span></div></div>
+   <div class="bb"><div>취소</div><div class="op">프린트</div></div></div>
+  <div class="prq" id="prq">거실 프린터 · 프린트 중 <span id="prn">1</span> / 6<div class="bar"><i id="prb"></i></div></div>
+  <div class="dock"><i style="background:#3d8bff"></i><i style="background:conic-gradient(#EA4335 0 33%,#FBBC05 0 66%,#34A853 0)"></i><i style="background:#ccc"></i><i style="background:#FFCB3D"></i><i style="background:#30C759"></i><i style="background:#FF9500"></i><i style="background:#8e8e93"></i></div>
+  <div class="clk" id="clk"></div>
+  <svg id="cur" viewBox="0 0 26 38"><path d="M2 2 L2 30 L9 23.5 L13.5 34 L18 32 L13.6 21.8 L23 21.8 Z" fill="#000" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>
+ </div>
+</div>
+<div class="ttl"><div>사진 5장으로 <em>우리 아이 색칠공부 책</em></div></div>
+<div class="capt" id="capt"></div>
+<div class="ff" id="ff">▶▶ 빠르게</div>
+<div class="kc" id="kc"></div>
+<div class="end" id="end"><h1 class="pop" style="--d:13700ms">아이가 주인공인<br><em>색칠공부 책</em> 완성!</h1><p class="pop" style="--d:13950ms">저장해두고 주말에 같이 만들어봐</p></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const svg=(i,cls)=>`<svg viewBox="0 0 400 400" class="${cls}" style="width:100%;height:100%">${SCENES[i]()}</svg>`;
+function a4(i,w){
+  const h=Math.round(w*1.414);
+  if(i==='cover') return `<div class="a4"><div class="ct" style="top:${h*.05}px;font-size:${w*.105}px;-webkit-text-stroke:${Math.max(1.5,w*.008)}px #1d1a17">민준이의 색칠공부</div>
+   <svg viewBox="0 0 400 400" class="line" style="top:${h*.15}px">${COVER()}</svg>
+   <div class="nm" style="bottom:${h*.07}px;font-size:${w*.045}px">이름 <span style="width:${w*.36}px;height:${w*.09}px;margin-left:${w*.02}px"></span></div></div>`;
+  return `<div class="a4"><svg viewBox="0 0 400 400" class="line" style="top:${h*.06}px">${SCENES[i]()}</svg><div class="cp" style="font-size:${w*.034}px">${CAPS[i]}</div></div>`;
+}
+const SPK=`<svg viewBox="0 0 24 24"><defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4285F4"/><stop offset="1" stop-color="#C66DD8"/></linearGradient></defs><path d="M12 0C12 6.6 17.4 12 24 12 17.4 12 12 17.4 12 24 12 17.4 6.6 12 0 12 6.6 12 12 6.6 12 0Z" fill="url(#gg)"/></svg>`;
+// finder cells: bike at col1,row0
+{
+ const names=['IMG_2041.JPG','IMG_2043.JPG','IMG_2050.JPG','IMG_2052.JPG','IMG_2060.JPG','IMG_2061.JPG','IMG_2075.JPG','IMG_2079.JPG'];
+ const fill=(c)=>`<div style="width:100%;height:100%;background:${c}"></div>`;
+ const th=[svg(3,'photo'),svg(0,'photo'),fill('linear-gradient(#FFE7C2,#FF9F43)'),svg(1,'photo'),fill('linear-gradient(#2b2d42,#5c5f8a)'),svg(2,'photo'),svg(4,'photo'),fill('linear-gradient(#E8F5E9,#81C784)')];
+ $('fcells').innerHTML=th.map((t,k)=>`<div class="cell" ${k==1?'id="fbike"':''} style="left:${175+(k%4)*130}px;top:${60+Math.floor(k/4)*160}px"><div class="th">${t}</div><span>${names[k]}</span></div>`).join('');
+}
+// chat feed (content coords; feed top=56)
+const P1='이 사진을 <b>5세</b> 어린이용 색칠공부 도안으로 바꿔줘. 흰 배경에 굵은 검은 윤곽선만 사용하고, 빗금이나 회색 음영은 넣지 마. 아이의 얼굴 특징, 자세, 옷은 사진을 따라줘. A4 세로 비율로.';
+const P2=i=>`이전 페이지와 같은 선 굵기와 그림체로 바꿔줘. 아래에 이 문장을 넣어줘: <b>${CAPS[i]}</b>`;
+const P3=`같은 그림체로 표지를 만들어줘. 큰 제목은 <b>‘민준이의 색칠공부’</b>. 손 흔드는 모습과 이름 빈칸도 남겨줘.`;
+const GW=240,GH=Math.round(GW*1.414);let fh='',y=20;const GEN=[];
+function pair(img,text,res,d,rtx){
+  if(img!=null){fh+=`<div class="uimg" style="top:${y}px;width:150px;height:150px">${svg(img,'photo')}</div>`;y+=162}
+  fh+=`<div class="ub" style="top:${y}px">${text}</div>`;y+=text.length>90?126:96;
+  fh+=`<div class="spk" style="top:${y}px">${SPK}</div><div class="rtx" style="top:${y+2}px">${rtx}</div>`;y+=40;
+  fh+=`<div class="gen" style="top:${y}px;width:${GW}px;height:${GH}px"><div class="sh"></div><div class="lb">이미지 생성 중…</div><div class="res" style="--d:${d}ms">${a4(res,GW)}</div>${res==='cover'?'<div class="dlb" id="dlb"></div>':''}</div>`;
+  GEN.push(y);y+=GH+48;
+}
+pair(0,P1,0,6400,'물론이죠! 5세 아이가 크레용으로 칠하기 좋은 도안이에요.');
+for(let i=1;i<5;i++)pair(i,P2(i),i,0,`${i+1}번째 페이지예요.`);
+pair(null,P3,'cover',9900,'표지를 만들었어요!');
+$('feed').innerHTML=fh;
+// preview window
+$('pvsd').innerHTML=['cover',0,1,2,3,4].map((r,k)=>`<div class="t ${k==0?'on':''}">${a4(r,72)}</div>`).join('');
+$('pvmn').innerHTML=a4('cover',360);$('pspp').innerHTML=a4('cover',290);
+$('dlth').innerHTML=`<div style="position:relative;width:34px;height:48px">${a4('cover',34)}</div>`;
+
+// ---------- timeline helpers
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const lerp=(a,b,f)=>a+(b-a)*f;
+function track(keys,t){ // keys: [t,...vals]
+  if(t<=keys[0][0])return keys[0].slice(1);
+  for(let i=0;i<keys.length-1;i++){const a=keys[i],b=keys[i+1];if(t<=b[0]){const f=ease((t-a[0])/(b[0]-a[0]));return a.slice(1).map((v,k)=>lerp(v,b[k+1],f))}}
+  return keys[keys.length-1].slice(1);
+}
+const C=(x,y)=>[x+8,y+112]; // content -> screen
+// feed scroll
+const VIS=420-56-14; // visible feed height above input box
+const showGen=k=>-(GEN[k]+GH+20-VIS);
+function scrollAt(t){
+  return track([[5200,0],[5900,0],[6300,showGen(0)],[7600,showGen(0)],[9700,showGen(5)]],t)[0];
+}
+// cover image position in screen coords at end
+const coverTop=()=>56+GEN[5]+showGen(5); // content y
+// camera keys: t, focus x (screen), focus y (screen), zoom
+const CAM=[[0,640,400,1],[250,330,90,1.9],[1000,330,90,1.9],[1450,640,330,1.45],[1650,640,330,1.45],[1900,330,380,2.0],[2350,330,370,2.0],[2650,640,370,1.45],[3600,640,370,1.45],
+ [3900,640,440,1.7],[5000,640,440,1.7],[5500,648,380,1.7],[7600,648,380,1.7],[7900,648,390,1.5],[9600,648,390,1.5],[10000,560,coverTop()+112+GH/2,1.8],[10900,560,coverTop()+112+GH/2,1.8],
+ [11300,640,380,1.3],[11800,640,380,1.3],[12100,640,300,1.45],[12900,640,300,1.45],[13400,640,400,1]];
+// cursor keys (screen coords)
+const ib=[]; // filled after layout
+const CUR=[[0,700,500],[150,560,80],[1100,560,80],[1500,700,420],[1850,C(282,0)[0],0],[2250,348,266],[2700,651,256],[3050,651,256],[3350,932,559],[3700,932,559],[3850,608,0],[4700,608,0],[4950,990,0],
+ [5600,1000,600],[9800,1000,600],[10600,C(300+GW-27,0)[0],coverTop()+112+27],[11000,C(300+GW-27,0)[0],coverTop()+112+27],[11500,800,600],[12400,910,559],[12900,910,559],[13300,1000,600]];
+const CLICKS=[150,1850,2250,2700,3350,3850,4950,10850,12400];
+const KEYS=[[1000,1200,['↵']],[4100,4450,['⌘','V']],[4950,5100,['↵']],[11500,11800,['⌘','P']]];
+const CAPS_T=[[0,1400,'① 크롬에서 <em>제미나이</em> 접속'],[1400,3700,'② <em>+ → 파일 업로드</em>로 사진 선택'],[3700,5300,'③ 프롬프트 <em>붙여넣고 전송</em>'],
+ [5300,7600,'④ 색칠공부 도안 <em>완성!</em>'],[7600,9900,'⑤ 같은 대화에서 <em>4장 + 표지</em>'],[9900,11300,'⑥ 이미지 <em>다운로드</em>'],[11300,13600,'⑦ <em>A4로 프린트</em>하면 끝!']];
+const URL='gemini.google.com';
+window.seek=function(t){
+  const show=(id,on,d='block')=>$(id).style.display=on?d:'none';
+  // fix y of dynamic cursor targets once layout exists
+  const ibx=$('ibox');
+  // pages
+  const g=t>=1300;show('pgNT',!g);show('pgG',g);
+  $('tab').innerHTML=g?`<span style="width:14px;height:14px;display:inline-block">${SPK}</span>Gemini`:'새 탭';
+  const nt=Math.round(clamp((t-250)/650)*URL.length);
+  $('url').innerHTML=g||t>=1000?'gemini.google.com/app':(t<250?'<span style="color:#888">검색어 또는 URL 입력</span>':URL.slice(0,nt)+'<span style="display:inline-block;width:1.5px;height:16px;background:#1A73E8;vertical-align:-3px"></span>');
+  const pg=$('prog');pg.style.display=(t>=1000&&t<1400)?'block':'none';pg.style.width=(clamp((t-1000)/400)*100)+'%';
+  // gemini home vs chat
+  const chat=t>=5100;
+  show('greet',!chat);
+  ibx.style.top=chat?'420px':'230px';
+  show('menu',t>=1900&&t<2300);
+  show('fd',t>=2400&&t<3400);
+  $('fbike').classList.toggle('sel',t>=2700);
+  const att=t>=3450&&t<5100;
+  $('chip').innerHTML=att?`<div class="thumbchip">${svg(0,'photo')}</div>`:'';
+  const tx=$('itx');
+  if(t>=4300&&t<5100){tx.className='tx on';tx.innerHTML=P1.replace(/<\/?b>/g,'')}
+  else{tx.className='tx';tx.innerHTML=(t>=3850&&t<5100?'<span style="display:inline-block;width:1.5px;height:18px;background:#1A73E8;vertical-align:-4px;margin-right:2px"></span>':'')+'Gemini에게 물어보기'}
+  show('mic',!(t>=4300&&t<5100));show('snd',t>=4300&&t<5100);
+  const fd=$('feed');fd.style.display=chat?'block':'none';fd.style.transform=`translateY(${scrollAt(t)}px)`;
+  [...fd.children].forEach(el=>{el.style.visibility=(t<7600&&parseFloat(el.style.top)>GEN[0]+GH)?'hidden':'visible'});
+  show('dlb',t>=10500&&t<11300);
+  show('dlpop',t>=10950&&t<11400);
+  show('pv',t>=11300);show('ps',t>=11800&&t<12450);
+  show('prq',t>=12450);$('prb').style.width=(clamp((t-12450)/1100)*100)+'%';$('prn').textContent=Math.min(6,1+Math.floor(clamp((t-12450)/1100)*6));
+  // cursor: resolve y for input-row targets
+  const iy=C(0,parseFloat(ibx.style.top)+ibx.offsetHeight-30)[1];
+  const keys=CUR.map(k=>[k[0],k[1],k[2]===0?iy:k[2]]);
+  const [cx,cy]=track(keys,t);
+  // menu item target fixed y
+  let mx=cx,my=cy;
+  $('cur').style.transform=`translate(${mx-2}px,${my-2}px)`;
+  const ck=$('clk');ck.style.display='none';
+  for(const c of CLICKS){if(t>=c&&t<c+350){ck.style.display='block';ck.style.left=mx+'px';ck.style.top=my+'px';const f=(t-c)/350;ck.style.transform=`scale(${.5+f})`;ck.style.opacity=1-f}}
+  // camera
+  const [fx,fy,z]=track(CAM,t);
+  const camx=50+fx*.765625,camy=670+fy*.765625;
+  //`translate(${540-camx*z}px,${960-camy*z}px) scale(${z})`;
+  // overlays
+  const c=CAPS_T.find(([a,b])=>t>=a&&t<b);const cp=$('capt');
+  if(c){cp.style.display='block';cp.innerHTML=c[2];const f=clamp((t-c[0])/180);cp.style.opacity=f;cp.style.transform=`translateX(-50%) translateY(${(1-f)*20}px)`}else cp.style.display='none';
+  const k=KEYS.find(([a,b])=>t>=a&&t<b);const kc=$('kc');
+  if(k){kc.style.display='flex';kc.innerHTML=k[2].map(s=>`<div>${s}</div>`).join('');const f=clamp((t-k[0])/120);kc.style.opacity=f;kc.style.transform=`translateX(-50%) scale(${lerp(.8,1,f)})`}else kc.style.display='none';
+  show('ff',t>=7700&&t<9700);
+  show('end',t>=13600,'flex');$('end').style.opacity=clamp((t-13600)/250);
+  document.getAnimations().forEach(an=>{an.pause();an.currentTime=t});
+};
+seek(0);
+</script>
+</body></html>
