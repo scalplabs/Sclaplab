@@ -568,62 +568,55 @@ function vhs(T) {
 // lines: [start, end, who, text]; who ∈ A (알바 민수), Z (아줌마), J (아저씨)
 const SHOTS = [
   // ---- cold open: start on the loudest moment, freeze, rewind ----
-  { d: 1.8, lines: [[0.05, 1.7, 'Z', '어디서 말대꾸야!!']], sfx: [[0, 'bang'], [0, 'static', 1.8], [0.15, 'slam']], draw(t, T, m) {
+  { d: 1.3, lines: [[0.05, 1.25, 'Z', '어디서 말대꾸야!!']], sfx: [[0, 'bang'], [0, 'static', 1.3], [0.12, 'slam']], draw(t, T, m) {
     const sh = (rnd(Math.floor(t * 60)) - 0.5) * 26 * Math.max(0, 1 - t / 0.5);
-    cam(800 + sh, 395 + sh * 0.5, lerp(2.0, 2.25, ease(t / 1.8)), () => hookScene(T, m('Z')));
+    cam(800 + sh, 395 + sh * 0.5, lerp(2.0, 2.25, ease(t / 1.3)), () => hookScene(T, m('Z')));
     hookHeadline(t + 0.2);
   } },
-  { d: 1.0, sfx: [[0, 'scratch']], draw(t, T) {
+  { d: 0.6, sfx: [[0, 'scratch']], draw(t, T) {
     g.filter = 'saturate(0.1) contrast(1.15)';
-    cam(800, 395, 2.25, () => hookScene(SHOTS[0].t0 + 1.79, 0.9));
+    cam(800, 395, 2.25, () => hookScene(SHOTS[0].t0 + 1.29, 0.9));
     g.filter = 'none';
     g.fillStyle = 'rgba(0,0,0,.25)'; g.fillRect(0, 0, W, H);
     hookHeadline(9);
     g.save(); g.font = `900 52px ${SUB}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
-    g.globalAlpha = clamp((t - 0.1) / 0.15, 0, 1); g.lineWidth = 10; g.strokeStyle = '#111'; g.strokeText('...어쩌다 이렇게 됐냐면', W / 2, H - 80);
+    g.globalAlpha = clamp((t - 0.03) / 0.1, 0, 1); g.lineWidth = 10; g.strokeStyle = '#111'; g.strokeText('...어쩌다 이렇게 됐냐면', W / 2, H - 80);
     g.fillStyle = '#fff'; g.fillText('...어쩌다 이렇게 됐냐면', W / 2, H - 80); g.restore();
   } },
-  { d: 0.9, sfx: [[0, 'rewind', 0.9]], draw(t, T) {
-    const u = t / 0.9;
+  { d: 0.6, sfx: [[0, 'rewind', 0.6]], draw(t, T) {
+    const u = t / 0.6;
     g.filter = 'saturate(0.45) contrast(1.2)';
     cam(640, 360, lerp(1.5, 1, ease(u)), () => scene(T, {
       A: { e: { lx: -0.9, ly: 0.1 } },
-      Z: { x: lerp(720, 260, u), bob: -Math.abs(Math.sin(t * 30)) * 8, frizz: 1 - u, e: { lx: 0.85 }, armR: 'cup', armK: 1 - u },
+      Z: { x: lerp(720, 260, u), bob: -Math.abs(Math.sin(t * 40)) * 8, frizz: 1 - u, e: { lx: 0.85 }, armR: 'cup', armK: 1 - u },
     }));
     g.filter = 'none';
     vhs(T);
     g.save(); g.font = `900 64px ${SUB}`; g.textAlign = 'left'; g.textBaseline = 'top'; g.fillStyle = '#fff'; g.shadowColor = 'rgba(0,0,0,.8)'; g.shadowBlur = 8;
     g.fillText('◀◀ 3분 전', 40, 30); g.restore();
   } },
-  { d: 2.0, sfx: [[0, 'crickets', 2.0], [0, 'buzz', 2.0]], draw(t, T) {
-    g.save(); const z = 1 + 0.05 * ease(t / 2.0); g.translate(W / 2, H / 2); g.scale(z, z); g.translate(-W / 2, -H / 2); exterior(T); g.restore();
-    g.save(); g.font = `900 30px ${SUB}`; g.textAlign = 'left'; g.textBaseline = 'top'; g.lineJoin = 'round'; g.lineWidth = 6; g.strokeStyle = 'rgba(0,0,0,.7)';
-    g.strokeText('새벽 3:12', 36, 30); g.fillStyle = '#fff'; g.fillText('새벽 3:12', 36, 30);
-    g.font = `500 22px ${SUB}`; g.textAlign = 'center'; g.textBaseline = 'alphabetic'; g.lineWidth = 5;
-    g.strokeText('※ 이 영상에는 유료 광고가 포함되어 있습니다.', W / 2, H - 40); g.fillText('※ 이 영상에는 유료 광고가 포함되어 있습니다.', W / 2, H - 40); g.restore();
-  } },
-  { d: 5.2, lines: [[2.2, 4.9, 'Z', '...총각. 이거 환불해 줘.']], sfx: [[0, 'hum', 5.2], [0.2, 'doorbell']], draw(t, T, m) {
-    const walk = ease((t - 0.3) / 1.4), wake = kf(t, [[0.6, 0], [0.9, 1]]);
-    cam(640, 360, lerp(1, 1.03, t / 5.2), () => scene(T, {
-      bell: clamp(1 - (t - 0.2) / 2, 0, 1),
-      A: { e: { lx: lerp(0, -0.9, wake), ly: lerp(0.6, 0.1, wake), lid: lerp(0.92, 0.55, wake) }, tilt: lerp(0.18, 0, wake), sweat: t > 2.7 ? 1 : 0 },
-      Z: { x: lerp(260, 720, walk), bob: walk > 0 && walk < 1 ? -Math.abs(Math.sin(t * 11)) * 8 : 0, e: { lx: 0.85, ly: -0.2 }, armR: t > 1.9 ? 'cup' : 'down', armK: ease((t - 1.9) / 0.3), say: m('Z') },
+  { d: 3.0, lines: [[0.9, 2.9, 'Z', '총각, 이거 환불해 줘.']], sfx: [[0, 'hum', 3.0], [0, 'doorbell']], draw(t, T, m) {
+    const walk = ease(t / 0.8), wake = kf(t, [[0.2, 0], [0.45, 1]]);
+    cam(640, 360, lerp(1, 1.04, t / 3.0), () => scene(T, {
+      bell: clamp(1 - t / 2, 0, 1),
+      A: { e: { lx: lerp(0, -0.9, wake), ly: lerp(0.6, 0.1, wake), lid: lerp(0.92, 0.55, wake) }, tilt: lerp(0.18, 0, wake), sweat: t > 2.0 ? 1 : 0 },
+      Z: { x: lerp(260, 720, walk), bob: walk > 0 && walk < 1 ? -Math.abs(Math.sin(t * 16)) * 8 : 0, e: { lx: 0.85, ly: -0.2 }, armR: t > 0.8 ? 'cup' : 'down', armK: ease((t - 0.8) / 0.2), say: m('Z') },
     }));
   } },
-  { d: 3.6, lines: [[1.0, 3.2, 'A', '...다 드셨는데요.']], sfx: [[0, 'hum', 3.6]], draw(t, T, m) {
-    cam(1040, 330, lerp(2.3, 2.42, t / 3.6), () => scene(T, {
-      A: { e: { lx: -0.9, ly: kf(t, [[0, -0.1], [0.6, 0.55]]), lid: 0.6 }, say: m('A') },
+  { d: 2.0, lines: [[0.3, 1.9, 'A', '...다 드셨는데요.']], sfx: [[0, 'hum', 2.0]], draw(t, T, m) {
+    cam(1040, 330, lerp(2.3, 2.42, t / 2.0), () => scene(T, {
+      A: { e: { lx: -0.9, ly: kf(t, [[0, -0.1], [0.3, 0.55]]), lid: 0.6 }, say: m('A') },
       Z: { e: { lx: 0.85, ly: -0.2 }, armR: 'cup', armK: 1 },
     }));
   } },
-  { d: 3.4, lines: [[0.2, 3.0, 'Z', '국물은 남겼잖아!']], sfx: [[0, 'hum', 3.4]], draw(t, T, m) {
+  { d: 1.9, lines: [[0.1, 1.8, 'Z', '국물은 남겼잖아!']], sfx: [[0, 'hum', 1.9]], draw(t, T, m) {
     cam(760, 400, 2.3, () => scene(T, {
       A: { e: { lx: -0.9, ly: 0.2 } },
-      Z: { e: { lx: 0.9, ly: -0.1, ang: 0.45, lid: 0.2 }, brow: 1.2, armR: 'cup', armK: 1, cupShake: t > 0.2 && t < 2.6, say: m('Z') },
+      Z: { e: { lx: 0.9, ly: -0.1, ang: 0.45, lid: 0.2 }, brow: 1.2, armR: 'cup', armK: 1, cupShake: t > 0.1 && t < 1.7, say: m('Z') },
     }));
   } },
-  { d: 4.2, lines: [[1.9, 3.9, 'A', '...한 방울이요.']], sfx: [[0, 'hum', 4.2], [1.15, 'drip1']], draw(t, T, m) {
-    const tilt = kf(t, [[0.3, 0], [0.9, 1.9], [1.6, 1.9], [2.0, 0]]);
+  { d: 2.3, lines: [[0.9, 2.2, 'A', '...한 방울이요.']], sfx: [[0, 'hum', 2.3], [0.2, 'drip1']], draw(t, T, m) {
+    const tilt = kf(t, [[0, 0], [0.3, 1.9], [0.9, 1.9], [1.2, 0]]);
     cam(930, 400, 1.75, () => {
       scene(T, {
         A: { e: { lx: -0.6, ly: 0.8, lid: 0.6 }, say: m('A') },
@@ -631,27 +624,27 @@ const SHOTS = [
       });
       // cup tipped over the counter: exactly one drop
       cupNoodle(970, 420, 1.0, tilt);
-      if (t > 1.05 && t < 1.6) { const u = (t - 1.05) / 0.55; drop(970 + 30, 430 + u * 30, 0.4 * (1 - u * 0.3)); }
-      if (t > 1.6) { ell(1000, 460, 10 * clamp((t - 1.6) / 0.15, 0, 1), 3); g.fillStyle = '#e8a050'; g.fill(); }
+      if (t > 0.35 && t < 0.75) { const u = (t - 0.35) / 0.4; drop(970 + 30, 430 + u * 30, 0.4 * (1 - u * 0.3)); }
+      if (t > 0.75) { ell(1000, 460, 10 * clamp((t - 0.75) / 0.15, 0, 1), 3); g.fillStyle = '#e8a050'; g.fill(); }
     });
   } },
-  { d: 3.4, lines: [[0.6, 3.1, 'Z', '어디서 말대꾸야!!']], sfx: [[0, 'hum', 3.4], [0.3, 'bang'], [0.35, 'static', 3.0]], draw(t, T, m) {
-    const k = kf(t, [[0, 0], [0.3, 1]]), fz = kf(t, [[0.3, 0], [0.55, 1]]), sh = t > 0.3 && t < 0.6 ? (rnd(Math.floor(t * 60)) - 0.5) * 18 : 0;
+  { d: 1.8, lines: [[0.3, 1.75, 'Z', '어디서 말대꾸야!!']], sfx: [[0, 'hum', 1.8], [0.2, 'bang'], [0.25, 'static', 1.55]], draw(t, T, m) {
+    const k = kf(t, [[0, 0], [0.2, 1]]), fz = kf(t, [[0.2, 0], [0.4, 1]]), sh = t > 0.2 && t < 0.5 ? (rnd(Math.floor(t * 60)) - 0.5) * 18 : 0;
     cam(790 + sh, 390 + sh * 0.5, 1.7, () => scene(T, {
       A: { e: { lx: -0.9, ly: -0.3, lid: 0.2, pup: 0.12 }, sweat: 2 },
       Z: { e: { lx: 0.9, ly: -0.1, ang: 0.6, lid: 0.25 }, brow: 1.6, armR: 'slam', armK: k, frizz: fz, say: m('Z'), blush: 1 },
     }));
   } },
-  { d: 4.6, lines: [[1.4, 3.0, 'A', '손님... 머리가...']], sfx: [[0, 'static', 4.0], [3.9, 'sting']], draw(t, T, m) {
-    const snap = t > 3.75, z = lerp(3.4, 3.9, ease(t / 3.75)) + (snap ? 0.6 * easeOut((t - 3.75) / 0.4) : 0);
+  { d: 2.2, lines: [[0.2, 1.5, 'A', '손님... 머리가...']], sfx: [[0, 'static', 1.7], [1.55, 'sting']], draw(t, T, m) {
+    const snap = t > 1.6, z = lerp(3.4, 3.9, ease(t / 1.6)) + (snap ? 0.6 * easeOut((t - 1.6) / 0.4) : 0);
     cam(1060, 318, z, () => scene(T, {
-      A: { e: { lx: -0.7, ly: kf(t, [[0, 0], [0.8, -0.85]]), lid: snap ? 0 : 0.6, pup: snap ? 0.1 : 0.15 }, say: m('A'), brow: snap ? -1 : 0 },
+      A: { e: { lx: -0.7, ly: kf(t, [[0, 0], [0.3, -0.85]]), lid: snap ? 0 : 0.6, pup: snap ? 0.1 : 0.15 }, say: m('A'), brow: snap ? -1 : 0 },
       Z: { frizz: 1, e: { lx: 0.9, ang: 0.6 }, brow: 1.6 },
     }));
-    if (snap) { speedLines(W / 2, H * 0.42, T, 'rgba(255,255,255,.85)', 40); flash(1 - (t - 3.75) / 0.2); }
+    if (snap) { speedLines(W / 2, H * 0.42, T, 'rgba(255,255,255,.85)', 40); flash(1 - (t - 1.6) / 0.2); }
   } },
   // ---- 광고 폭주 ----
-  { d: 1.1, sfx: [[0, 'boom'], [0, 'choir', 1.6]], draw(t, T) {
+  { d: 0.8, sfx: [[0, 'boom'], [0, 'choir', 1.2]], draw(t, T) {
     rays(W / 2, H * 0.48, T, '#ffcf3f', '#ffe68a', 22, 1.2);
     speedLines(W / 2, H * 0.48, T, 'rgba(255,255,255,.9)', 60);
     const k = backOut(t / 0.35);
@@ -661,43 +654,43 @@ const SHOTS = [
     slam('잠깐!!!', W / 2, 110, 120, t - 0.05, -0.06, '#fff27a', '#ff8a1c', '#3a1500');
     flash(1 - t / 0.25);
   } },
-  { d: 3.8, sfx: [[0, 'fanfare', 9.8], [0.5, 'sparkle'], [1.2, 'slam'], [2.2, 'slam']], draw(t, T) {
+  { d: 2.4, sfx: [[0, 'fanfare', 7.4], [0.3, 'sparkle'], [0.6, 'slam'], [1.3, 'slam']], draw(t, T) {
     rays(W * 0.58, H * 0.3, T, '#4fb7ff', '#87d3ff', 24, 0.5);
     bubbles(T, 22, 3);
-    const up = easeOut(t / 0.6);
+    const up = easeOut(t / 0.4);
     const ap = { x: 470, y: H + 330, s: 1.5, T, e: { lx: 0.55, ly: -0.7, lid: 0.05, ang: 0.3 }, armR: 'raise', armK: up, brow: 1.0, say: 0.5, circles: 0.4 };
     alba(ap);
     const hx = ap.hand.x, hy = ap.hand.y, bw = 150, bob = Math.sin(T * 3) * 6;
     beams(hx + 20, hy - 70 + bob, T, ease(t / 0.8));
     adBox(hx + 20 - bw / 2, hy - 140 + bob, bw, T);
     for (let i = 0; i < 6; i++) twinkle(hx + 20 + Math.cos(T * 2 + i) * 120, hy - 70 + Math.sin(T * 2 + i) * 110, 12 + 10 * Math.sin(T * 6 + i));
-    slam('정전기 박멸', 960, 300, 110, t - 1.2, -0.08, '#ffffff', '#5ec4ff', '#0d3b66');
-    slam('헤어 에센스 등장', 980, 440, 80, t - 2.2, 0.05, '#fff7a8', '#ffb01c');
+    slam('정전기 박멸', 960, 300, 110, t - 0.6, -0.08, '#ffffff', '#5ec4ff', '#0d3b66');
+    slam('헤어 에센스 등장', 980, 440, 80, t - 1.3, 0.05, '#fff7a8', '#ffb01c');
   } },
-  { d: 2.9, sfx: [[0.2, 'spray'], [0.3, 'sparkle'], [1.3, 'ting'], [1.5, 'slam']], draw(t, T) {
+  { d: 2.2, sfx: [[0.1, 'spray'], [0.2, 'sparkle'], [0.9, 'ting'], [1.1, 'slam']], draw(t, T) {
     rays(W / 2, H * 0.45, T, '#ff9ec2', '#ffc4da', 26, -0.4);
-    const k = ease((t - 0.2) / 1.0);
+    const k = ease((t - 0.1) / 0.8);
     ajumma({ x: W / 2, y: 330 + 306 * 2.3, s: 2.3, T, e: { lx: 0, ly: -0.1, lid: lerp(0.25, 0, k), ang: lerp(0.6, -0.1, k), sparkle: k }, frizz: 1 - k, silk: k, wind: 1, brow: lerp(1.6, -0.6, k), blush: k });
-    const sx = lerp(-200, W + 200, ease((t - 0.2) / 1.0));
+    const sx = lerp(-200, W + 200, ease((t - 0.1) / 0.8));
     g.save(); g.globalCompositeOperation = 'lighter'; const gr = g.createLinearGradient(sx - 160, 0, sx + 160, 0);
     gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.5, 'rgba(255,255,255,.75)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
     g.fillStyle = gr; g.fillRect(0, 0, W, H); g.restore();
     for (let i = 0; i < 10; i++) { const a = i * 0.63 + T, r = 330 + 40 * Math.sin(T * 3 + i); twinkle(W / 2 + Math.cos(a) * r, H * 0.45 + Math.sin(a) * r * 0.7, (18 + 14 * Math.sin(T * 7 + i)) * k, k); }
-    slam('부스스 → 찰랑', W / 2, H - 100, 100, t - 1.5, -0.03, '#ffffff', '#ffd0e4', '#7a1f4a');
+    slam('부스스 → 찰랑', W / 2, H - 100, 100, t - 1.1, -0.03, '#ffffff', '#ffd0e4', '#7a1f4a');
   } },
-  { d: 1.7, sfx: [[0.05, 'gasp']], draw(t, T) {
+  { d: 1.0, sfx: [[0.02, 'gasp']], draw(t, T) {
     rays(W / 2, H * 0.5, T, '#ffd23f', '#ffe9a0', 22, 0.8);
     speedLines(W / 2, H * 0.5, T, 'rgba(255,255,255,.8)', 36);
     const pk = backOut(t / 0.25);
     g.save(); g.translate(W / 2, H); g.scale(pk, pk); g.translate(-W / 2, -H);
     ajeossi({ x: W / 2, y: H + 120, s: 2.4, T, awake: 1, e: { lx: 0, ly: -0.2, pup: 0.08 }, eyeScale: 1.3, say: 1 });
     g.restore();
-    slam('헉!!', W / 2 + 330, 150, 120, t - 0.15, 0.08, '#ffffff', '#ffe08a');
+    slam('헉!!', W / 2 + 330, 150, 120, t - 0.1, 0.08, '#ffffff', '#ffe08a');
   } },
-  { d: 3.3, sfx: [[0.1, 'whoosh'], [0.9, 'slam'], [1.8, 'slam'], [2.6, 'sparkle']], draw(t, T) {
+  { d: 1.8, sfx: [[0, 'whoosh'], [0.45, 'slam'], [1.0, 'slam'], [1.4, 'sparkle']], draw(t, T) {
     rays(W / 2, H * 0.46, T, '#3aa0f0', '#6cc4ff', 28, 0.7);
     bubbles(T, 30, 9);
-    const sc = lerp(0.3, 1, backOut(t / 0.45)), bw = 300 * sc, bob = Math.sin(T * 2.5) * 10, sway = Math.sin(T * 2.2) * 0.12;
+    const sc = lerp(0.3, 1, backOut(t / 0.3)), bw = 300 * sc, bob = Math.sin(T * 2.5) * 10, sway = Math.sin(T * 2.2) * 0.12;
     beams(W / 2, H * 0.46 + bob, T, 1, 'rgba(220,245,255,');
     g.save(); g.globalAlpha = 0.85; ell(W / 2, H * 0.46 + bw * 0.55 + bob, bw * 0.9, bw * 0.16); g.lineWidth = 6; g.strokeStyle = '#e8f8ff'; g.stroke(); g.restore();
     // silky ribbons of hair-shine swirling round the product
@@ -707,33 +700,33 @@ const SHOTS = [
       g.strokeStyle = 'rgba(255,255,255,.75)'; g.lineWidth = 10 - i * 2; g.lineCap = 'round'; g.stroke(); g.restore();
     }
     g.save(); g.translate(W / 2, H * 0.46 + bob); g.rotate(sway); adBox(-bw / 2, -bw / 2, bw, T); g.restore();
-    slam('뿌리는 순간', 250, 160, 74, t - 0.9, -0.1, '#ffffff', '#c6f0ff', '#0d3b66');
-    slam('찰랑 72시간', 1040, 560, 86, t - 1.8, 0.07, '#fff7a8', '#ffb01c');
+    slam('뿌리는 순간', 250, 160, 74, t - 0.45, -0.1, '#ffffff', '#c6f0ff', '#0d3b66');
+    slam('찰랑 72시간', 1040, 560, 86, t - 1.0, 0.07, '#fff7a8', '#ffb01c');
     for (let i = 0; i < 8; i++) star(W / 2 + Math.cos(T * 1.5 + i * 0.8) * 440, H * 0.46 + Math.sin(T * 1.5 + i * 0.8) * 260, 16 + 6 * Math.sin(T * 5 + i), '#fff6b0', T + i);
   } },
   // ---- 원래대로 ----
-  { d: 6.4, lines: [[1.0, 2.9, 'Z', '...환불 안 해도 돼, 총각.'], [3.6, 5.8, 'A', '...에센스는 계산하셔야...']], sfx: [[0, 'scratch'], [0.25, 'hum', 6.1], [4.8, 'doorbell']], draw(t, T, m) {
-    const out = ease((t - 2.9) / 2.0);
+  { d: 3.3, lines: [[0.35, 1.6, 'Z', '...환불 안 해도 돼.'], [1.9, 3.25, 'A', '...계산은요?']], sfx: [[0, 'scratch'], [0.25, 'hum', 3.0], [2.6, 'doorbell']], draw(t, T, m) {
+    const out = ease((t - 1.5) / 1.3);
     cam(640, 360, 1.0, () => scene(T, {
-      bell: clamp(1 - (t - 4.8) / 1.5, 0, t > 4.8 ? 1 : 0),
+      bell: clamp(1 - (t - 2.6) / 1.5, 0, t > 2.6 ? 1 : 0),
       J: { awake: 1, e: { lx: 0.8, ly: 0, pup: 0.1 } },
-      A: { e: { lx: lerp(-0.9, -1, out), ly: 0, lid: 0.55 }, say: m('A'), armR: t > 3.5 ? 'raise' : 'down', armK: 0.25 },
-      Z: { x: lerp(720, 40, out), bob: out > 0 && out < 1 ? -Math.abs(Math.sin(t * 9)) * 6 : 0, silk: 1, wind: 0.35, brow: -0.2, e: { lx: out > 0 ? -0.9 : 0.6, ly: -0.1, lid: 0.35, ang: -0.1 }, say: m('Z'), blush: 1 },
+      A: { e: { lx: lerp(-0.9, -1, out), ly: 0, lid: 0.55 }, say: m('A'), armR: t > 1.9 ? 'raise' : 'down', armK: 0.25 },
+      Z: { x: lerp(720, 40, out), bob: out > 0 && out < 1 ? -Math.abs(Math.sin(t * 13)) * 6 : 0, silk: 1, wind: 0.35, brow: -0.2, e: { lx: out > 0 ? -0.9 : 0.6, ly: -0.1, lid: 0.35, ang: -0.1 }, say: m('Z'), blush: 1 },
     }));
   } },
-  { d: 4.6, lines: [[2.6, 4.2, 'A', '...어서 오세요.']], sfx: [[0, 'jingle'], [0.15, 'sparkle']], draw(t, T, m) {
+  { d: 2.4, lines: [[1.2, 2.35, 'A', '...어서 오세요.']], sfx: [[0, 'jingle'], [0.1, 'sparkle']], draw(t, T, m) {
     const bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#d9f1ff'); bg.addColorStop(1, '#ffe3ee'); g.fillStyle = bg; g.fillRect(0, 0, W, H);
     bubbles(T, 18, 21);
-    const pk = backOut(t / 0.4), bw = 270 * pk;
+    const pk = backOut(t / 0.3), bw = 270 * pk;
     beams(W / 2, 320, T, 0.6, 'rgba(255,255,255,');
     adBox(W / 2 - bw / 2, 320 - bw / 2, bw, T);
-    slam('정전기 박멸 헤어 에센스', W / 2, 92, 68, t - 0.25, 0, '#ffffff', '#bfe8ff', '#0d3b66');
-    if (t > 0.6) {
-      g.save(); g.globalAlpha = clamp((t - 0.6) / 0.3, 0, 1);
+    slam('정전기 박멸 헤어 에센스', W / 2, 92, 68, t - 0.15, 0, '#ffffff', '#bfe8ff', '#0d3b66');
+    if (t > 0.4) {
+      g.save(); g.globalAlpha = clamp((t - 0.4) / 0.2, 0, 1);
       g.font = `900 34px ${SUB}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#1d3b5a'; g.fillText('부스스한 머리, 뿌리면 찰랑 · 지금 프로필 링크에서', W / 2, 520);
       g.restore();
     }
-    const peek = easeOut((t - 1.2) / 0.6);
+    const peek = easeOut((t - 0.7) / 0.4);
     g.save(); g.beginPath(); g.rect(0, 0, W, H); g.clip();
     alba({ x: 1130, y: lerp(1300, 1080, peek), s: 1.4, T, e: { lx: -0.6, ly: 0.2 }, say: m('A') });
     g.restore();
@@ -788,6 +781,8 @@ function drawFrame(T) {
   g.save(); g.beginPath(); g.rect(0, 0, W, H); g.clip();
   shot.draw(t, T, who => mouthAt(T, who));
   g.restore();
+  g.save(); g.font = `700 18px ${SUB}`; rr(W - 132, 14, 116, 32, 8); g.fillStyle = 'rgba(15,12,18,.7)'; g.fill();
+  g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('유료광고 포함', W - 74, 31); g.restore();
   for (const l of LINES) {
     if (T < l.t0 || T >= l.t1) continue;
     subtitle(l.text, Math.min(clamp((T - l.t0) / 0.08, 0, 1), clamp((l.t1 - T) / 0.08, 0, 1)));
@@ -971,7 +966,7 @@ seek.oninput = () => { cur = (seek.value / 1000) * DUR; if (playing) { startPerf
 sndBtn.onclick = () => { muted = !muted; sndBtn.textContent = muted ? '🔇' : '🔊'; if (playing) startAudio(); };
 
 // Korean webfonts arrive in unicode-range subsets, so preload every string the film draws.
-const ALL_TEXT = LINES.map(l => l.text).join('') + '※이영상에는유료광고가포함되어있습니다.새벽3:12바로마트24민수Z...어쩌다이렇게됐냐면◀3분전';
+const ALL_TEXT = LINES.map(l => l.text).join('') + '유료광고포함※이영상에는유료광고가포함되어있습니다.새벽3:12바로마트24민수Z...어쩌다이렇게됐냐면◀3분전';
 const HYPE_TEXT = '컵라면국물환불해달라는손님광고잠깐!!!정전기박멸헤어에센스등장부스스→찰랑헉뿌리는순간72시간';
 window.ready = Promise.all([
   document.fonts.load(`700 36px 'Noto Sans KR'`, ALL_TEXT + '부스스한머리,뿌리면찰랑·지금프로필링크에서'),
@@ -979,7 +974,7 @@ window.ready = Promise.all([
   document.fonts.load(`500 22px 'Noto Sans KR'`, ALL_TEXT),
   document.fonts.load(`40px 'Black Han Sans'`, HYPE_TEXT),
 ]).catch(() => {}).then(() => {
-  cur = 0.6; render(); cur = 0;
+  cur = 0.4; render(); cur = 0;
   timeEl.textContent = `${fmt(0)} / ${fmt(DUR)}`; seek.value = 0;
 });
 </script>
