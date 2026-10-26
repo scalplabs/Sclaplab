@@ -1,0 +1,466 @@
+<title>카드뉴스 공방</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: workbench. Desktop = controls column | live 1080px canvas preview with card strip and export.
+   Phone = preview first, then controls. Card colors are the user's own; the UI borrows the guide's cover blue. */
+:root{
+  --bg:#eef1f6;
+  --panel:#ffffff;
+  --panel-2:#f5f7fb;
+  --line:#d9dfea;
+  --fg:#141a26;
+  --muted:#5d6779;
+  --accent:#1d5fb4;
+  --accent-fg:#ffffff;
+  --accent-soft:rgba(29,95,180,.1);
+  --danger:#c2412d;
+  --f-ui:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --f-num:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0d1118;--panel:#151b26;--panel-2:#1b2230;--line:#283246;--fg:#e7ecf5;--muted:#8e99ad;
+  --accent:#5b9bf0;--accent-fg:#0d1118;--accent-soft:rgba(91,155,240,.14);--danger:#f07a66;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1118;--panel:#151b26;--panel-2:#1b2230;--line:#283246;--fg:#e7ecf5;--muted:#8e99ad;
+  --accent:#5b9bf0;--accent-fg:#0d1118;--accent-soft:rgba(91,155,240,.14);--danger:#f07a66;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-ui);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.wrap{max-width:1320px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px;display:flex;flex-direction:column;gap:16px}
+header{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+header h1{margin:0;font-size:20px;font-weight:900;letter-spacing:-.02em;text-wrap:balance}
+header p{margin:0;color:var(--muted);font-size:13px}
+.spec{font-family:var(--f-num);font-size:12px;color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:4px}
+
+.grid{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:16px;align-items:start}
+.controls{display:flex;flex-direction:column;gap:12px;min-width:0}
+.stage{display:flex;flex-direction:column;gap:12px;min-width:0;position:sticky;top:12px}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}.stage{order:-1;position:static}}
+
+section.box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+section.box h2{margin:0;font-size:13px;font-weight:700;letter-spacing:.02em;display:flex;justify-content:space-between;align-items:center;gap:8px}
+section.box h2 small{font-weight:400;color:var(--muted);font-size:12px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);min-width:0}
+input[type=text],textarea,select{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:14px;color:var(--fg)}
+textarea{resize:vertical;min-height:64px;line-height:1.5}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row > *{min-width:0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+
+.seg{display:flex;background:var(--panel-2);border:1px solid var(--line);border-radius:7px;padding:2px}
+.seg button{flex:1;border:0;background:none;padding:6px 4px;border-radius:5px;font-size:13px;color:var(--muted)}
+.seg button[aria-pressed=true]{background:var(--panel);color:var(--fg);font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+
+.btn{border:1px solid var(--line);background:var(--panel-2);border-radius:6px;padding:7px 12px;font-size:13px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent);font-weight:700}
+.btn.danger{color:var(--danger)}
+.btn:disabled{opacity:.4;cursor:default}
+
+.color{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+.color span.in{display:flex;align-items:center;gap:6px;background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:4px 6px}
+.color input[type=color]{width:26px;height:26px;border:0;padding:0;background:none;flex:none}
+.color input[type=text]{border:0;background:none;padding:0;font-family:var(--f-num);font-size:12px;text-transform:uppercase}
+
+.presets{display:flex;gap:6px;flex-wrap:wrap}
+.preset{display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel-2);border-radius:20px;padding:4px 10px 4px 4px;font-size:12px}
+.preset i{display:flex;width:34px;height:18px;border-radius:10px;overflow:hidden}
+.preset i b{flex:1}
+
+.toggle{display:flex;align-items:center;gap:8px;font-size:13px}
+
+.canvas-frame{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;justify-content:center}
+#view{display:block;max-width:100%;height:auto;max-height:68vh;border-radius:4px;box-shadow:0 6px 24px rgba(0,0,0,.18)}
+
+.strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.thumb{flex:none;border:2px solid transparent;border-radius:6px;padding:0;background:none;position:relative}
+.thumb canvas{display:block;height:96px;width:auto;border-radius:4px}
+.thumb[aria-current=true]{border-color:var(--accent)}
+.thumb em{position:absolute;left:4px;top:4px;font-style:normal;font-family:var(--f-num);font-size:10px;background:rgba(0,0,0,.6);color:#fff;padding:0 4px;border-radius:3px}
+.add{flex:none;width:78px;height:100px;border:1px dashed var(--line);border-radius:6px;background:none;color:var(--muted);font-size:13px}
+
+.exports{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.hint{font-size:12px;color:var(--muted);margin:0}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.gallery img{width:100%;border-radius:4px;border:1px solid var(--line)}
+.toast{font-size:12px;color:var(--accent);min-height:18px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>카드뉴스 공방</h1>
+    <span class="spec" id="specTag">1080 × 1350 · 세이프 120px</span>
+    <p>제목·본문만 바꾸면 카드가 찍혀 나오는 틀입니다.</p>
+  </header>
+
+  <div class="grid">
+    <div class="controls">
+      <section class="box" aria-labelledby="h-card">
+        <h2 id="h-card">카드 편집 <small id="cardPos">1 / 1</small></h2>
+        <div class="seg" role="group" aria-label="카드 종류">
+          <button type="button" data-type="cover">표지</button>
+          <button type="button" data-type="content">본문</button>
+          <button type="button" data-type="cta">마무리</button>
+        </div>
+        <label class="f"><span id="labelName">상단 태그 (선택)</span><input type="text" id="fLabel"></label>
+        <label class="f">제목 <textarea id="fTitle" rows="2"></textarea></label>
+        <label class="f">본문 <textarea id="fBody" rows="4"></textarea></label>
+        <label class="f">배경 이미지 (선택)
+          <input type="file" id="fImg" accept="image/*">
+        </label>
+        <div class="row">
+          <button class="btn" type="button" id="bImgClear">배경 이미지 빼기</button>
+          <button class="btn" type="button" id="bLeft">◀ 앞으로</button>
+          <button class="btn" type="button" id="bRight">뒤로 ▶</button>
+          <button class="btn" type="button" id="bDup">복제</button>
+          <button class="btn danger" type="button" id="bDel">삭제</button>
+        </div>
+      </section>
+
+      <section class="box" aria-labelledby="h-style">
+        <h2 id="h-style">전체 스타일 <small>모든 카드에 적용</small></h2>
+        <label class="f">크기
+          <select id="fSize">
+            <option value="1080x1350">인스타 피드 세로 1080×1350 (기본)</option>
+            <option value="1080x1080">인스타 피드 정사각 1080×1080</option>
+            <option value="1080x1920">스토리·릴스 1080×1920</option>
+          </select>
+        </label>
+        <div class="presets" id="presets"></div>
+        <div class="three">
+          <label class="color">배경<span class="in"><input type="color" id="cBg"><input type="text" id="tBg" maxlength="7"></span></label>
+          <label class="color">포인트<span class="in"><input type="color" id="cPoint"><input type="text" id="tPoint" maxlength="7"></span></label>
+          <label class="color">글자<span class="in"><input type="color" id="cText"><input type="text" id="tText" maxlength="7"></span></label>
+        </div>
+        <label class="f">하단 핸들 <input type="text" id="fHandle"></label>
+        <label class="toggle"><input type="checkbox" id="fSafe"> 세이프 존 가이드 보기 (저장 이미지에는 안 들어감)</label>
+      </section>
+
+      <section class="box" aria-labelledby="h-copy">
+        <h2 id="h-copy">카피 채우기 <small>GPT로 글감 만들기</small></h2>
+        <label class="f">주제 <input type="text" id="fTopic" placeholder="예: 퇴근 후 30분 루틴"></label>
+        <div class="two">
+          <label class="f">타깃 <input type="text" id="fTarget" placeholder="예: 30대 직장인"></label>
+          <label class="f">카드 수
+            <select id="fCount"><option>3</option><option>4</option><option selected>5</option><option>6</option><option>7</option><option>8</option></select>
+          </label>
+        </div>
+        <button class="btn primary" type="button" id="bPrompt">1. GPT 프롬프트 복사</button>
+        <textarea id="fPrompt" rows="4" readonly hidden aria-label="복사할 프롬프트"></textarea>
+        <label class="f">2. GPT 답변 붙여넣기
+          <textarea id="fPaste" rows="5" placeholder="제목: ...&#10;본문: ...&#10;---&#10;제목: ...&#10;본문: ..."></textarea>
+        </label>
+        <button class="btn" type="button" id="bFill">3. 카드에 채우기</button>
+        <div class="toast" id="copyToast" role="status"></div>
+      </section>
+    </div>
+
+    <div class="stage">
+      <div class="canvas-frame"><canvas id="view" width="1080" height="1350" aria-label="카드 미리보기"></canvas></div>
+      <div class="strip" id="strip"></div>
+      <div class="exports">
+        <button class="btn primary" type="button" id="bPng">이 카드 PNG</button>
+        <button class="btn" type="button" id="bAll">전체 PNG</button>
+        <span class="toast" id="exportToast" role="status"></span>
+      </div>
+      <p class="hint" id="galleryHint" hidden>아래 이미지를 길게 누르거나 우클릭해서 저장하세요. 파일로 열었다면 자동으로 다운로드도 됩니다.</p>
+      <div class="gallery" id="gallery"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const SAFE = 120;
+  const FONT = '"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
+  const KEY = 'cardnews-studio-v1';
+  const PRESETS = [
+    {name:'미드나잇 라임', bg:'#0F0F10', point:'#C7F860', text:'#FFFFFF'},
+    {name:'페이퍼 블루', bg:'#F2F4F7', point:'#1D5FB4', text:'#111827'},
+    {name:'코랄', bg:'#FFF4EC', point:'#FF5A36', text:'#1F1A17'},
+    {name:'딥 네이비', bg:'#0B1E3F', point:'#5EC8FF', text:'#FFFFFF'}
+  ];
+  const SAMPLE = {
+    size:'1080x1350', bg:'#0F0F10', point:'#C7F860', text:'#FFFFFF', handle:'@mybrand_official', safe:true, sel:0,
+    cards:[
+      {type:'cover', label:'', title:'퇴근 후\n30분 루틴', body:'하루를 리셋하는\n3가지 행동'},
+      {type:'content', label:'01', title:'휴대폰은 현관에 두기', body:'집에 들어오자마자 휴대폰을 현관 선반에 둡니다. 30분만 떨어져 있어도 머리가 조용해집니다.'},
+      {type:'content', label:'02', title:'10분 스트레칭', body:'하루 종일 앉아 굳은 목과 허리를 풀어줍니다. 영상 하나 틀어두고 따라 하면 끝.'},
+      {type:'content', label:'03', title:'내일 할 일 3개만 적기', body:'다 적지 말고 딱 3개. 아침에 고민하는 시간이 사라집니다.'},
+      {type:'cta', label:'저장해두고 오늘 밤 해보기', title:'오늘부터\n딱 30분만', body:'도움이 됐다면 친구에게 DM으로 공유해 주세요'}
+    ]
+  };
+
+  let S = load() || structuredClone(SAMPLE);
+  const imgs = new Map(); // card -> HTMLImageElement (kept out of storage)
+
+  const $ = id => document.getElementById(id);
+  const view = $('view'), vctx = view.getContext('2d');
+
+  function load(){ try{ const s = JSON.parse(localStorage.getItem(KEY)); return s && s.cards && s.cards.length ? s : null; }catch(e){ return null; } }
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+
+  const dims = () => S.size.split('x').map(Number);
+  const card = () => S.cards[S.sel];
+  function rgba(hex, a){
+    const h = hex.replace('#',''); const n = parseInt(h.length===3 ? h.split('').map(c=>c+c).join('') : h, 16);
+    return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`;
+  }
+  const font = (w, px) => `${w} ${px}px ${FONT}`;
+
+  // Wrap on spaces, falling back to characters for long Korean runs.
+  function wrap(ctx, text, maxW){
+    const out = [];
+    for(const para of String(text).split('\n')){
+      if(!para.trim()){ out.push(''); continue; }
+      let line = '';
+      for(const word of para.split(/\s+/)){
+        const t = line ? line + ' ' + word : word;
+        if(ctx.measureText(t).width <= maxW){ line = t; continue; }
+        if(line) out.push(line);
+        if(ctx.measureText(word).width <= maxW){ line = word; continue; }
+        line = '';
+        for(const ch of word){
+          if(ctx.measureText(line + ch).width > maxW && line){ out.push(line); line = ch; } else line += ch;
+        }
+      }
+      if(line) out.push(line);
+    }
+    return out;
+  }
+  // Largest size (step 4px) whose wrapped lines fit both line count and height.
+  function fit(ctx, text, weight, max, min, maxW, maxLines, lh, maxH){
+    let px = max, lines;
+    for(; px >= min; px -= 4){
+      ctx.font = font(weight, px); lines = wrap(ctx, text, maxW);
+      if(lines.length <= maxLines && lines.length * px * lh <= (maxH || Infinity)) break;
+    }
+    px = Math.max(px, min); ctx.font = font(weight, px);
+    return {px, lines: wrap(ctx, text, maxW), lh, font: font(weight, px)};
+  }
+  function drawLines(ctx, b, x, y){ ctx.font = b.font; b.lines.forEach((l, i) => ctx.fillText(l, x, y + i * b.px * b.lh)); return y + b.lines.length * b.px * b.lh; }
+  const blockH = b => b.lines.length * b.px * b.lh;
+
+  function render(ctx, c, idx, guides){
+    const [W, H] = dims(); const n = S.cards.length;
+    ctx.canvas.width = W; ctx.canvas.height = H;
+    ctx.fillStyle = S.bg; ctx.fillRect(0, 0, W, H);
+    const im = imgs.get(c);
+    if(im){
+      const r = Math.max(W / im.width, H / im.height), iw = im.width * r, ih = im.height * r;
+      ctx.drawImage(im, (W - iw) / 2, (H - ih) / 2, iw, ih);
+      ctx.fillStyle = rgba(S.bg, .6); ctx.fillRect(0, 0, W, H);
+    }
+    ctx.textBaseline = 'top';
+    const inner = W - SAFE * 2;
+
+    if(c.type === 'cover'){
+      ctx.textAlign = 'center';
+      let y = SAFE + 40;
+      ctx.fillStyle = S.point; ctx.fillRect(W/2 - 40, y, 80, 8); y += 60;
+      if(c.label){ ctx.font = font(700, 34); ctx.fillStyle = S.point; ctx.fillText(c.label, W/2, y); y += 70; }
+      ctx.fillStyle = S.text;
+      y = drawLines(ctx, fit(ctx, c.title, 900, 156, 72, inner, 4, 1.16), W/2, y) + 70;
+      if(c.body){ ctx.fillStyle = rgba(S.text, .88); y = drawLines(ctx, fit(ctx, c.body, 700, 52, 36, inner, 3, 1.4), W/2, y) + 60; }
+      dashes(ctx, W/2, y, idx, n);
+      ctx.font = font(500, 30); ctx.fillStyle = rgba(S.text, .6); ctx.textBaseline = 'bottom';
+      ctx.fillText(S.handle, W/2, H - SAFE);
+    } else if(c.type === 'cta'){
+      ctx.textAlign = 'center'; ctx.fillStyle = S.text;
+      const t = fit(ctx, c.title, 900, 120, 64, inner, 4, 1.18);
+      const b = c.body ? fit(ctx, c.body, 500, 40, 30, inner, 4, 1.5) : null;
+      const pill = c.label ? 104 : 0;
+      const total = blockH(t) + (b ? 50 + blockH(b) : 0) + (pill ? 80 + pill : 0);
+      let y = Math.max(SAFE, (H - total) / 2 - 30);
+      ctx.fillStyle = S.text; y = drawLines(ctx, t, W/2, y);
+      if(b){ ctx.fillStyle = rgba(S.text, .8); y = drawLines(ctx, b, W/2, y + 50); }
+      if(c.label){
+        y += 80; ctx.font = font(700, 38);
+        const pw = Math.min(inner, ctx.measureText(c.label).width + 120);
+        ctx.fillStyle = S.point; roundRect(ctx, W/2 - pw/2, y, pw, pill, pill/2); ctx.fill();
+        ctx.fillStyle = S.bg; ctx.textBaseline = 'middle'; ctx.fillText(c.label, W/2, y + pill/2 + 2); ctx.textBaseline = 'top';
+      }
+      footer(ctx, W, H, idx, n, 'center');
+    } else {
+      ctx.textAlign = 'left'; let y = SAFE;
+      if(c.label){ ctx.font = font(900, 72); ctx.fillStyle = S.point; ctx.fillText(c.label, SAFE, y); y += 120; }
+      ctx.fillStyle = S.text;
+      y = drawLines(ctx, fit(ctx, c.title, 900, 88, 56, inner, 3, 1.22), SAFE, y) + 44;
+      ctx.fillStyle = S.point; ctx.fillRect(SAFE, y, 64, 7); y += 60;
+      if(c.body){
+        const room = H - SAFE - 90 - y;
+        ctx.fillStyle = rgba(S.text, .86); drawLines(ctx, fit(ctx, c.body, 500, 46, 28, inner, 99, 1.62, room), SAFE, y);
+      }
+      footer(ctx, W, H, idx, n, 'split');
+    }
+
+    if(guides){
+      ctx.save(); ctx.setLineDash([14, 10]); ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,64,129,.75)';
+      ctx.strokeRect(SAFE, SAFE, W - SAFE*2, H - SAFE*2); ctx.restore();
+    }
+  }
+  function dashes(ctx, cx, y, idx, n){
+    const k = Math.min(n, 10), w = 44, g = 14, total = k * w + (k - 1) * g;
+    for(let i = 0; i < k; i++){ ctx.fillStyle = i === idx ? S.point : rgba(S.point, .3); ctx.fillRect(cx - total/2 + i * (w + g), y, w, 5); }
+  }
+  function footer(ctx, W, H, idx, n, mode){
+    ctx.font = font(500, 28); ctx.fillStyle = rgba(S.text, .55); ctx.textBaseline = 'bottom';
+    if(mode === 'center'){ ctx.textAlign = 'center'; ctx.fillText(S.handle, W/2, H - SAFE); }
+    else{
+      ctx.textAlign = 'left'; ctx.fillText(S.handle, SAFE, H - SAFE);
+      ctx.textAlign = 'right'; ctx.fillText(`${idx + 1} / ${n}`, W - SAFE, H - SAFE);
+    }
+    ctx.textBaseline = 'top';
+  }
+  function roundRect(ctx, x, y, w, h, r){ ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+
+  // ---------- UI ----------
+  const LABEL_NAME = {cover:'상단 태그 (선택)', content:'번호 (예: 01)', cta:'버튼 문구 (선택)'};
+
+  function syncForm(){
+    const c = card();
+    document.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.type === c.type));
+    $('labelName').textContent = LABEL_NAME[c.type];
+    $('fLabel').value = c.label || ''; $('fTitle').value = c.title || ''; $('fBody').value = c.body || '';
+    $('cardPos').textContent = `${S.sel + 1} / ${S.cards.length}`;
+    $('bLeft').disabled = S.sel === 0; $('bRight').disabled = S.sel === S.cards.length - 1; $('bDel').disabled = S.cards.length === 1;
+    $('bImgClear').disabled = !imgs.has(c); $('fImg').value = '';
+    $('fSize').value = S.size; $('fHandle').value = S.handle; $('fSafe').checked = S.safe;
+    for(const k of ['bg','point','text']){ const K = k[0].toUpperCase() + k.slice(1); $('c' + K).value = S[k]; $('t' + K).value = S[k]; }
+    const [W, H] = dims(); $('specTag').textContent = `${W} × ${H} · 세이프 ${SAFE}px`;
+  }
+
+  let raf = 0;
+  function draw(){ cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { render(vctx, card(), S.sel, S.safe); drawStrip(); save(); }); }
+  function drawStrip(){
+    const strip = $('strip'); strip.textContent = '';
+    const off = document.createElement('canvas').getContext('2d');
+    S.cards.forEach((c, i) => {
+      render(off, c, i, false);
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'thumb';
+      b.setAttribute('aria-current', i === S.sel); b.setAttribute('aria-label', `${i + 1}번 카드 편집`);
+      const t = document.createElement('canvas'); const r = 96 / off.canvas.height;
+      t.width = Math.round(off.canvas.width * r); t.height = 96;
+      t.getContext('2d').drawImage(off.canvas, 0, 0, t.width, t.height);
+      const em = document.createElement('em'); em.textContent = i + 1;
+      b.append(t, em); b.onclick = () => { S.sel = i; syncForm(); draw(); };
+      strip.append(b);
+    });
+    const add = document.createElement('button'); add.type = 'button'; add.className = 'add'; add.textContent = '+ 카드 추가';
+    add.onclick = () => {
+      const num = String(S.cards.filter(c => c.type === 'content').length + 1).padStart(2, '0');
+      const at = S.cards[S.cards.length - 1].type === 'cta' ? S.cards.length - 1 : S.cards.length;
+      S.cards.splice(at, 0, {type:'content', label:num, title:'새 카드 제목', body:'본문을 입력하세요.'});
+      S.sel = at; syncForm(); draw();
+    };
+    strip.append(add);
+  }
+
+  document.querySelectorAll('.seg button').forEach(b => b.onclick = () => { card().type = b.dataset.type; syncForm(); draw(); });
+  $('fLabel').oninput = e => { card().label = e.target.value; draw(); };
+  $('fTitle').oninput = e => { card().title = e.target.value; draw(); };
+  $('fBody').oninput = e => { card().body = e.target.value; draw(); };
+  $('fImg').onchange = e => {
+    const f = e.target.files[0]; if(!f) return;
+    const c = card(), im = new Image();
+    im.onload = () => { imgs.set(c, im); syncForm(); draw(); };
+    im.src = URL.createObjectURL(f);
+  };
+  $('bImgClear').onclick = () => { imgs.delete(card()); syncForm(); draw(); };
+  function move(d){ const i = S.sel, j = i + d; [S.cards[i], S.cards[j]] = [S.cards[j], S.cards[i]]; S.sel = j; syncForm(); draw(); }
+  $('bLeft').onclick = () => move(-1);
+  $('bRight').onclick = () => move(1);
+  $('bDup').onclick = () => { const c = structuredClone(card()); if(imgs.has(card())) imgs.set(c, imgs.get(card())); S.cards.splice(S.sel + 1, 0, c); S.sel++; syncForm(); draw(); };
+  $('bDel').onclick = () => { S.cards.splice(S.sel, 1); S.sel = Math.min(S.sel, S.cards.length - 1); syncForm(); draw(); };
+
+  $('fSize').onchange = e => { S.size = e.target.value; syncForm(); draw(); };
+  $('fHandle').oninput = e => { S.handle = e.target.value; draw(); };
+  $('fSafe').onchange = e => { S.safe = e.target.checked; draw(); };
+  for(const k of ['bg','point','text']){
+    const K = k[0].toUpperCase() + k.slice(1);
+    $('c' + K).oninput = e => { S[k] = e.target.value.toUpperCase(); $('t' + K).value = S[k]; draw(); };
+    $('t' + K).oninput = e => { const v = e.target.value.trim(); if(/^#[0-9a-fA-F]{6}$/.test(v)){ S[k] = v.toUpperCase(); $('c' + K).value = S[k]; draw(); } };
+  }
+  PRESETS.forEach(p => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'preset';
+    const sw = document.createElement('i');
+    for(const c of [p.bg, p.point, p.text]){ const s = document.createElement('b'); s.style.background = c; sw.append(s); }
+    b.append(sw, p.name);
+    b.onclick = () => { Object.assign(S, {bg:p.bg, point:p.point, text:p.text}); syncForm(); draw(); };
+    $('presets').append(b);
+  });
+
+  // ---------- copy helper ----------
+  function buildPrompt(){
+    const topic = $('fTopic').value.trim() || '(주제)', target = $('fTarget').value.trim() || '(타깃)', n = +$('fCount').value;
+    return [
+      '너는 인스타그램 카드뉴스 카피라이터야.',
+      `주제: ${topic}`, `타깃: ${target}`,
+      `카드 ${n}장 분량으로 써줘. 1장은 표지, 마지막 장은 저장·DM 공유를 부르는 마무리, 나머지는 본문이야.`,
+      '규칙:',
+      '- 표지 제목은 15자 이내, 궁금해서 넘기게 만드는 후킹 문장. 본문 칸에는 부제 한 줄.',
+      '- 본문 카드 제목은 20자 이내, 본문은 2~3문장 80자 이내.',
+      '- 마무리 카드는 제목 한 줄과 저장·공유를 권하는 본문 한 줄.',
+      '- 확인할 수 없는 수치나 출처 없는 통계는 쓰지 마.',
+      '- 아래 형식 그대로, 다른 말 없이 출력해. 카드 사이는 --- 한 줄로 구분.',
+      '', '제목: ...', '본문: ...', '---', '제목: ...', '본문: ...'
+    ].join('\n');
+  }
+  async function copyText(text, area, toast){
+    area.value = text;
+    try{ await navigator.clipboard.writeText(text); $(toast).textContent = '복사했어요. GPT에 붙여넣으세요.'; area.hidden = true; }
+    catch(e){ area.hidden = false; area.focus(); area.select(); $(toast).textContent = '자동 복사가 막혔어요. 아래 글을 직접 복사하세요.'; }
+  }
+  $('bPrompt').onclick = () => copyText(buildPrompt(), $('fPrompt'), 'copyToast');
+
+  function parse(text){
+    return text.split(/^\s*-{3,}\s*$/m).map(b => b.trim()).filter(Boolean).map(b => {
+      const t = b.match(/제목\s*[:：]\s*([\s\S]*?)(?=\n\s*본문\s*[:：]|$)/), d = b.match(/본문\s*[:：]\s*([\s\S]*)$/);
+      if(t) return {title: t[1].trim(), body: d ? d[1].trim() : ''};
+      const lines = b.split('\n'); return {title: lines[0].trim(), body: lines.slice(1).join('\n').trim()};
+    });
+  }
+  $('bFill').onclick = () => {
+    const items = parse($('fPaste').value);
+    if(!items.length){ $('copyToast').textContent = '붙여넣은 글이 없어요. GPT 답변을 그대로 붙여넣으세요.'; return; }
+    let num = 0;
+    S.cards = items.map((it, i) => {
+      const type = i === 0 ? 'cover' : (i === items.length - 1 && items.length >= 3 ? 'cta' : 'content');
+      const label = type === 'content' ? String(++num).padStart(2, '0') : (type === 'cta' ? '저장해두고 다시 보기' : '');
+      return {type, label, title: it.title, body: it.body};
+    });
+    imgs.clear(); S.sel = 0; syncForm(); draw();
+    $('copyToast').textContent = `카드 ${items.length}장을 채웠어요.`;
+  };
+
+  // ---------- export ----------
+  function exportCards(list){
+    const gal = $('gallery'); gal.textContent = '';
+    const off = document.createElement('canvas').getContext('2d');
+    list.forEach(i => {
+      render(off, S.cards[i], i, false);
+      const url = off.canvas.toDataURL('image/png');
+      const img = new Image(); img.src = url; img.alt = `${i + 1}번 카드`; gal.append(img);
+      try{ const a = document.createElement('a'); a.href = url; a.download = `cardnews-${String(i + 1).padStart(2, '0')}.png`; a.click(); }catch(e){}
+    });
+    $('galleryHint').hidden = false;
+    $('exportToast').textContent = `${list.length}장을 이미지로 만들었어요.`;
+    gal.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'nearest'});
+  }
+  $('bPng').onclick = () => exportCards([S.sel]);
+  $('bAll').onclick = () => exportCards(S.cards.map((_, i) => i));
+
+  syncForm(); draw();
+  if(document.fonts){
+    Promise.all([900,700,500].map(w => document.fonts.load(font(w, 40), '가A'))).then(draw, draw);
+  }
+})();
+</script>
