@@ -12,7 +12,7 @@ import wave
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from scipy.ndimage import gaussian_filter
-from scipy.signal import butter, lfilter
+from scipy.signal import butter, fftconvolve, lfilter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 W, H = 320, 180          # 실제 픽셀 해상도
@@ -770,7 +770,155 @@ def bell(n, times, freqs, gain=0.15):
     return out
 
 
-def synth_audio(path, dur):
+# ---------------------------------------------------------------- 기계음 목소리
+# 한글을 음절로 쪼개서 모음마다 포먼트(공명 주파수)를 걸고, 비트를 깎아 레트로 게임 NPC처럼 만든다.
+VOWEL_F = {"a": (800, 1300, 2600), "e": (550, 1900, 2600), "eo": (600, 1000, 2500), "o": (450, 800, 2400),
+           "u": (350, 850, 2300), "eu": (380, 1450, 2400), "i": (300, 2300, 3000)}
+# 중성 21개 -> (시작 모음, 끝 모음). 이중모음은 시작 모음에서 미끄러진다
+JUNG = [("a", "a"), ("e", "e"), ("i", "a"), ("i", "e"), ("eo", "eo"), ("e", "e"), ("i", "eo"), ("i", "e"),
+        ("o", "o"), ("u", "a"), ("u", "e"), ("u", "e"), ("i", "o"), ("u", "u"), ("u", "eo"), ("u", "e"),
+        ("u", "i"), ("i", "u"), ("eu", "eu"), ("eu", "i"), ("i", "i")]
+PLOSIVE = {0, 1, 3, 4, 7, 8, 15, 16, 17}
+FRIC = {9, 10, 12, 13, 14}
+NASAL_CHO = {2, 6}
+NASAL_JONG = {4, 16, 21}
+VOICES = {
+    #      기본 음높이, 음절 길이, 샘플레이트 깎기, 비트, 대사 음량(dB RMS)
+    "A": dict(f0=205, syl=0.085, sr=11025, bits=6, gain=-17, fall=0.06, jitter=0.10),
+    "A!": dict(f0=185, syl=0.115, sr=11025, bits=6, gain=-15, fall=0.10, jitter=0.06),
+    "B": dict(f0=92, syl=0.15, sr=8000, bits=5, gain=-18, fall=0.16, jitter=0.03),
+}
+
+
+def _resonate(x, f, bw):
+    lo, hi = max(40, f - bw), min(SR / 2 - 100, f + bw)
+    b, a = butter(2, [lo / (SR / 2), hi / (SR / 2)], btype="band")
+    return lfilter(b, a, x)
+
+
+def _tokens(text):
+    """대사 -> [('syl', 초성, 중성, 종성) | ('pause', 초)]"""
+    text = text.replace("[웃음]", "흐흐흐").replace("...", "…")
+    text = re.sub(r"\[[^\]]*\]", "", text)
+    out = []
+    digits = {"0": "영", "1": "일", "2": "이", "3": "삼", "4": "사", "5": "오", "6": "육", "7": "칠", "8": "팔", "9": "구"}
+    for ch in text:
+        ch = digits.get(ch, ch)
+        o = ord(ch)
+        if 0xAC00 <= o <= 0xD7A3:
+            c = o - 0xAC00
+            out.append(("syl", c // 588, (c % 588) // 28, c % 28))
+        elif ch == "…":
+            out.append(("pause", 0.32))
+        elif ch in ".?!":
+            out.append(("pause", 0.18))
+        elif ch == ",":
+            out.append(("pause", 0.12))
+        elif ch == " ":
+            out.append(("pause", 0.05))
+    while out and out[-1][0] == "pause":
+        out.pop()
+    while out and out[0][0] == "pause":
+        out.pop(0)
+    return out
+
+
+def speak(text, kind, avail, rng):
+    v = VOICES[kind]
+    toks = _tokens(text)
+    nsyl = sum(1 for tk in toks if tk[0] == "syl")
+    if nsyl == 0:
+        return np.zeros(1, np.float32)
+    need = nsyl * v["syl"] + sum(tk[1] for tk in toks if tk[0] == "pause")
+    k = min(1.0, max(0.3, avail - 0.15) / need)  # 자막 시간 안에 들어가도록 압축
+    question = text.rstrip().endswith("?")
+    segs = []
+    si = 0
+    for tk in toks:
+        if tk[0] == "pause":
+            segs.append(np.zeros(int(tk[1] * k * SR), np.float32))
+            continue
+        _, cho, jung, jong = tk
+        si += 1
+        L = int(v["syl"] * k * SR * (0.8 if jong else 1.0) * rng.uniform(0.9, 1.15))
+        tt = np.arange(L) / SR
+        # 음높이: 문장 끝으로 갈수록 내려가고, 해설의 질문은 끝을 올린다
+        prog = si / nsyl
+        f0 = v["f0"] * (1 - v["fall"] * prog) * (1 + v["jitter"] * rng.uniform(-1, 1))
+        if question and kind != "B" and si >= nsyl - 1:
+            f0 *= 1.25 + 0.15 * (si == nsyl)
+        f0 = 2 ** (np.round(12 * np.log2(f0 / 55)) / 12) * 55   # 반음 단위로 끊어서 기계 느낌
+        phase = np.cumsum(np.full(L, f0 / SR))
+        src = 2 * (phase % 1.0) - 1                              # 톱니파 성대
+        start, end = JUNG[jung]
+        h = len(src) // 2
+        voiced = np.zeros(L)
+        for part, vw in ((slice(0, h), start), (slice(h, L), end)):
+            f1, f2, f3 = VOWEL_F[vw]
+            s = src[part]
+            voiced[part] = _resonate(s, f1, 90) + 0.7 * _resonate(s, f2, 140) + 0.25 * _resonate(s, f3, 200)
+        env = np.minimum(1, tt / 0.012) * np.minimum(1, (L / SR - tt) / 0.02)
+        syl = voiced * env
+        # 초성
+        if cho in PLOSIVE:
+            b = int(0.012 * SR)
+            burst = butter_f(rng.standard_normal(b), 2000, "high") * np.exp(-np.arange(b) / (0.003 * SR))
+            syl[:b] = syl[:b] * 0.2 + burst * 0.6
+        elif cho in FRIC:
+            b = int(0.04 * SR)
+            hiss = butter_f(rng.standard_normal(b), 3800, "high") * 0.35
+            syl = np.concatenate([hiss, syl])
+        elif cho == 18:
+            b = int(0.03 * SR)
+            syl = np.concatenate([butter_f(rng.standard_normal(b), 1200, "high") * 0.2, syl])
+        elif cho in NASAL_CHO:
+            b = int(0.03 * SR)
+            syl = np.concatenate([np.sin(2 * np.pi * f0 * np.arange(b) / SR) * 0.3, syl])
+        # 종성 비음은 웅 하고 끌기
+        if jong in NASAL_JONG:
+            b = int(0.035 * SR)
+            ph = np.cumsum(np.full(b, f0 / SR))
+            syl = np.concatenate([syl, butter_f(2 * (ph % 1) - 1, 400) * 0.6 * np.linspace(1, 0, b)])
+        segs.append(syl.astype(np.float32))
+    y = np.concatenate(segs)
+    y /= np.max(np.abs(y)) + 1e-6
+    # 기계음 처리: 샘플레이트 깎기 + 비트 깎기
+    hold = max(1, int(SR / v["sr"]))
+    y = np.repeat(y[::hold], hold)[: len(y)]
+    q = 2 ** (v["bits"] - 1)
+    y = np.round(y * q) / q
+    if kind == "B":   # 지친 NPC: 낮은 링모듈레이션 + 울림
+        tt = np.arange(len(y)) / SR
+        y = y * (0.75 + 0.25 * np.sin(2 * np.pi * 31 * tt))
+        y = butter_f(y, 2600)
+        d = int(0.11 * SR)
+        y = np.concatenate([y, np.zeros(d * 3)])
+        for i in (1, 2, 3):
+            y[d * i:] += y[: len(y) - d * i] * (0.3 ** i)
+    else:
+        y = butter_f(y, 4500)
+    rms = np.sqrt(np.mean(y[: len(y) - (d * 3 if kind == "B" else 0)] ** 2)) + 1e-6
+    return (y * 10 ** (v["gain"] / 20) / rms).astype(np.float32)
+
+
+def voice_track(lines, n):
+    rng = np.random.default_rng(5)
+    voice = np.zeros(n, np.float32)
+    duck = np.zeros(n, np.float32)
+    for t0, t1, kind, ko, _ in lines:
+        if kind not in VOICES:
+            continue
+        y = speak(ko, kind, t1 - t0, rng)
+        s = int((t0 + 0.05) * SR)
+        e = min(n, s + len(y))
+        voice[s:e] += y[: e - s]
+        duck[max(0, s - 2000):e] = 1
+    k = int(0.6 * SR)  # 0.6초에 걸쳐 부드럽게 줄였다가 돌아오게
+    duck = fftconvolve(duck, np.hanning(k) / np.hanning(k).sum(), mode="same").astype(np.float32)
+    return voice, duck
+
+
+def synth_audio(path, dur, lines=()):
     n = int(dur * SR)
     rng = np.random.default_rng(99)
     t = np.arange(n) / SR
@@ -800,7 +948,7 @@ def synth_audio(path, dur):
     s0 = sc["roof"][0]
     melody_t = [s0 + 2 + i * 2.0 for i in range(18)]
     melody_f = [659.3, 523.3, 440, 523.3, 587.3, 523.3, 440, 392, 440, 523.3, 659.3, 587.3, 523.3, 440, 392, 329.6, 440, 440]
-    roof_music = butter_f(pad, 1800) * 0.9 + bell(n, melody_t, melody_f, 0.05)
+    roof_music = butter_f(pad, 1800) * 0.5 + bell(n, melody_t, melody_f, 0.035)
     mix += (roof_music + rain_ * 0.55 + wind * 0.6) * env_scene(n, *sc["roof"], 1.5)
     # 밤 도로: 바람 + 다가오는 차
     r0 = sc["road"][0]
@@ -821,6 +969,10 @@ def synth_audio(path, dur):
         if s + L < n:
             mix[s:s + L] += np.sign(np.sin(2 * np.pi * 1760 * np.arange(L) / SR)) * 0.05
 
+    # 대사가 나올 때 배경음을 살짝 낮추고 기계음 목소리를 얹는다
+    voice, duck = voice_track(lines, n)
+    mix = mix * (1 - 0.5 * duck) + voice
+
     mix = np.tanh(mix * 1.4) * 0.8
     pcm = (np.clip(mix, -1, 1) * 32767).astype(np.int16)
     with wave.open(path, "wb") as w:
@@ -838,7 +990,7 @@ def scene_at(t):
     return "end", t - SCENES[-1][0], SCENES[-1][0], SCENES[-1][1]
 
 
-def render(out, start=0.0, end=DURATION, still=None):
+def render(out, start=0.0, end=DURATION, still=None, audio_only=False):
     lines = parse_script(os.path.join(HERE, "script", "ep01.txt"))
     subs = Subs()
     objs = {"room": Room(), "street": Street(), "store": Store(), "roof": Roof(), "road": Road(), "taxi": Taxi()}
@@ -876,11 +1028,15 @@ def render(out, start=0.0, end=DURATION, still=None):
         return
 
     wav = out + ".wav"
-    synth_audio(wav, DURATION)
+    synth_audio(wav, DURATION, lines)
+    if audio_only:
+        os.replace(wav, out)
+        return
+    # 화면 노이즈 때문에 용량이 커서 grain 튜닝 + crf 29로 GitHub 한도(100MB) 아래로 맞춘다
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{OW}x{OH}",
            "-r", str(FPS), "-i", "-", "-ss", str(start), "-t", str(end - start), "-i", wav,
-           "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p",
-           "-c:a", "aac", "-b:a", "160k", "-shortest", out]
+           "-c:v", "libx264", "-preset", "slow", "-crf", "29", "-tune", "grain", "-pix_fmt", "yuv420p",
+           "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", "-shortest", out]
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE)
     nframes = int((end - start) * FPS)
     for i in range(nframes):
@@ -899,5 +1055,6 @@ if __name__ == "__main__":
     ap.add_argument("--start", type=float, default=0.0)
     ap.add_argument("--end", type=float, default=DURATION)
     ap.add_argument("--still", type=float, help="이 시각의 한 프레임만 PNG로 저장")
+    ap.add_argument("--audio-only", action="store_true", help="사운드만 WAV로 저장")
     args = ap.parse_args()
-    render(args.out, args.start, args.end, args.still)
+    render(args.out, args.start, args.end, args.still, args.audio_only)
