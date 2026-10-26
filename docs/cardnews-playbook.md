@@ -40,6 +40,8 @@
 
 - 미리캔버스는 한글 폰트는 좋지만 AI 연결이 안 돼 대량 생산에 불리.
 - 1장 제작 시간(저자 실측): 포토샵 40분 / Figma 30분 / 캔바 15분 / Claude Design 5분.
+- 사진: 이 작업 환경에는 `PIXABAY_API_KEY`가 있다. 픽사베이 API(pixabay.com/api)로 검색·다운로드 가능 (상업 이용 가능, 출처 표기 불필요). Higgsfield 생성 이미지는 이미지 서버(cloudfront)가 네트워크에서 막혀 내려받지 못함.
+- 디자인 템플릿: Claude 디자인 캔버스 "AI 여행 플래너 카드뉴스" (https://claude.ai/artifact/L4EmZFvQCsar5o5AsWVqLX). 보드 7장 복제 후 글자·사진만 교체해서 재사용.
 - Claude Pro 이상 권장 (무료는 사용량 제한으로 작업이 끊김).
 - Claude Design 접속: 클로드 웹/앱 → 왼쪽 메뉴 [Design].
 
