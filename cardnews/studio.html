@@ -91,6 +91,11 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
 .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
 .gallery img{width:100%;border-radius:4px;border:1px solid var(--line)}
 .toast{font-size:12px;color:var(--accent);min-height:18px}
+.hooks{list-style:none;margin:0;padding:10px 12px;background:var(--panel-2);border:1px solid var(--line);border-radius:6px;display:flex;flex-direction:column;gap:4px;font-size:12px}
+.hooks li{display:flex;gap:6px;color:var(--muted)}
+.hooks li b{flex:none;width:14px;text-align:center;font-weight:700}
+.hooks li.ok{color:var(--fg)}.hooks li.ok b{color:var(--accent)}
+.hooks li.no b{color:var(--danger)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
@@ -112,7 +117,8 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
         </div>
         <label class="f"><span id="labelName">상단 태그 (선택)</span><input type="text" id="fLabel"></label>
         <label class="f">제목 <textarea id="fTitle" rows="2"></textarea></label>
-        <label class="f">본문 <textarea id="fBody" rows="4"></textarea></label>
+        <label class="f"><span id="bodyName">본문</span> <textarea id="fBody" rows="4"></textarea></label>
+        <ul class="hooks" id="hooks" aria-label="후킹 체크"></ul>
         <label class="f">배경 이미지 (선택)
           <input type="file" id="fImg" accept="image/*">
         </label>
@@ -191,11 +197,11 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
   const SAMPLE = {
     size:'1080x1350', bg:'#0F0F10', point:'#C7F860', text:'#FFFFFF', handle:'@mybrand_official', safe:true, sel:0,
     cards:[
-      {type:'cover', label:'', title:'퇴근 후\n30분 루틴', body:'하루를 리셋하는\n3가지 행동'},
+      {type:'cover', label:'', title:'30대 직장인에게\n퇴근 후 30분 루틴', body:'주말에 몰아 쉬는 사람은\n평생 피곤합니다'},
       {type:'content', label:'01', title:'휴대폰은 현관에 두기', body:'집에 들어오자마자 휴대폰을 현관 선반에 둡니다. 30분만 떨어져 있어도 머리가 조용해집니다.'},
       {type:'content', label:'02', title:'10분 스트레칭', body:'하루 종일 앉아 굳은 목과 허리를 풀어줍니다. 영상 하나 틀어두고 따라 하면 끝.'},
       {type:'content', label:'03', title:'내일 할 일 3개만 적기', body:'다 적지 말고 딱 3개. 아침에 고민하는 시간이 사라집니다.'},
-      {type:'cta', label:'저장해두고 오늘 밤 해보기', title:'오늘부터\n딱 30분만', body:'도움이 됐다면 친구에게 DM으로 공유해 주세요'}
+      {type:'cta', label:'저장해두고 오늘 밤 해보기', title:'오늘 밤 휴대폰부터\n현관에 두세요', body:'도움이 됐다면 친구에게 DM으로 공유해 주세요'}
     ]
   };
 
@@ -246,6 +252,8 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
     px = Math.max(px, min); ctx.font = font(weight, px);
     return {px, lines: wrap(ctx, text, maxW), lh, font: font(weight, px)};
   }
+  // Respect the writer's own line breaks before letting the title wrap further.
+  const titleLines = t => { const n = String(t).split('\n').filter(l => l.trim()).length; return n > 1 ? Math.min(n, 4) : 3; };
   function drawLines(ctx, b, x, y){ ctx.font = b.font; b.lines.forEach((l, i) => ctx.fillText(l, x, y + i * b.px * b.lh)); return y + b.lines.length * b.px * b.lh; }
   const blockH = b => b.lines.length * b.px * b.lh;
 
@@ -268,7 +276,7 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
       ctx.fillStyle = S.point; ctx.fillRect(W/2 - 40, y, 80, 8); y += 60;
       if(c.label){ ctx.font = font(700, 34); ctx.fillStyle = S.point; ctx.fillText(c.label, W/2, y); y += 70; }
       ctx.fillStyle = S.text;
-      y = drawLines(ctx, fit(ctx, c.title, 900, 156, 72, inner, 4, 1.16), W/2, y) + 70;
+      y = drawLines(ctx, fit(ctx, c.title, 900, 132, 64, inner, titleLines(c.title), 1.16), W/2, y) + 70;
       if(c.body){ ctx.fillStyle = rgba(S.text, .88); y = drawLines(ctx, fit(ctx, c.body, 700, 52, 36, inner, 3, 1.4), W/2, y) + 60; }
       dashes(ctx, W/2, y, idx, n);
       ctx.font = font(500, 30); ctx.fillStyle = rgba(S.text, .6); ctx.textBaseline = 'bottom';
@@ -330,6 +338,7 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
     document.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.type === c.type));
     $('labelName').textContent = LABEL_NAME[c.type];
     $('fLabel').value = c.label || ''; $('fTitle').value = c.title || ''; $('fBody').value = c.body || '';
+    $('bodyName').textContent = c.type === 'cover' ? '부제목' : '본문'; hookCheck();
     $('cardPos').textContent = `${S.sel + 1} / ${S.cards.length}`;
     $('bLeft').disabled = S.sel === 0; $('bRight').disabled = S.sel === S.cards.length - 1; $('bDel').disabled = S.cards.length === 1;
     $('bImgClear').disabled = !imgs.has(c); $('fImg').value = '';
@@ -366,8 +375,35 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
 
   document.querySelectorAll('.seg button').forEach(b => b.onclick = () => { card().type = b.dataset.type; syncForm(); draw(); });
   $('fLabel').oninput = e => { card().label = e.target.value; draw(); };
-  $('fTitle').oninput = e => { card().title = e.target.value; draw(); };
-  $('fBody').oninput = e => { card().body = e.target.value; draw(); };
+  $('fTitle').oninput = e => { card().title = e.target.value; hookCheck(); draw(); };
+  $('fBody').oninput = e => { card().body = e.target.value; hookCheck(); draw(); };
+
+  // Hook rules from benchmarked posts: number, named target, a subtitle people want to argue with.
+  const NUM = /\d|한 가지|두 가지|세 가지|네 가지|다섯 가지/;
+  const TARGET = /에게|한테|분들|하는 사람|\d+대|\d+살|직장인|대학생|취준생|신입|후임|부모|엄마|아빠|사장님/;
+  function hookCheck(){
+    const c = card(), t = c.title || '', b = c.body || '', all = t + ' ' + b, rows = [];
+    const len = t.replace(/\s/g, '').length;
+    if(c.type === 'cover'){
+      rows.push([NUM.test(all), '숫자가 들어갔나 (예: 2026년, 25살, 3가지)']);
+      rows.push([TARGET.test(all), '"~이 ~에게" 타겟이 보이나']);
+      rows.push([b.trim().length > 0, '부제목이 있나']);
+      rows.push([null, '부제목이 "아닌데?" 하고 반박하고 싶은 문장인가 (직접 판단)']);
+      rows.push([len > 0 && len <= 20, `제목이 짧은가 (공백 빼고 ${len}자 / 20자 이내)`]);
+    } else if(c.type === 'content'){
+      const longest = Math.max(0, ...b.split(/(?<=[.!?。])\s+|\n/).map(x => x.trim().length));
+      rows.push([longest <= 40, `한 문장이 짧은가 (가장 긴 문장 ${longest}자 / 40자 이내)`]);
+      rows.push([null, '"나는 ~한 사람이다" 같은 권위가 드러나나 (직접 판단)']);
+    } else {
+      rows.push([/해라|하세요|해보세요|해 보세요|저장|공유|댓글/.test(all), '마지막에 정확한 행동 지시가 있나 (이걸 해라)']);
+    }
+    const ul = $('hooks'); ul.textContent = '';
+    for(const [ok, text] of rows){
+      const li = document.createElement('li'); li.className = ok === null ? '' : ok ? 'ok' : 'no';
+      const m = document.createElement('b'); m.textContent = ok === null ? '·' : ok ? '✓' : '✕';
+      li.append(m, text); ul.append(li);
+    }
+  }
   $('fImg').onchange = e => {
     const f = e.target.files[0]; if(!f) return;
     const c = card(), im = new Image();
@@ -406,9 +442,13 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
       `주제: ${topic}`, `타깃: ${target}`,
       `카드 ${n}장 분량으로 써줘. 1장은 표지, 마지막 장은 저장·DM 공유를 부르는 마무리, 나머지는 본문이야.`,
       '규칙:',
-      '- 표지 제목은 15자 이내, 궁금해서 넘기게 만드는 후킹 문장. 본문 칸에는 부제 한 줄.',
-      '- 본문 카드 제목은 20자 이내, 본문은 2~3문장 80자 이내.',
-      '- 마무리 카드는 제목 한 줄과 저장·공유를 권하는 본문 한 줄.',
+      '- 표지 제목은 20자 이내. 반드시 숫자를 넣어 직관적으로 (예: 2026년, 25살, 3가지).',
+      '- 표지 제목에 "~이 ~에게" 형태로 누가 누구에게 하는 말인지 타겟을 정확히 드러내.',
+      '- 표지 본문 칸에는 부제목 한 줄. 읽는 사람이 "아닌데?" 하고 반박하고 싶어지는 단정적인 문장으로.',
+      '- 추상적인 제목, 다음 장이 궁금하지 않은 제목, 타겟이 없는 제목은 쓰지 마.',
+      '- 본문 카드는 "나는 ~한 사람이다"처럼 말하는 사람의 권위를 분명히 하고, 한 문장은 40자 이내로 짧게.',
+      '- 본문 카드 제목은 20자 이내, 본문은 2~3문장. 사람들이 친구에게 공유하고 싶은 내용으로.',
+      '- 마무리 카드는 "이걸 해라" 식의 정확한 행동 지시 한 줄과 저장·공유를 권하는 본문 한 줄.',
       '- 확인할 수 없는 수치나 출처 없는 통계는 쓰지 마.',
       '- 아래 형식 그대로, 다른 말 없이 출력해. 카드 사이는 --- 한 줄로 구분.',
       '', '제목: ...', '본문: ...', '---', '제목: ...', '본문: ...'
@@ -461,6 +501,8 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
   syncForm(); draw();
   if(document.fonts){
     Promise.all([900,700,500].map(w => document.fonts.load(font(w, 40), '가A'))).then(draw, draw);
+    // Google Fonts ships Korean in unicode-range slices; redraw as each slice arrives.
+    document.fonts.addEventListener('loadingdone', draw);
   }
 })();
 </script>
