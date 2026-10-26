@@ -14,6 +14,7 @@
   - 사진 배경형: https://claude.ai/artifact/L4EmZFvQCsar5o5AsWVqLX
   - 트윗형: https://claude.ai/artifact/JEn8siSXmSx8wJCshcPUko
   - 미니멀형(프리텐다드 + 흐린 사진 배경): https://claude.ai/artifact/43mLaYokTBHfeCjkc2MiKV
+  - **애드맨 v1 (oaiwan형, 현재 주력 템플릿)**: https://claude.ai/artifact/SQoDK94Cf7GycNCUJzx6SG
 
 ## 1. 전제
 
