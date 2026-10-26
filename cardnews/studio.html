@@ -113,6 +113,7 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
         <div class="seg" role="group" aria-label="카드 종류">
           <button type="button" data-type="cover">표지</button>
           <button type="button" data-type="content">본문</button>
+          <button type="button" data-type="photo">사진 글귀</button>
           <button type="button" data-type="cta">마무리</button>
         </div>
         <label class="f"><span id="labelName">상단 태그 (선택)</span><input type="text" id="fLabel"></label>
@@ -159,6 +160,12 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
             <select id="fCount"><option>3</option><option>4</option><option selected>5</option><option>6</option><option>7</option><option>8</option></select>
           </label>
         </div>
+        <label class="f">채널 유형
+          <select id="fStyle">
+            <option value="info">정보형: 숫자 + 타겟 + 반박 부제목</option>
+            <option value="mood">감성형: 원문 한 구절 + 사진 (사진 글귀 카드)</option>
+          </select>
+        </label>
         <button class="btn primary" type="button" id="bPrompt">1. GPT 프롬프트 복사</button>
         <textarea id="fPrompt" rows="4" readonly hidden aria-label="복사할 프롬프트"></textarea>
         <label class="f">2. GPT 답변 붙여넣기
@@ -265,12 +272,26 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
     if(im){
       const r = Math.max(W / im.width, H / im.height), iw = im.width * r, ih = im.height * r;
       ctx.drawImage(im, (W - iw) / 2, (H - ih) / 2, iw, ih);
-      ctx.fillStyle = rgba(S.bg, .6); ctx.fillRect(0, 0, W, H);
+      if(c.type !== 'photo'){ ctx.fillStyle = rgba(S.bg, .6); ctx.fillRect(0, 0, W, H); }
     }
     ctx.textBaseline = 'top';
     const inner = W - SAFE * 2;
 
-    if(c.type === 'cover'){
+    if(c.type === 'photo'){
+      // Full-bleed photo, a few lines of copy low-left over a dark fade (poem-mag style).
+      const g = ctx.createLinearGradient(0, H * .45, 0, H);
+      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.72)');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+      ctx.textAlign = 'left';
+      const t = fit(ctx, c.title, 700, 76, 48, inner, titleLines(c.title), 1.42);
+      const sub = c.body ? fit(ctx, c.body, 500, 34, 26, inner, 3, 1.5) : null;
+      let y = H - SAFE - 70 - blockH(t) - (sub ? 28 + blockH(sub) : 0);
+      if(c.label){ ctx.font = font(500, 30); ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.fillText(c.label, SAFE, y - 54); }
+      ctx.fillStyle = '#FFFFFF'; y = drawLines(ctx, t, SAFE, y);
+      if(sub){ ctx.fillStyle = 'rgba(255,255,255,.8)'; drawLines(ctx, sub, SAFE, y + 28); }
+      ctx.font = font(500, 26); ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+      ctx.fillText(S.handle, W/2, H - SAFE + 40); ctx.textBaseline = 'top';
+    } else if(c.type === 'cover'){
       ctx.textAlign = 'center';
       let y = SAFE + 40;
       ctx.fillStyle = S.point; ctx.fillRect(W/2 - 40, y, 80, 8); y += 60;
@@ -331,7 +352,7 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
   function roundRect(ctx, x, y, w, h, r){ ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
 
   // ---------- UI ----------
-  const LABEL_NAME = {cover:'상단 태그 (선택)', content:'번호 (예: 01)', cta:'버튼 문구 (선택)'};
+  const LABEL_NAME = {cover:'상단 태그 (선택)', content:'번호 (예: 01)', cta:'버튼 문구 (선택)', photo:'작은 머리말 (선택)'};
 
   function syncForm(){
     const c = card();
@@ -394,6 +415,10 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
       const longest = Math.max(0, ...b.split(/(?<=[.!?。])\s+|\n/).map(x => x.trim().length));
       rows.push([longest <= 40, `한 문장이 짧은가 (가장 긴 문장 ${longest}자 / 40자 이내)`]);
       rows.push([null, '"나는 ~한 사람이다" 같은 권위가 드러나나 (직접 판단)']);
+    } else if(c.type === 'photo'){
+      rows.push([imgs.has(c), '배경 사진을 넣었나 (사진 글귀는 사진이 반)']);
+      rows.push([t.split('\n').filter(l => l.trim()).length <= 3, '글귀가 3줄 이내인가']);
+      rows.push([null, '채널 방향과 맞는 한 구절인가, 읽고 다음 장이 궁금한가 (직접 판단)']);
     } else {
       rows.push([/해라|하세요|해보세요|해 보세요|저장|공유|댓글/.test(all), '마지막에 정확한 행동 지시가 있나 (이걸 해라)']);
     }
@@ -440,7 +465,16 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
     return [
       '너는 인스타그램 카드뉴스 카피라이터야.',
       `주제: ${topic}`, `타깃: ${target}`,
-      `카드 ${n}장 분량으로 써줘. 1장은 표지, 마지막 장은 저장·DM 공유를 부르는 마무리, 나머지는 본문이야.`,
+      $('fStyle').value === 'mood' ? `카드 ${n}장 분량으로 써줘. 1장은 표지 글귀, 나머지는 이어지는 글귀야.` : `카드 ${n}장 분량으로 써줘. 1장은 표지, 마지막 장은 저장·DM 공유를 부르는 마무리, 나머지는 본문이야.`,
+      ...($('fStyle').value === 'mood' ? [
+      '규칙:',
+      '- 모든 카드는 분위기 사진 위에 얹는 짧은 글귀야. 제목 칸에 글귀를 2~3줄로 줄바꿈해서 써.',
+      '- 지어낸 카피 말고, 주제에 맞는 책·시·가사 같은 원문 한 구절처럼 담백하게. 실제 인용이면 본문 칸에 출처(작품명·저자)를 적어.',
+      '- 표지 글귀는 문장이 끝나지 않고 걸려 있게 ("~했기에", "그러니까 나는,") 해서 다음 장이 궁금하게.',
+      '- 채널이 무엇을 하는 곳인지 썸네일만 봐도 보이게.',
+      '- 아래 형식 그대로, 다른 말 없이 출력해. 카드 사이는 --- 한 줄로 구분.',
+      '', '제목: ...', '본문: ...', '---', '제목: ...', '본문: ...'
+      ] : [
       '규칙:',
       '- 표지 제목은 20자 이내. 반드시 숫자를 넣어 직관적으로 (예: 2026년, 25살, 3가지).',
       '- 표지 제목에 "~이 ~에게" 형태로 누가 누구에게 하는 말인지 타겟을 정확히 드러내.',
@@ -452,6 +486,7 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
       '- 확인할 수 없는 수치나 출처 없는 통계는 쓰지 마.',
       '- 아래 형식 그대로, 다른 말 없이 출력해. 카드 사이는 --- 한 줄로 구분.',
       '', '제목: ...', '본문: ...', '---', '제목: ...', '본문: ...'
+      ])
     ].join('\n');
   }
   async function copyText(text, area, toast){
@@ -473,6 +508,7 @@ textarea{resize:vertical;min-height:64px;line-height:1.5}
     if(!items.length){ $('copyToast').textContent = '붙여넣은 글이 없어요. GPT 답변을 그대로 붙여넣으세요.'; return; }
     let num = 0;
     S.cards = items.map((it, i) => {
+      if($('fStyle').value === 'mood') return {type:'photo', label:'', title: it.title, body: it.body};
       const type = i === 0 ? 'cover' : (i === items.length - 1 && items.length >= 3 ? 'cta' : 'content');
       const label = type === 'content' ? String(++num).padStart(2, '0') : (type === 'cta' ? '저장해두고 다시 보기' : '');
       return {type, label, title: it.title, body: it.body};
