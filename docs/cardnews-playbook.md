@@ -15,6 +15,12 @@
   - 트윗형: https://claude.ai/artifact/JEn8siSXmSx8wJCshcPUko
   - 미니멀형(프리텐다드 + 흐린 사진 배경): https://claude.ai/artifact/43mLaYokTBHfeCjkc2MiKV
   - **애드맨 v1 (oaiwan형, 현재 주력 템플릿)**: https://claude.ai/artifact/SQoDK94Cf7GycNCUJzx6SG
+    - 스펙: 1080×1350, 사방 120px 여백, Pretendard(제목 76~84px/800, 부제 32px), 영문 라벨 IBM Plex Mono
+    - 색: 배경 #0A0A0A, 카드 #141414, 회색 #8C8C8C/#6A6A6A, 강조 주황 #FF5A00(레부엘토 느낌) 하나만
+    - 모서리 전부 각지게(radius 0), 카드 모서리 주황 꺾쇠·FIG 번호·VOL 머리말 같은 디테일
+    - 배경: 사진 블러 18px + 검정 72%, 위쪽 목업 카드는 45% 흐리게 → 제목이 제일 먼저 보이게
+    - 하단: 프로필 사진 + @adman_park + 장 번호(01 / 07)
+    - 마지막 장: 권위형 팔로우 유도("AI 모르면 도태됩니다. 살아남을 사람만 팔로우")
 
 ## 1. 전제
 
