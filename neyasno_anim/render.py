@@ -23,11 +23,27 @@ OW, OH = W * SCALE, H * SCALE
 FPS = 24
 SR = 44100
 
-SCENES = [  # (시작, 끝, 이름)
-    (0, 12, "title"), (12, 40, "room"), (40, 68, "street"), (68, 112, "store"),
-    (112, 152, "roof"), (152, 166, "road"), (166, 212, "taxi"), (212, 228, "end"),
-]
+# 장면: (시작, 끝, 이름, 장면 안에서 몇 초부터 보여줄지)
+EPISODES = {
+    "ep01": dict(script="ep01.txt", layout="wide", music="ep01", scenes=[
+        (0, 12, "title", 0), (12, 40, "room", 0), (40, 68, "street", 0), (68, 112, "store", 0),
+        (112, 152, "roof", 0), (152, 166, "road", 0), (166, 212, "taxi", 0), (212, 228, "end", 0)]),
+    # 인스타 릴스 1분 세로판: 네 장면만, 대사는 허무하게, 음악은 처음부터 끝까지 음침하게
+    "insta01": dict(script="insta01.txt", layout="reel", music="gloom", scenes=[
+        (0, 14, "street", 6), (14, 30, "store", 0), (30, 44, "roof", 0), (44, 60, "taxi", 28.5)]),
+}
+SCENES = EPISODES["ep01"]["scenes"]
 DURATION = SCENES[-1][1]
+RW, RH = 1080, 1920          # 릴스 캔버스
+RS = 3                       # 릴스에서 픽셀 배율 (960x540)
+RY = 600                     # 릴스에서 화면이 놓이는 y
+
+
+def use_episode(name):
+    global SCENES, DURATION
+    SCENES = EPISODES[name]["scenes"]
+    DURATION = SCENES[-1][1]
+    return EPISODES[name]
 
 # 스타일 가이드 팔레트
 C = {k: np.array([int(v[i:i + 2], 16) for i in (1, 3, 5)], np.float32) for k, v in {
@@ -687,13 +703,20 @@ def parse_script(path):
 
 
 class Subs:
-    def __init__(self):
+    def __init__(self, layout="wide"):
         fdir = os.path.join(HERE, "fonts")
-        self.fa = ImageFont.truetype(os.path.join(fdir, "NanumGothic-ExtraBold.ttf"), 34)
-        self.fa_big = ImageFont.truetype(os.path.join(fdir, "NanumGothic-ExtraBold.ttf"), 44)
-        self.fb = ImageFont.truetype(os.path.join(fdir, "NanumGothic-ExtraBold.ttf"), 30)
-        self.fen = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf", 19)
-        self.ft = ImageFont.truetype(os.path.join(fdir, "NanumGothic-ExtraBold.ttf"), 36)
+        k = 1.45 if layout == "reel" else 1.0
+        ko = os.path.join(fdir, "NanumGothic-ExtraBold.ttf")
+        self.fa = ImageFont.truetype(ko, int(34 * k))
+        self.fa_big = ImageFont.truetype(ko, int(44 * k))
+        self.fb = ImageFont.truetype(ko, int(30 * k))
+        self.fen = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf", int(19 * k))
+        self.ft = ImageFont.truetype(ko, int(36 * k))
+        self.fen_title = ImageFont.truetype(ko, 34)
+        if layout == "reel":   # 화면 아래 검은 여백에 자막, 인스타 UI에 안 가리게
+            self.cx, self.ct, self.ya, self.yb, self.yen = RW / 2, RY + H * RS / 2, RY + H * RS + 110, RY + H * RS + 95, RY + H * RS + 160
+        else:
+            self.cx, self.ct, self.ya, self.yb, self.yen = OW / 2, OH / 2, OH - 64, OH - 92, OH - 58
 
     def draw(self, img, lines, t):
         d = ImageDraw.Draw(img)
@@ -704,16 +727,16 @@ class Subs:
             if kind == "T":
                 a = int(255 * min(1.0, (t - t0) / 0.6, (t1 - t) / 0.6))
                 layer = Image.new("RGBA", img.size, (0, 0, 0, 0))
-                ImageDraw.Draw(layer).text((OW / 2, OH / 2), ko, font=self.ft, fill=(225, 225, 230, a), anchor="mm")
+                ImageDraw.Draw(layer).text((self.cx, self.ct), ko, font=self.ft, fill=(225, 225, 230, a), anchor="mm")
                 img.paste(layer, (0, 0), layer)
             elif kind in ("A", "A!"):
                 f = self.fa_big if kind == "A!" else self.fa
-                d.text((OW / 2, OH - 64), ko, font=f, fill=(255, 255, 255), anchor="mm",
+                d.text((self.cx, self.ya), ko, font=f, fill=(255, 255, 255), anchor="mm",
                        stroke_width=3, stroke_fill=(0, 0, 0))
             elif kind == "B":
-                d.text((OW / 2, OH - 92), ko, font=self.fb, fill=(245, 214, 58), anchor="mm",
+                d.text((self.cx, self.yb), ko, font=self.fb, fill=(245, 214, 58), anchor="mm",
                        stroke_width=2, stroke_fill=(0, 0, 0))
-                d.text((OW / 2, OH - 58), en, font=self.fen, fill=(235, 235, 235), anchor="mm",
+                d.text((self.cx, self.yen), en, font=self.fen, fill=(235, 235, 235), anchor="mm",
                        stroke_width=1, stroke_fill=(0, 0, 0))
             _ = alpha
 
@@ -918,13 +941,54 @@ def voice_track(lines, n):
     return voice, duck
 
 
-def synth_audio(path, dur, lines=()):
+def reverb(x, secs=3.0, wet=0.35, seed=4):
+    rng = np.random.default_rng(seed)
+    L = int(secs * SR)
+    ir = rng.standard_normal(L) * np.exp(-np.arange(L) / (secs * SR / 6))
+    ir = butter_f(ir, 3000)
+    ir /= np.sqrt((ir ** 2).sum())
+    return x * (1 - wet) + fftconvolve(x, ir)[: len(x)].astype(np.float32) * wet * 1.5
+
+
+def gloom_music(n, t, rng):
+    """음침한 배경음: 바닥에 깔리는 저음 드론, 숨 쉬는 듯한 단조 패드, 띄엄띄엄 떨어지는 피아노, 심장 박동 같은 저음."""
+    drone = (np.sin(2 * np.pi * 41.2 * t) + 0.6 * np.sin(2 * np.pi * 61.7 * t + np.sin(t * 0.3))) * 0.06
+    drone *= 0.75 + 0.25 * np.sin(2 * np.pi * t / 9.0)
+    # Em - C - Am - B (각 7.5초)
+    pad = chord_pad(n, [[82.4, 164.8, 196, 246.9], [65.4, 130.8, 196, 164.8], [55, 110, 130.8, 164.8],
+                        [61.7, 123.5, 185, 155.6]], 7.5, 1.0, 8)
+    pad = butter_f(pad, 900) * 0.55
+    # 피아노 비슷한 종소리: 낮은 음역에서 드문드문
+    notes_t, notes_f = [], []
+    seq = [329.6, 246.9, 196, 246.9, 261.6, 196, 164.8, 196, 220, 164.8, 130.8, 164.8, 185, 155.6, 123.5, 155.6]
+    for i, f in enumerate(seq * 2):
+        tm = 1.0 + i * 1.875 + rng.uniform(-0.05, 0.05)
+        if rng.random() < 0.8:
+            notes_t.append(tm)
+            notes_f.append(f)
+    piano = bell(n, notes_t, notes_f, 0.06)
+    # 심장 박동 (쿵… 쿵)
+    beat = np.zeros(n, np.float32)
+    L = int(0.25 * SR)
+    tt = np.arange(L) / SR
+    thump = np.sin(2 * np.pi * (55 - 25 * tt / 0.25) * tt) * np.exp(-tt * 18)
+    for bt in np.arange(2.0, n / SR, 1.6):
+        for off, g in ((0, 0.12), (0.28, 0.07)):
+            s = int((bt + off) * SR)
+            if s + L < n:
+                beat[s:s + L] += thump * g
+    return reverb(drone + pad + piano, 3.5, 0.45) + beat
+
+
+def synth_audio(path, dur, lines=(), music="ep01"):
     n = int(dur * SR)
+    if music == "gloom":
+        return synth_gloom(path, n, lines)
     rng = np.random.default_rng(99)
     t = np.arange(n) / SR
     white = rng.standard_normal(n).astype(np.float32)
     mix = np.zeros(n, np.float32)
-    sc = {name: (s0, s1) for s0, s1, name in SCENES}
+    sc = {name: (s0, s1) for s0, s1, name, _ in SCENES}
 
     rain_ = butter_f(butter_f(white, 400, "high"), 6000) * 0.10
     brown = butter_f(np.cumsum(white) / 300, 0.5, "high")
@@ -973,6 +1037,30 @@ def synth_audio(path, dur, lines=()):
     voice, duck = voice_track(lines, n)
     mix = mix * (1 - 0.5 * duck) + voice
 
+    write_wav(path, mix)
+
+
+def synth_gloom(path, n, lines):
+    rng = np.random.default_rng(77)
+    t = np.arange(n) / SR
+    white = rng.standard_normal(n).astype(np.float32)
+    sc = {name: (s0, s1) for s0, s1, name, _ in SCENES}
+    rain_ = butter_f(butter_f(white, 400, "high"), 5000) * 0.06
+    brown = butter_f(np.cumsum(white) / 300, 0.5, "high")
+    wind = butter_f(brown, 400) * 0.05
+    amb = (rain_ + wind) * 0.8
+    if "taxi" in sc:   # 택시 안: 비 대신 엔진 소리
+        e = env_scene(n, *sc["taxi"], 1.0)
+        rumble = butter_f(white, 110) * 0.7 + np.sin(2 * np.pi * 38 * t) * 0.03
+        amb = amb * (1 - e * 0.7) + rumble * e
+    music = gloom_music(n, t, rng) * 0.4
+    fade = np.minimum(1, t / 1.5) * np.minimum(1, (n / SR - t) / 2.5)
+    voice, duck = voice_track(lines, n)
+    mix = (music * (1 - 0.35 * duck) + amb * (1 - 0.5 * duck)) * fade + voice
+    write_wav(path, mix)
+
+
+def write_wav(path, mix):
     mix = np.tanh(mix * 1.4) * 0.8
     pcm = (np.clip(mix, -1, 1) * 32767).astype(np.int16)
     with wave.open(path, "wb") as w:
@@ -984,15 +1072,20 @@ def synth_audio(path, dur, lines=()):
 
 # ================================================================ 렌더
 def scene_at(t):
-    for s0, s1, name in SCENES:
+    for s0, s1, name, off in SCENES:
         if s0 <= t < s1:
-            return name, t - s0, s0, s1
-    return "end", t - SCENES[-1][0], SCENES[-1][0], SCENES[-1][1]
+            return name, t - s0 + off, s0, s1
+    s0, s1, name, off = SCENES[-1]
+    return name, t - s0 + off, s0, s1
 
 
-def render(out, start=0.0, end=DURATION, still=None, audio_only=False):
-    lines = parse_script(os.path.join(HERE, "script", "ep01.txt"))
-    subs = Subs()
+def render(out, episode="ep01", start=0.0, end=None, still=None, audio_only=False):
+    ep = use_episode(episode)
+    end = DURATION if end is None else end
+    lines = parse_script(os.path.join(HERE, "script", ep["script"]))
+    reel = ep["layout"] == "reel"
+    subs = Subs(ep["layout"])
+    fw, fh = (RW, RH) if reel else (OW, OH)
     objs = {"room": Room(), "street": Street(), "store": Store(), "roof": Roof(), "road": Road(), "taxi": Taxi()}
     b_lines = [(a, b) for a, b, k, *_ in lines if k == "B"]
 
@@ -1019,7 +1112,13 @@ def render(out, start=0.0, end=DURATION, still=None, audio_only=False):
         a = a * VIGNETTE + np.random.default_rng(int(t * FPS)).normal(0, 5, (H, W, 1))
         fade = min(1.0, (t - s0) / 0.7, (s1 - t) / 0.7)
         a = a * max(0.0, fade)
-        img = to_img(a).resize((OW, OH), Image.NEAREST)
+        if reel:
+            img = Image.new("RGB", (RW, RH), (0, 0, 0))
+            img.paste(to_img(a).resize((W * RS, H * RS), Image.NEAREST), ((RW - W * RS) // 2, RY))
+            hd = ImageDraw.Draw(img)
+            hd.text((RW / 2, RY - 70), "확실한 건 없다", font=subs.fen_title, fill=(150, 150, 160), anchor="mm")
+        else:
+            img = to_img(a).resize((OW, OH), Image.NEAREST)
         subs.draw(img, lines, t)
         return img
 
@@ -1028,12 +1127,12 @@ def render(out, start=0.0, end=DURATION, still=None, audio_only=False):
         return
 
     wav = out + ".wav"
-    synth_audio(wav, DURATION, lines)
+    synth_audio(wav, DURATION, lines, ep["music"])
     if audio_only:
         os.replace(wav, out)
         return
     # 화면 노이즈 때문에 용량이 커서 grain 튜닝 + crf 29로 GitHub 한도(100MB) 아래로 맞춘다
-    cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{OW}x{OH}",
+    cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{fw}x{fh}",
            "-r", str(FPS), "-i", "-", "-ss", str(start), "-t", str(end - start), "-i", wav,
            "-c:v", "libx264", "-preset", "slow", "-crf", "29", "-tune", "grain", "-pix_fmt", "yuv420p",
            "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", "-shortest", out]
@@ -1051,10 +1150,12 @@ def render(out, start=0.0, end=DURATION, still=None, audio_only=False):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out", default=os.path.join(HERE, "ep01.mp4"))
+    ap.add_argument("--episode", default="ep01", choices=sorted(EPISODES))
+    ap.add_argument("--out")
     ap.add_argument("--start", type=float, default=0.0)
-    ap.add_argument("--end", type=float, default=DURATION)
+    ap.add_argument("--end", type=float)
     ap.add_argument("--still", type=float, help="이 시각의 한 프레임만 PNG로 저장")
     ap.add_argument("--audio-only", action="store_true", help="사운드만 WAV로 저장")
     args = ap.parse_args()
-    render(args.out, args.start, args.end, args.still, args.audio_only)
+    out = args.out or os.path.join(HERE, args.episode + ".mp4")
+    render(out, args.episode, args.start, args.end, args.still, args.audio_only)
