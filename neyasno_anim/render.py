@@ -28,9 +28,10 @@ EPISODES = {
     "ep01": dict(script="ep01.txt", layout="wide", music="ep01", scenes=[
         (0, 12, "title", 0), (12, 40, "room", 0), (40, 68, "street", 0), (68, 112, "store", 0),
         (112, 152, "roof", 0), (152, 166, "road", 0), (166, 212, "taxi", 0), (212, 228, "end", 0)]),
-    # 인스타 릴스 1분 세로판: 네 장면만, 대사는 허무하게, 음악은 처음부터 끝까지 음침하게
+    # 인스타 릴스 1분 세로판, 1인칭: 소주 → 비틀비틀 택시 잡기 → 허무주의 기사. 음악은 처음부터 끝까지 음침하게
     "insta01": dict(script="insta01.txt", layout="reel", music="gloom", scenes=[
-        (0, 14, "street", 6), (14, 30, "store", 0), (30, 44, "roof", 0), (44, 60, "taxi", 28.5)]),
+        (0, 16, "soju", 0), (16, 26, "road", 3), (26, 60, "taxi", 11)],
+        drunk=[(0, 0.25), (5.0, 0.3), (6.5, 0.7), (16, 0.85), (26, 0.8), (31, 0.4), (60, 0.55)]),
 }
 SCENES = EPISODES["ep01"]["scenes"]
 DURATION = SCENES[-1][1]
@@ -626,6 +627,94 @@ class Road:
         return a
 
 
+class Soju:
+    """1인칭, 편의점 앞 초록 플라스틱 테이블. 빈 소주병들과 소주잔. 뒤 가게는 초점 밖으로 뭉개진다."""
+    DRINK = (4.0, 6.2)   # 잔을 들이키는 구간 (장면 안 시간)
+
+    def __init__(self, store):
+        self.store = store
+
+    @staticmethod
+    def bottle(d, x, base, h, level):
+        w = int(h * 0.3)
+        neck = int(h * 0.3)
+        d.rectangle([x, base - h + neck, x + w, base], fill=(34, 104, 58))
+        d.polygon([(x, base - h + neck), (x + w, base - h + neck), (x + w * 0.7, base - h + neck * 0.45),
+                   (x + w * 0.3, base - h + neck * 0.45)], fill=(34, 104, 58))
+        d.rectangle([x + w * 0.3, base - h + 2, x + w * 0.7, base - h + neck * 0.5], fill=(34, 104, 58))
+        d.rectangle([x + w * 0.28, base - h, x + w * 0.72, base - h + 3], fill=(46, 150, 70))      # 뚜껑
+        if level > 0:
+            d.rectangle([x + 1, base - (h - neck) * level, x + w - 1, base - 1], fill=(120, 190, 140))
+        d.rectangle([x, base - h * 0.45, x + w, base - h * 0.28], fill=(214, 230, 214))           # 라벨
+        d.rectangle([x + w * 0.2, base - h * 0.42, x + w * 0.8, base - h * 0.31], fill=(40, 120, 70))
+        d.line([x + 2, base - h + neck + 2, x + 2, base - 3], fill=(90, 170, 110))                   # 유리 하이라이트
+
+    def frame(self, t):
+        bg = self.store.frame(t)
+        crop = to_img(bg[30:150, 110:CW])
+        a = from_img(crop.resize((CW, CH), Image.BILINEAR))
+        a = gaussian_filter(a, (2.2, 2.2, 0)) * 0.85
+        img = to_img(a)
+        d = ImageDraw.Draw(img)
+        # 테이블 상판 (원근)
+        d.polygon([(-40, 112), (CW + 40, 112), (CW + 120, CH), (-120, CH)], fill=(26, 72, 44))
+        d.line([(-40, 112), (CW + 40, 112)], fill=(60, 128, 80), width=2)
+        for gx in range(-200, CW + 200, 36):   # 플라스틱 테이블 홈
+            d.line([(CW / 2 + (gx - CW / 2) * 0.55, 114), (gx, CH)], fill=(22, 62, 38))
+        # 빈 병들 (뒤쪽), 하나는 누워 있음
+        for x, h in ((26, 58), (54, 60), (250, 58)):
+            self.bottle(d, x, 124, h, 0)
+        d.polygon([(270, 130), (318, 122), (322, 132), (274, 140)], fill=(34, 104, 58))
+        d.rectangle([314, 121, 324, 128], fill=(46, 150, 70))
+        # 반 남은 병 (앞쪽, 크게)
+        self.bottle(d, 214, 160, 84, 0.45)
+        # 컵라면
+        d.rectangle([100, 120, 128, 140], fill=(200, 56, 40))
+        d.rectangle([98, 118, 130, 122], fill=(232, 232, 224))
+        # 소주잔: 평소엔 테이블 위, 마실 땐 얼굴 쪽으로 올라온다
+        d0, d1 = self.DRINK
+        if d0 < t < d1:
+            p = (t - d0) / (d1 - d0)
+            lift = np.sin(np.pi * p)
+            sc = 1 + 6 * lift                 # 잔이 카메라(입) 쪽으로 다가온다
+            cx, cy = 168, 150 + 60 * lift
+        else:
+            sc, cx, cy = 1.0, 168, 150
+        gw, gh = 12 * sc, 14 * sc
+        d.polygon([(cx - gw / 2, cy - gh), (cx + gw / 2, cy - gh), (cx + gw * 0.38, cy), (cx - gw * 0.38, cy)],
+                  fill=(150, 176, 168))
+        if t < (d0 + d1) / 2:   # 잔이 입에 닿기 전까지는 소주가 담겨 있음
+            d.polygon([(cx - gw * 0.45, cy - gh * 0.7), (cx + gw * 0.45, cy - gh * 0.7), (cx + gw * 0.38, cy - 1),
+                       (cx - gw * 0.38, cy - 1)], fill=(206, 226, 220))
+        d.line([(cx - gw / 2, cy - gh), (cx + gw / 2, cy - gh)], fill=(230, 240, 236), width=max(1, int(sc)))
+        a = from_img(img)
+        # 가게 불빛이 테이블에 번짐
+        yy, xx = np.mgrid[0:CH, 0:CW]
+        a += np.array([30, 34, 40]) * np.exp(-(((xx - 200) / 160) ** 2 + ((yy - 110) / 40) ** 2))[..., None]
+        a[112:] *= np.linspace(1.0, 0.55, CH - 112)[:, None, None]   # 앞쪽 테이블은 어둡게
+        rain(a, t, n=90, color=(110, 120, 150))
+        return a
+
+
+def drunk(a, t, k):
+    """취한 시선: 흔들리고, 기울고, 두 개로 보이고, 흐릿하다. k는 0(멀쩡)~1(만취)."""
+    if k <= 0.01:
+        return a
+    img = to_img(a)
+    ang = np.sin(t * 0.7) * 3.5 * k + np.sin(t * 1.9) * 1.0 * k
+    img = img.rotate(ang, resample=Image.BILINEAR, center=(CW / 2, CH / 2))
+    zoom = 1 + 0.1 * k
+    w2, h2 = int(CW / zoom), int(CH / zoom)
+    l, u = (CW - w2) // 2 + int(np.sin(t * 0.9) * 6 * k), (CH - h2) // 2 + int(np.sin(t * 1.3) * 3 * k)
+    a = from_img(img.crop((l, u, l + w2, u + h2)).resize((CW, CH), Image.BILINEAR))
+    off = int(round((5 + 4 * np.sin(t * 0.6)) * k)) + 1
+    a = a * 0.6 + np.roll(np.roll(a, off, axis=1), off // 2, axis=0) * 0.4
+    sig = 0.3 + 1.5 * k * (0.7 + 0.3 * np.sin(t * 0.9))
+    a = gaussian_filter(a, (sig, sig, 0))
+    a *= np.array([1.05, 1.0, 0.93]) * (1 - 0.12 * k * (0.5 + 0.5 * np.sin(t * 1.1)))
+    return a
+
+
 class Taxi:
     """택시 뒷좌석. 거의 암전, 계기판 초록빛, 지나가는 가로등이 실내를 훑는다."""
 
@@ -664,6 +753,13 @@ class Taxi:
         d.rectangle([182, 126, 262, CH], fill=(20, 20, 24))
         d.rectangle([0, 0, CW, 34], fill=(6, 6, 8))                       # 천장
         d.rectangle([0, 0, 62, CH], fill=(8, 8, 10))                      # 왼쪽 기둥
+        # 백미러: 기사 눈만 보인다
+        d.rectangle([146, 34, 194, 46], fill=(30, 30, 36))
+        d.rectangle([148, 36, 192, 44], fill=(22, 26, 34))
+        if hash2(int(t * 3), 21) > 0.12:   # 가끔 깜빡
+            for ex in (162, 174):
+                d.rectangle([ex, 39, ex + 3, 40], fill=(220, 236, 210))
+                d.point((ex + 1, 39), fill=(10, 10, 10))
         a = from_img(img)
         # 계기판 초록빛
         dash = np.exp(-(((xx - 166) / 14) ** 2 + ((yy - 104) / 7) ** 2))
@@ -689,7 +785,7 @@ class Taxi:
 # ================================================================ 자막
 def parse_script(path):
     lines = []
-    pat = re.compile(r"\[(\d+):(\d+(?:\.\d+)?)-(\d+):(\d+(?:\.\d+)?)\]\s*\[(T|A!|A|B)\]\s*(.+)")
+    pat = re.compile(r"\[(\d+):(\d+(?:\.\d+)?)-(\d+):(\d+(?:\.\d+)?)\]\s*\[(T|A!|A~|A|B)\]\s*(.+)")
     with open(path, encoding="utf-8") as f:
         for raw in f:
             m = pat.match(raw.strip())
@@ -729,7 +825,7 @@ class Subs:
                 layer = Image.new("RGBA", img.size, (0, 0, 0, 0))
                 ImageDraw.Draw(layer).text((self.cx, self.ct), ko, font=self.ft, fill=(225, 225, 230, a), anchor="mm")
                 img.paste(layer, (0, 0), layer)
-            elif kind in ("A", "A!"):
+            elif kind in ("A", "A!", "A~"):
                 f = self.fa_big if kind == "A!" else self.fa
                 d.text((self.cx, self.ya), ko, font=f, fill=(255, 255, 255), anchor="mm",
                        stroke_width=3, stroke_fill=(0, 0, 0))
@@ -809,6 +905,7 @@ VOICES = {
     #      기본 음높이, 음절 길이, 샘플레이트 깎기, 비트, 대사 음량(dB RMS)
     "A": dict(f0=205, syl=0.085, sr=11025, bits=6, gain=-17, fall=0.06, jitter=0.10),
     "A!": dict(f0=185, syl=0.115, sr=11025, bits=6, gain=-15, fall=0.10, jitter=0.06),
+    "A~": dict(f0=170, syl=0.135, sr=8000, bits=6, gain=-17, fall=0.18, jitter=0.22),
     "B": dict(f0=92, syl=0.15, sr=8000, bits=5, gain=-18, fall=0.16, jitter=0.03),
 }
 
@@ -918,6 +1015,10 @@ def speak(text, kind, avail, rng):
         y = np.concatenate([y, np.zeros(d * 3)])
         for i in (1, 2, 3):
             y[d * i:] += y[: len(y) - d * i] * (0.3 ** i)
+    elif kind == "A~":  # 취해서 웅얼: 음이 출렁이고 먹먹하게
+        tt = np.arange(len(y)) / SR
+        y = y * (0.8 + 0.2 * np.sin(2 * np.pi * 5.5 * tt))
+        y = butter_f(y, 2200)
     else:
         y = butter_f(y, 4500)
     rms = np.sqrt(np.mean(y[: len(y) - (d * 3 if kind == "B" else 0)] ** 2)) + 1e-6
@@ -1054,6 +1155,25 @@ def synth_gloom(path, n, lines):
         rumble = butter_f(white, 110) * 0.7 + np.sin(2 * np.pi * 38 * t) * 0.03
         amb = amb * (1 - e * 0.7) + rumble * e
     music = gloom_music(n, t, rng) * 0.4
+    offs = {name: off for _, _, name, off in SCENES}
+    if "soju" in sc:   # 소주: 잔 부딪는 소리, 꿀꺽, 그리고 취하면서 소리가 먹먹해진다
+        s0 = sc["soju"][0] - offs["soju"]
+        amb = amb + bell(n, [s0 + Soju.DRINK[0] - 0.4], [2350], 0.05) + bell(n, [s0 + Soju.DRINK[0] - 0.33], [3120], 0.03)
+        g = int((s0 + 5.0) * SR)
+        L = int(0.18 * SR)
+        tt = np.arange(L) / SR
+        amb[g:g + L] += (np.sin(2 * np.pi * (180 - 300 * tt) * tt) * np.exp(-tt * 20) * 0.12).astype(np.float32)
+    if "road" in sc:   # 비틀대는 밤 도로: 택시가 다가오는 소리
+        r0 = sc["road"][0] - offs["road"]
+        approach = smoothstep(r0 + 5.5, r0 + 12.5, t) * env_scene(n, *sc["road"], 0.6)
+        amb = amb + (butter_f(white, 180) * 0.6 + np.sin(2 * np.pi * 45 * t) * 0.04) * approach
+    drunk_w = np.zeros(n, np.float32)
+    for nm in ("soju", "road"):
+        if nm in sc:
+            drunk_w += env_scene(n, *sc[nm], 1.0)
+    drunk_w *= 0.65
+    music = music * (1 - drunk_w) + butter_f(music, 500) * drunk_w
+    amb = amb * (1 - drunk_w) + butter_f(amb, 900) * drunk_w
     fade = np.minimum(1, t / 1.5) * np.minimum(1, (n / SR - t) / 2.5)
     voice, duck = voice_track(lines, n)
     mix = (music * (1 - 0.35 * duck) + amb * (1 - 0.5 * duck)) * fade + voice
@@ -1087,6 +1207,8 @@ def render(out, episode="ep01", start=0.0, end=None, still=None, audio_only=Fals
     subs = Subs(ep["layout"])
     fw, fh = (RW, RH) if reel else (OW, OH)
     objs = {"room": Room(), "street": Street(), "store": Store(), "roof": Roof(), "road": Road(), "taxi": Taxi()}
+    objs["soju"] = Soju(objs["store"])
+    drunk_curve = ep.get("drunk")
     b_lines = [(a, b) for a, b, k, *_ in lines if k == "B"]
 
     def make(t):
@@ -1105,6 +1227,9 @@ def render(out, episode="ep01", start=0.0, end=None, still=None, audio_only=Fals
             dx, dy = 0, (hash2(int(lt * 30), 1) - 0.5) * 1.5
         else:
             dx, dy = np.sin(lt * 0.5) * 1.5, np.sin(lt * 0.7) * 1.2
+        if drunk_curve:
+            xs, ks = zip(*drunk_curve)
+            a = drunk(a, t, float(np.interp(t, xs, ks)))
         ox, oy = int(round(PAD + dx)), int(round(PAD + dy))
         a = a[oy:oy + H, ox:ox + W]
         if name not in ("title", "end"):
