@@ -29,6 +29,7 @@ const W = 1280, H = 720;           // scene space (16:9)
 const cv = document.getElementById('c');
 const ctx = cv.getContext('2d');
 let T = 0; // current time, shared with draw helpers
+let SHOT_T0 = 0; // start time of the current shot
 
 // ---------- math ----------
 const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
@@ -602,7 +603,7 @@ function shotTeacherMid(c, t, dark) {
   if (!dark && hit > 0 && hit < 1) drawFocusLines(c, 420, 300, 300, '#fffbe0', 0.7 * (1 - hit), 80, 5 + Math.floor(t * 15));
   let st, pose;
   if (!dark) {
-    const p = easeOut(prog(t, 12.2, 12.7));
+    const p = easeOut(prog(t, SHOT_T0 + 0.4, SHOT_T0 + 0.9));
     st = { mouth: talk(TEACHER, t), blink: blinkAt(t, 2.1), lookX: -0.6, expr: t > 15.5 ? 'smug' : 'normal' };
     pose = { arm: cc => drawArm(cc, -170, 230, lerp(-200, -470, p), lerp(480, -40, p) + Math.sin(t * 3) * 6, '#f4f6fb', CAST.teacher.skin, '#ffffff') };
   } else {
@@ -777,7 +778,7 @@ function drawNextCard(c, t, at) {
 function shotRage(c, t) {
   c.fillStyle = '#3a0a0a'; c.fillRect(0, 0, W, H);
   drawFocusLines(c, 640, 330, 300, '#a8201a', 1, 130, 41 + Math.floor(t * 14));
-  const z = lerp(1.3, 1.0, easeOut(prog(t, 16.9, 17.1)));
+  const z = lerp(1.3, 1.0, easeOut(prog(t, SHOT_T0, SHOT_T0 + 0.2)));
   c.save(); c.translate(640, 330); c.scale(z, z); c.translate(-640, -330);
   drawBust(c, 640 + Math.sin(t * 70) * 6, 360, 1.7, CAST.teacher, { mouth: talk(TEACHER, t), expr: 'angry', vein: true, glint: 1 });
   c.restore();
@@ -901,9 +902,54 @@ function shotBike(c, t) {
 function shotHanaDead(c, t) {
   c.fillStyle = '#4a4650'; c.fillRect(0, 0, W, H);
   c.save(); c.filter = 'blur(16px)'; c.globalAlpha = .35; c.fillStyle = '#2e5a45'; c.fillRect(760, 60, 520, 260); c.restore();
-  const z = lerp(1.0, 1.06, prog(t, 25, 28));
+  const z = lerp(1.0, 1.06, prog(t, SHOT_T0, SHOT_T0 + 3));
   c.save(); c.translate(640, 320); c.scale(z, z); c.translate(-640, -320);
   drawBust(c, 640, 300, 1.25, CAST.hana, { mouth: talk('하나', t), blink: blinkAt(t, 0.9), expr: 'dead', gloom: true });
+  c.restore();
+}
+function shotTaeoAsk(c, t) {
+  closeupBG(c, t, 95);
+  c.fillStyle = '#d9b07c'; c.fillRect(0, 590, W, 130); c.fillStyle = '#a77d4c'; c.fillRect(0, 590, W, 12);
+  const up = easeOut(prog(t, SHOT_T0, SHOT_T0 + 0.4));
+  drawBust(c, 620, lerp(380, 300, up), 1.22, CAST.taeo, { mouth: talk('태오', t), blink: blinkAt(t, 0.2), expr: 'sleepy', tilt: -0.05, lookX: 0.4 });
+  const k = backOut(prog(t, SHOT_T0 + 0.6, SHOT_T0 + 0.9));
+  if (k > 0) { c.save(); c.translate(880, 170); c.scale(k, k); c.font = '90px BHS'; c.fillStyle = '#5a7ad0'; c.fillText('?', 0, 0); c.restore(); }
+}
+// seen from behind and above: classmates ringed around 민준, kicking in
+function shotKickTop(c, t) {
+  c.save(); c.translate(Math.sin(t * 85) * 5, Math.cos(t * 71) * 5);
+  c.fillStyle = '#b07e52'; c.fillRect(-20, -20, W + 40, H + 40);
+  c.strokeStyle = 'rgba(70,40,20,.28)'; c.lineWidth = 3;
+  for (let x = -20; x < W + 40; x += 64) { c.beginPath(); c.moveTo(x, -20); c.lineTo(x, H + 20); c.stroke(); }
+  const cx = 640, cy = 330;
+  // 민준 on his back, seen from above
+  c.save(); c.translate(cx - 200, cy); c.scale(0.62, 0.62);
+  c.fillStyle = '#283456'; c.fillRect(380, -50, 300, 44); c.fillRect(380, 4, 300, 44);
+  drawBust(c, 0, 0, 0.72, CAST.minjun, { mouth: 0.6 + 0.4 * Math.sin(t * 20), expr: 'shock', sweat: true, tilt: -Math.PI / 2 });
+  c.restore();
+  const ring = [[180, 300, .42], [1100, 300, .42], [420, 90, .32], [860, 90, .32], [330, 600, .6], [640, 660, .62], [950, 600, .6]];
+  const kids = [EXTRA[1], EXTRA[3], EXTRA[4], EXTRA[0], EXTRA[5], CAST.taeo, EXTRA[2]];
+  // legs swing in toward 민준, under the kids' bodies
+  ring.forEach(([x, y, s], i) => {
+    const u = (t * 3.1 + i * 0.29) % 1, ext = u < 0.3 ? easeOut(u / 0.3) : 1 - easeInOut((u - 0.3) / 0.7);
+    const a = Math.atan2(cy - y, cx - 60 - x), len = (90 + 200 * ext) * (s / 0.5);
+    c.save(); c.translate(x, y); c.rotate(a);
+    c.fillStyle = i % 2 ? '#283456' : '#2d3a66'; c.fillRect(0, -22 * s / 0.5, len, 44 * s / 0.5);
+    c.fillStyle = i === 5 ? '#fff' : '#111'; c.beginPath(); c.roundRect(len - 10, -30 * s / 0.5, 60 * s / 0.5, 60 * s / 0.5, 14); c.fill();
+    c.restore();
+  });
+  ring.forEach(([x, y, s], i) => drawStudentBack(c, x, y - 40 * s, s, kids[i]));
+  // dust + hits
+  const R = rng(19); c.fillStyle = 'rgba(244,239,228,.85)';
+  for (let i = 0; i < 14; i++) { const x = cx - 150 + R() * 360, y = cy - 90 + R() * 180; c.beginPath(); c.arc(x + Math.sin(t * 20 + i) * 6, y, (26 + R() * 30) * (0.7 + 0.3 * Math.sin(t * 9 + i)), 0, 7); c.fill(); }
+  for (let k = 0; k < 3; k++) {
+    const slot = Math.floor(t * 6) - k, R2 = rng(slot * 17 + 3), f = (t * 6) % 1;
+    const word = ['퍽!', '빡!', '퍼억!', '퍽!!'][Math.floor(R2() * 4)];
+    c.save(); c.translate(380 + R2() * 520, 140 + R2() * 380); c.rotate(-0.3 + R2() * 0.6);
+    const sc = k === 0 ? backOut(clamp(f * 3)) : 1; c.scale(sc, sc);
+    c.font = '80px BHS'; c.textAlign = 'center'; c.lineWidth = 12; c.strokeStyle = '#1a0a10'; c.strokeText(word, 0, 0);
+    c.fillStyle = k === 0 ? '#ffe14d' : '#fff'; c.fillText(word, 0, 0); c.restore();
+  }
   c.restore();
 }
 function shotBlank(c) { c.fillStyle = '#000'; c.fillRect(0, 0, W, H); }
@@ -957,6 +1003,7 @@ const SHOT_FNS = {
   wide: shotWide, hana: shotHana, teacher: (c, t) => shotTeacherMid(c, t, false), minjun: shotMinjun,
   hanaSwear: shotHanaSwear, teacherDark: (c, t) => shotTeacherMid(c, t, true), taeo: shotTaeo,
   gasp: shotGasp, final: shotTeacherFinal,
+  taeoAsk: shotTaeoAsk, kickTop: shotKickTop,
   rage: shotRage, stomp: shotStomp, bike: shotBike, hanaDead: shotHanaDead, blank: shotBlank,
 };
 const DEFAULT_SHOTS = [
@@ -967,7 +1014,14 @@ const SHOTS = (EP.shots || DEFAULT_SHOTS).map(([a, b, name]) => [a, b, SHOT_FNS[
 function renderScene(c, t) {
   c.save(); c.clearRect(0, 0, W, H);
   const shot = SHOTS.find(s => t >= s[0] && t < s[1]) || SHOTS[SHOTS.length - 1];
+  SHOT_T0 = shot[0];
   shot[2](c, t);
+  if (EP.nextAt && t < 30) drawNextCard(c, t, EP.nextAt);
+  if (EP.dip) {  // fade to dark and back
+    const [a, m, b] = EP.dip;
+    const d = t < m ? prog(t, a, m) : 1 - prog(t, m, b);
+    if (d > 0) { c.fillStyle = `rgba(0,0,0,${d})`; c.fillRect(0, 0, W, H); }
+  }
   // cut flash
   const since = t - shot[0];
   if (shot[0] > 0 && shot[0] < 30 && since < 0.07) { c.fillStyle = `rgba(255,255,255,${0.5 * (1 - since / 0.07)})`; c.fillRect(0, 0, W, H); }
@@ -1051,21 +1105,24 @@ function renderThumb() {
   // raging 쌤 up top
   drawBust(c, 540, 470, 1.55, CAST.teacher, { mouth: 0.9, expr: 'angry', vein: true, glint: 1 });
   // the stomp pile at the bottom, drawn from the 16:9 scene
+  const th = EP.thumb || { lines: ['씨 ㅃㅏㄹ', '여자가', '인권을?'], bottom: { shot: 'stomp', t: 20.37, src: [120, 160, 1100, 560] } };
   const off = Object.assign(document.createElement('canvas'), { width: W, height: H }).getContext('2d');
-  shotStomp(off, 20.37);
+  SHOT_FNS[th.bottom.shot](off, th.bottom.t);
+  const [sx, sy, sw, sh] = th.bottom.src;
   c.save(); c.beginPath(); c.rect(0, 1460, VW, VH - 1460); c.clip();
-  c.drawImage(off.canvas, 120, 160, 1100, 560, -40, 1420, 1160, 590); c.restore();
+  c.drawImage(off.canvas, sx, sy, sw, sh, -40, 1420, 1160, 1160 * sh / sw); c.restore();
   // crude, slapped-on red text
   c.textAlign = 'center'; c.lineJoin = 'round';
   const slap = (txt, x, y, size, rot) => {
     c.save(); c.translate(x, y); c.rotate(rot); c.font = `${size}px BHS`;
+    const w = c.measureText(txt).width; if (w > 960) { size = Math.floor(size * 960 / w); c.font = `${size}px BHS`; }
     c.lineWidth = size * 0.3; c.strokeStyle = '#000'; c.strokeText(txt, 0, 0);
     c.lineWidth = size * 0.14; c.strokeStyle = '#fff'; c.strokeText(txt, 0, 0);
     c.fillStyle = '#ff1414'; c.fillText(txt, 0, 0); c.restore();
   };
-  slap('씨 ㅃㅏㄹ', 548, 900, 230, -0.06);
-  slap('여자가', 528, 1150, 290, 0.035);
-  slap('인권을?', 552, 1410, 270, -0.03);
+  slap(th.lines[0], 548, 900, 230, -0.06);
+  slap(th.lines[1], 528, 1150, 290, 0.035);
+  slap(th.lines[2], 552, 1410, 270, -0.03);
   c.restore();
 }
 window.renderFrame = renderFrame;

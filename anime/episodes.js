@@ -138,6 +138,55 @@ const EPISODES = {
       { k: 'endsting', t: 28.3, g: 0.2 },
     ],
   },
+  5: {
+    period: '제5화 · 7교시 지역학개론',
+    title: '니 고향이 어디냐',
+    next: '「쌤 사투리 교정 학원 사건」',
+    bpm: 112,
+    vertical: true,
+    duration: 36,
+    closingCaption: ['※ 이 영상은 지역감정을 조장하는', '극우 행태를 풍자한 것입니다'],
+    poster: ['향우회', '고향 묻지 마라', '🗺️ 우리는 하나'],
+    doodle: 'none',
+    minjunProp: 'none',
+    taeoProp: 'none',
+    finale: 'angry',
+    darkAt: 99,
+    musicEnd: 29.6,
+    silence: [24.0, 28.5],
+    silenceFade: true,       // fade out with the picture instead of a record scratch
+    dip: [24.0, 25.0, 26.0], // fade to dark, then back up
+    nextAt: 28.6,
+    crop: { teacher: 600 },
+    shots: [
+      [0, 7.5, 'wide'], [7.5, 11.0, 'teacher'], [11.0, 14.0, 'taeoAsk'], [14.0, 17.5, 'rage'],
+      [17.5, 20.0, 'minjun'], [20.0, 25.0, 'kickTop'], [25.0, 30.0, 'hanaDead'], [30.0, 36.01, 'blank'],
+    ],
+    lines: [
+      { s: 2.8,  e: 7.3,  who: '선생님', text: '오늘은 지역감정이다. 사람은 고향 보면 답 나와 이 새끼들아.', speak: 0.8 },
+      { s: 7.7,  e: 10.8, who: '선생님', text: '전라도는 외국이야. 씨발 다 거기서 거기야.', speak: 0.75 },
+      { s: 11.2, e: 13.8, who: '태오',   text: '…그럼 경상도도 외국인가요?', speak: 0.7 },
+      { s: 14.2, e: 17.3, who: '선생님', text: '븅신아, 전라도만 외국이라니까? 전라도로 보내줘?', speak: 0.78 },
+      { s: 17.7, e: 19.9, who: '민준',   text: '전, 전라도도 우리나라예요…', speak: 0.75 },
+      { s: 20.1, e: 21.8, who: '반 애들', text: '이 새끼가!!', speak: 0.6 },
+      { s: 26.0, e: 28.4, who: '하나',   text: '…역시 극우들이란.', speak: 0.65, voice: '하나정색' },
+    ],
+    board: [
+      { text: '오늘의 주제', x: 22, y: 38, size: 22, a: 3.0, b: 3.6, color: '#bfe6c8' },
+      { text: '고향 보면 답 나온다', x: 22, y: 86, size: 40, a: 3.6, b: 6.4 },
+      { text: '① 전라도 = 외국', x: 22, y: 132, size: 25, a: 8.0, b: 9.4, color: '#ff9d9d' },
+    ],
+    sfx: [
+      { k: 'whoosh', t: 7.45, g: 0.15 },
+      { k: 'hit', t: 14.0, f: 40, d: 1.0, g: 0.45 },
+      { k: 'stomps', a: 20.1, b: 24.8, g: 0.35 },
+      { k: 'endsting', t: 28.6, g: 0.2 },
+    ],
+    thumb: {
+      lines: ['씨 ㅃㅏㄹ', '전라도로', '보내줘?'],
+      bottom: { shot: 'kickTop', t: 22.3, src: [140, 100, 1000, 560] },
+    },
+  },
 };
 const SPEAKER_COLORS = { '선생님': '#ffb36b', '하나': '#ff8fc0', '민준': '#8fcfff', '태오': '#c4f28a', '반 애들': '#d6d0e0' };
 if (typeof module !== 'undefined') module.exports = { EPISODES, SPEAKER_COLORS };

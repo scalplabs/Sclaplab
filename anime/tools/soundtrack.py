@@ -264,12 +264,21 @@ def main(ep, path):
         add(sfx, 29.25, sum(pluck(hz(n), 0.8) for n in (48, 55, 63)), 0.2)
     if 'silence' in E:   # music cuts out (record scratch) and comes back
         a, b = E['silence']
+        fade_out = E.get('silenceFade', False)
         gate = np.ones(N); ia, ib = int(a * SR), int(b * SR); r = int(0.03 * SR)
-        gate[ia:ib] = 0; gate[ia - r:ia] = np.linspace(1, 0, r); gate[ib:ib + r] = np.linspace(0, 1, r)
+        ro = int(1.0 * SR)
+        gate[ia:ib] = 0; gate[ib:ib + r] = np.linspace(0, 1, r)
+        if fade_out: gate[ia:ia + ro] = np.linspace(1, 0, ro)
+        else: gate[ia - r:ia] = np.linspace(1, 0, r)
         music *= gate
-        tt = t_(0.35)
-        scratch = np.sin(2 * np.pi * np.cumsum(np.linspace(900, 120, len(tt))) / SR) * np.exp(-tt * 6)
-        add(sfx, a - 0.05, scratch + butter_f(rng.standard_normal(len(tt)), 2000, 'high') * 0.3 * np.exp(-tt * 10), 0.25)
+        if not fade_out:
+            tt = t_(0.35)
+            scratch = np.sin(2 * np.pi * np.cumsum(np.linspace(900, 120, len(tt))) / SR) * np.exp(-tt * 6)
+            add(sfx, a - 0.05, scratch + butter_f(rng.standard_normal(len(tt)), 2000, 'high') * 0.3 * np.exp(-tt * 10), 0.25)
+    if 'dip' in E:   # sound effects dim along with the picture's fade to dark
+        a, m, b = E['dip']
+        tt = np.arange(N) / SR
+        sfx *= 1 - np.where(tt < m, np.clip((tt - a) / (m - a), 0, 1), np.clip(1 - (tt - m) / (b - m), 0, 1))
 
     voice, duck = voice_track(E['lines'])
     out = music * (1 - 0.55 * duck) + sfx + voice
