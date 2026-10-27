@@ -91,6 +91,53 @@ const EPISODES = {
       { text: '② 아우디 ✕ · 할부 60개월 = 훈장', x: 22, y: 216, size: 25, a: 22.0, b: 23.8, color: '#ff9d9d' },
     ],
   },
+  4: {
+    period: '제4화 · 5교시 남자학개론',
+    title: '감히 토를 달아?',
+    next: '「민준 부활 사건」',
+    bpm: 112,
+    vertical: true,          // 9:16 shorts layout
+    duration: 36,            // 30s episode + 3s black + 3s closing caption
+    closingCaption: ['※ 이 영상은 요즘 일부 남자들의', '행태를 풍자한 것입니다'],
+    poster: ['남자부', '토 달면 퇴부', '🙊 대답은 네'],
+    doodle: 'none',
+    minjunProp: 'none',
+    taeoProp: 'none',
+    finale: 'angry',
+    darkAt: 99,
+    musicEnd: 29.6,
+    silence: [25.0, 28.0],
+    crop: { hana: 600, teacher: 600, stomp: 680 },
+    shots: [
+      [0, 7.8, 'wide'], [7.8, 10.8, 'hana'], [10.8, 14.8, 'teacher'], [14.8, 16.9, 'minjun'],
+      [16.9, 18.0, 'rage'], [18.0, 23.0, 'stomp'], [23.0, 25.0, 'bike'], [25.0, 28.0, 'hanaDead'],
+      [28.0, 30.0, 'bike'], [30.0, 36.01, 'blank'],
+    ],
+    lines: [
+      { s: 2.8,  e: 7.6,  who: '선생님', text: '오늘 주제는 여자가 남자 말에 토 다는 거다. 잘 들어 이 새끼들아.', speak: 0.8 },
+      { s: 8.0,  e: 10.6, who: '하나',   text: '…네? 그게 왜요?', speak: 0.6 },
+      { s: 11.0, e: 14.6, who: '선생님', text: "토 달지 말라고. 남자가 말하면 그냥 '네' 하는 거야 씨발.", speak: 0.8 },
+      { s: 15.0, e: 16.8, who: '민준',   text: '그, 근데 여자도 인권이란 게…', speak: 0.75 },
+      { s: 17.0, e: 18.0, who: '선생님', text: 'ㅆㅃ 감히 여자가 인권을?', speak: 0.8 },
+      { s: 18.1, e: 19.8, who: '반 애들', text: '이 새끼가 어디서!!', speak: 0.7 },
+      { s: 25.3, e: 27.8, who: '하나',   text: '…이게 요즘 남자들이구나.', speak: 0.7, voice: '하나정색' },
+    ],
+    board: [
+      { text: '오늘의 주제', x: 22, y: 38, size: 22, a: 3.0, b: 3.6, color: '#bfe6c8' },
+      { text: '여자가 토 다는 것', x: 22, y: 86, size: 40, a: 3.6, b: 6.4 },
+      { text: '① 남자가 말하면 → "네"', x: 22, y: 132, size: 25, a: 11.4, b: 12.6, color: '#bfe6c8' },
+      { text: '"토 달지 마라"', x: 40, y: 172, size: 30, a: 12.8, b: 14.0, color: '#ffd98a', underline: true },
+    ],
+    sfx: [
+      { k: 'whoosh', t: 7.78, g: 0.15 },
+      { k: 'hit', t: 16.9, f: 40, d: 1.0, g: 0.45 },
+      { k: 'stomps', a: 18.1, b: 22.9, g: 0.35 },
+      { k: 'engine', a: 22.9, b: 24.7, pass: 23.65, g: 0.3 },
+      { k: 'crunch', t: 23.6, g: 0.4 },
+      { k: 'ting', t: 24.4, g: 0.08 },
+      { k: 'endsting', t: 28.3, g: 0.2 },
+    ],
+  },
 };
-const SPEAKER_COLORS = { '선생님': '#ffb36b', '하나': '#ff8fc0', '민준': '#8fcfff', '태오': '#c4f28a' };
+const SPEAKER_COLORS = { '선생님': '#ffb36b', '하나': '#ff8fc0', '민준': '#8fcfff', '태오': '#c4f28a', '반 애들': '#d6d0e0' };
 if (typeof module !== 'undefined') module.exports = { EPISODES, SPEAKER_COLORS };

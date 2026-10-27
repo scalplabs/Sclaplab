@@ -9,10 +9,13 @@
 @font-face{font-family:BHS;src:url(fonts/BlackHanSans.ttf)}
 :root{--bg:#0d0b14;--fg:#f3eefc}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:Jua,sans-serif;display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px;box-sizing:border-box;min-height:100vh}
-canvas{width:100%;max-width:1280px;aspect-ratio:16/9;background:#000;border-radius:8px}
+canvas{width:100%;max-width:1280px;aspect-ratio:16/9;}
+canvas.v{max-width:420px;aspect-ratio:9/16;}
+canvas{background:#000;border-radius:8px}
 button{font:inherit;font-size:18px;padding:8px 22px;border-radius:999px;border:0;background:#ff7eb6;color:#2a0d1c;cursor:pointer}
 body.render{padding:0;gap:0}
 body.render canvas{width:1280px;height:720px;border-radius:0}
+body.render canvas.v{width:1080px;height:1920px;max-width:none}
 body.render button{display:none}
 </style>
 </head>
@@ -22,7 +25,7 @@ body.render button{display:none}
 <audio id="bgm" preload="auto"></audio>
 <script src="episodes.js"></script>
 <script>
-const W = 1280, H = 720, DUR = 30;
+const W = 1280, H = 720;           // scene space (16:9)
 const cv = document.getElementById('c');
 const ctx = cv.getContext('2d');
 let T = 0; // current time, shared with draw helpers
@@ -42,7 +45,15 @@ const EP_NUM = +(new URLSearchParams(location.search).get('ep') || 1);
 const EP = EPISODES[EP_NUM];
 const LINES = EP.lines.map(l => ({ ...l, col: SPEAKER_COLORS[l.who], speak: l.speak || 0.6 }));
 const BLEEP = '(삐-)';
-const SPOKEN = /[가-힣A-Za-z0-9]/;
+const SPOKEN = /[가-힣ㄱ-ㅎA-Za-z0-9]/;
+const DUR = EP.duration || 30;
+const VERTICAL = !!EP.vertical;
+const VW = 1080, VH = 1920;              // shorts frame (9:16)
+const BAND_Y = 440, CROP_W = 1040, BAND_H = Math.round(720 * VW / CROP_W);
+// in vertical mode scenes are drawn to an offscreen 16:9 canvas, then composited into the 9:16 frame
+const sceneCv = VERTICAL ? Object.assign(document.createElement('canvas'), { width: W, height: H }) : cv;
+const sctx = sceneCv.getContext('2d');
+if (VERTICAL) { cv.width = VW; cv.height = VH; }
 function talk(who, t) {
   for (const l of LINES) {
     const span = (l.e - l.s) * l.speak;
@@ -420,6 +431,7 @@ function drawBoardContent(c, t) {
       c.stroke(); c.restore();
     }
   }
+  if (EP.doodle === 'none') return;
   if (EP.doodle === 'ramen') { drawRamenDoodle(c, t); return; }
   if (EP.doodle === 'car') { drawCarDoodle(c, t); return; }
   // fingerprint doodle
@@ -753,9 +765,152 @@ function shotTeacherFinal(c, t) {
   }
 }
 
+// ---------- episode 4: rage, stomp, bike ----------
+function drawNextCard(c, t, at) {
+  const e = prog(t, at, at + 0.3);
+  if (e <= 0) return;
+  c.save(); c.globalAlpha = e; c.fillStyle = 'rgba(10,4,20,.6)'; c.fillRect(0, 0, W, 120);
+  const xr = VERTICAL ? 1130 : 1240;  // stay inside the 9:16 crop
+  c.font = '30px Jua'; c.fillStyle = '#c9b6ff'; c.textAlign = 'right'; c.fillText('다음 화', xr, 52);
+  c.font = '46px BHS'; c.fillStyle = '#fff'; c.fillText(EP.next, xr, 102); c.restore();
+}
+function shotRage(c, t) {
+  c.fillStyle = '#3a0a0a'; c.fillRect(0, 0, W, H);
+  drawFocusLines(c, 640, 330, 300, '#a8201a', 1, 130, 41 + Math.floor(t * 14));
+  const z = lerp(1.3, 1.0, easeOut(prog(t, 16.9, 17.1)));
+  c.save(); c.translate(640, 330); c.scale(z, z); c.translate(-640, -330);
+  drawBust(c, 640 + Math.sin(t * 70) * 6, 360, 1.7, CAST.teacher, { mouth: talk(TEACHER, t), expr: 'angry', vein: true, glint: 1 });
+  c.restore();
+}
+function floorBG(c) {
+  let g = c.createLinearGradient(0, 0, 0, 380); g.addColorStop(0, '#efe0c6'); g.addColorStop(1, '#e2cba6');
+  c.fillStyle = g; c.fillRect(0, 0, W, 380);
+  c.fillStyle = '#c7a37a'; c.fillRect(0, 350, W, 30);
+  g = c.createLinearGradient(0, 380, 0, H); g.addColorStop(0, '#b9875a'); g.addColorStop(1, '#8e5f38');
+  c.fillStyle = g; c.fillRect(0, 380, W, H - 380);
+  c.strokeStyle = 'rgba(70,40,20,.25)'; c.lineWidth = 2;
+  for (let y = 420; y < H; y += 46) { c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
+}
+// 민준 lying on the floor, head on the left; flat = 0..1 squash
+function drawLyingMinjun(c, t, flat, expr) {
+  c.save(); c.translate(380, 590); c.scale(1, lerp(1, 0.3, flat));
+  // legs
+  c.fillStyle = '#283456'; c.fillRect(380, -50, 300, 44); c.fillRect(380, 4, 300, 44);
+  c.fillStyle = '#1a1a22'; c.fillRect(670, -58, 40, 56); c.fillRect(670, -2, 40, 56);
+  drawBust(c, 0, 0, 0.72, CAST.minjun, { mouth: flat ? 0 : 0.6 + 0.4 * Math.sin(t * 20), expr: expr || 'shock', sweat: !flat, tilt: -Math.PI / 2 });
+  c.restore();
+}
+function drawLeg(c, x, footY, pants, shoe) {
+  c.fillStyle = pants; c.fillRect(x - 30, -20, 60, footY + 4);
+  c.fillStyle = shoe; c.beginPath(); c.roundRect(x - 40, footY - 10, 96, 40, 16); c.fill();
+  c.fillStyle = 'rgba(255,255,255,.85)'; c.fillRect(x - 40, footY + 22, 96, 7);
+}
+function shotStomp(c, t) {
+  const sh = 6;
+  c.save(); c.translate(Math.sin(t * 90) * sh, Math.cos(t * 77) * sh);
+  floorBG(c);
+  drawLyingMinjun(c, t, 0, 'shock');
+  // dust cloud over the body, leaving his face peeking out
+  const R = rng(13); const grow = easeOut(prog(t, 18.0, 18.6));
+  c.save(); c.fillStyle = '#f4efe4'; c.strokeStyle = '#6a5a48'; c.lineWidth = 5;
+  for (let i = 0; i < 26; i++) {
+    const x = 500 + R() * 560, y = 470 + R() * 210, r = (50 + R() * 60) * grow;
+    c.beginPath(); c.arc(x + Math.sin(t * 22 + i) * 7, y + Math.cos(t * 19 + i) * 7, r, 0, 7); c.fill(); c.stroke();
+  }
+  c.restore();
+  // stomping legs: classmates + 쌤 (grey slacks, brown shoes)
+  const legs = [[540, '#283456', '#111'], [640, '#2d3a66', '#fff'], [740, '#3b3f52', '#7a4a22'], [840, '#283456', '#111'], [940, '#2d3a66', '#ddd'], [1030, '#283456', '#111']];
+  legs.forEach(([x, pants, shoe], i) => {
+    const u = (t * 3.4 + i * 0.37) % 1;
+    const y = u < 0.28 ? lerp(120, 470, Math.pow(u / 0.28, 2)) : lerp(470, 120, easeOut((u - 0.28) / 0.72));
+    drawLeg(c, x + Math.sin(i * 7) * 14, y, pants, shoe);
+  });
+  // 퍽!
+  for (let k = 0; k < 3; k++) {
+    const slot = Math.floor(t * 6) - k, R2 = rng(slot * 31 + 5), f = (t * 6) % 1;
+    if (slot / 6 < 18.1) continue;
+    const word = ['퍽!', '퍽!!', '빡!', '퍼억!'][Math.floor(R2() * 4)];
+    c.save(); c.translate(460 + R2() * 640, 120 + R2() * 300); c.rotate(-0.3 + R2() * 0.6);
+    const s = k === 0 ? backOut(clamp(f * 3)) : 1; c.scale(s, s);
+    c.font = '84px BHS'; c.textAlign = 'center'; c.lineWidth = 12; c.strokeStyle = '#1a0a10'; c.strokeText(word, 0, 0);
+    c.fillStyle = k === 0 ? '#ffe14d' : '#fff'; c.fillText(word, 0, 0); c.restore();
+  }
+  c.restore();
+}
+function drawBike(c, x, y, t) {
+  c.save();
+  // speed lines
+  c.strokeStyle = 'rgba(255,255,255,.8)'; c.lineWidth = 6; c.lineCap = 'round';
+  for (let i = 0; i < 6; i++) { const yy = y - 260 + i * 46; c.beginPath(); c.moveTo(x - 260 - i * 40, yy); c.lineTo(x - 520 - i * 60, yy); c.stroke(); }
+  // delivery box
+  c.fillStyle = '#ff8a1e'; c.strokeStyle = '#5a2a0a'; c.lineWidth = 5;
+  c.beginPath(); c.roundRect(x - 210, y - 250, 130, 110, 10); c.fill(); c.stroke();
+  c.fillStyle = '#fff'; c.font = '36px BHS'; c.textAlign = 'center'; c.fillText('배달', x - 145, y - 182);
+  // frame
+  c.fillStyle = '#d6303a';
+  c.beginPath(); c.moveTo(x - 160, y - 70); c.lineTo(x - 70, y - 140); c.lineTo(x + 60, y - 140); c.lineTo(x + 130, y - 70); c.lineTo(x + 60, y - 50); c.lineTo(x - 90, y - 50); c.closePath(); c.fill(); c.stroke();
+  c.strokeStyle = '#333'; c.lineWidth = 10; c.beginPath(); c.moveTo(x + 110, y - 40); c.lineTo(x + 70, y - 200); c.lineTo(x + 40, y - 210); c.stroke();
+  // wheels
+  [x - 150, x + 120].forEach(wx => {
+    c.fillStyle = '#1e1e24'; c.beginPath(); c.arc(wx, y - 48, 50, 0, 7); c.fill();
+    c.fillStyle = '#999'; c.beginPath(); c.arc(wx, y - 48, 18, 0, 7); c.fill();
+    c.strokeStyle = '#bbb'; c.lineWidth = 4;
+    for (let k = 0; k < 4; k++) { const a = t * 40 + k * Math.PI / 4; c.beginPath(); c.moveTo(wx + Math.cos(a) * 18, y - 48 + Math.sin(a) * 18); c.lineTo(wx + Math.cos(a) * 44, y - 48 + Math.sin(a) * 44); c.stroke(); }
+  });
+  // rider: 쌤 with a helmet
+  c.fillStyle = '#2e3142'; c.fillRect(x - 60, y - 170, 40, 110);
+  drawBust(c, x - 30, y - 330, 0.4, CAST.teacher, { mouth: 0.7, expr: 'angry', vein: true, glint: 1, tilt: 0.12 }, {
+    arm: cc => {
+      drawArm(cc, 150, 230, 250, 300, '#f4f6fb', CAST.teacher.skin, '#ffffff');
+      cc.fillStyle = '#f2c14e'; cc.strokeStyle = '#5a3a10'; cc.lineWidth = 8;
+      cc.beginPath(); cc.arc(0, -40, 128, Math.PI, Math.PI * 2); cc.lineTo(128, -10); cc.lineTo(-128, -10); cc.closePath(); cc.fill(); cc.stroke();
+    }
+  });
+  c.restore();
+}
+function shotBike(c, t) {
+  floorBG(c);
+  const passT = 23.65;
+  const bx = lerp(-400, 1700, prog(t, 23.1, 24.2));
+  const flat = easeOut(prog(t, passT - 0.05, passT + 0.05));
+  drawLyingMinjun(c, t, flat, flat > 0.5 ? 'sleepy' : 'shock');
+  // tire track across the flattened body
+  if (flat > 0) {
+    const end = Math.min(bx - 120, 1100);
+    c.save(); c.fillStyle = 'rgba(30,30,36,.75)';
+    for (let x = 300; x < end; x += 34) { c.beginPath(); c.moveTo(x, 578); c.lineTo(x + 18, 590); c.lineTo(x, 602); c.lineTo(x + 10, 590); c.fill(); }
+    c.restore();
+  }
+  if (t < 24.3) drawBike(c, bx, 640, t);
+  if (t > 23.2 && t < 24.4) {
+    const k = backOut(prog(t, 23.2, 23.45));
+    c.save(); c.translate(640, 170); c.rotate(-0.08); c.scale(k, k);
+    c.font = '120px BHS'; c.textAlign = 'center'; c.lineWidth = 14; c.strokeStyle = '#1a0a10'; c.strokeText('부아앙!!', 0, 0);
+    c.fillStyle = '#ff5a3a'; c.fillText('부아앙!!', 0, 0); c.restore();
+  }
+  // stars circling his head once he's flat
+  if (t > 24.2) {
+    for (let i = 0; i < 5; i++) {
+      const a = t * 4 + i * Math.PI * 2 / 5;
+      c.save(); c.translate(300 + Math.cos(a) * 90, 520 + Math.sin(a) * 24); c.fillStyle = '#ffe14d'; c.strokeStyle = '#7a5a10'; c.lineWidth = 3;
+      c.beginPath(); for (let k = 0; k < 10; k++) { const r = k % 2 ? 9 : 22, b = k * Math.PI / 5 - Math.PI / 2; c.lineTo(Math.cos(b) * r, Math.sin(b) * r); } c.closePath(); c.fill(); c.stroke(); c.restore();
+    }
+  }
+  if (t >= 28) drawNextCard(c, t, 28.3);
+}
+function shotHanaDead(c, t) {
+  c.fillStyle = '#4a4650'; c.fillRect(0, 0, W, H);
+  c.save(); c.filter = 'blur(16px)'; c.globalAlpha = .35; c.fillStyle = '#2e5a45'; c.fillRect(760, 60, 520, 260); c.restore();
+  const z = lerp(1.0, 1.06, prog(t, 25, 28));
+  c.save(); c.translate(640, 320); c.scale(z, z); c.translate(-640, -320);
+  drawBust(c, 640, 300, 1.25, CAST.hana, { mouth: talk('하나', t), blink: blinkAt(t, 0.9), expr: 'dead', gloom: true });
+  c.restore();
+}
+function shotBlank(c) { c.fillStyle = '#000'; c.fillRect(0, 0, W, H); }
+
 // ---------- overlays ----------
 function drawTitleCard(c, t) {
-  if (t > 2.9) return;
+  if (t > 2.9 || VERTICAL) return;  // vertical layout shows the title in its header
   const a = prog(t, 0.1, 0.5) * (1 - prog(t, 2.4, 2.85));
   c.save(); c.globalAlpha = a;
   c.fillStyle = 'rgba(20,10,30,.55)'; c.fillRect(0, 250, W, 210);
@@ -802,23 +957,22 @@ const SHOT_FNS = {
   wide: shotWide, hana: shotHana, teacher: (c, t) => shotTeacherMid(c, t, false), minjun: shotMinjun,
   hanaSwear: shotHanaSwear, teacherDark: (c, t) => shotTeacherMid(c, t, true), taeo: shotTaeo,
   gasp: shotGasp, final: shotTeacherFinal,
+  rage: shotRage, stomp: shotStomp, bike: shotBike, hanaDead: shotHanaDead, blank: shotBlank,
 };
 const DEFAULT_SHOTS = [
   [0, 7.8, 'wide'], [7.8, 11.8, 'hana'], [11.8, 17.0, 'teacher'], [17.0, 21.0, 'minjun'],
   [21.0, 25.15, 'teacherDark'], [25.15, 27.5, 'taeo'], [27.5, 28.3, 'gasp'], [28.3, 30.01, 'final'],
 ];
-const SHOTS = (EP.shots || DEFAULT_SHOTS).map(([a, b, name]) => [a, b, SHOT_FNS[name]]);
-function renderFrame(t) {
-  T = t;
-  const c = ctx;
+const SHOTS = (EP.shots || DEFAULT_SHOTS).map(([a, b, name]) => [a, b, SHOT_FNS[name], name]);
+function renderScene(c, t) {
   c.save(); c.clearRect(0, 0, W, H);
   const shot = SHOTS.find(s => t >= s[0] && t < s[1]) || SHOTS[SHOTS.length - 1];
   shot[2](c, t);
   // cut flash
   const since = t - shot[0];
-  if (shot[0] > 0 && since < 0.07) { c.fillStyle = `rgba(255,255,255,${0.5 * (1 - since / 0.07)})`; c.fillRect(0, 0, W, H); }
+  if (shot[0] > 0 && shot[0] < 30 && since < 0.07) { c.fillStyle = `rgba(255,255,255,${0.5 * (1 - since / 0.07)})`; c.fillRect(0, 0, W, H); }
   drawTitleCard(c, t);
-  drawSubtitle(c, t);
+  if (!VERTICAL) drawSubtitle(c, t);
   // vignette
   const vg = c.createRadialGradient(640, 360, 420, 640, 360, 820);
   vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.28)');
@@ -827,12 +981,96 @@ function renderFrame(t) {
   const f = Math.max(1 - prog(t, 0, 0.35), prog(t, 29.75, 30));
   if (f > 0) { c.fillStyle = `rgba(0,0,0,${f})`; c.fillRect(0, 0, W, H); }
   c.restore();
+  return shot;
+}
+function drawSubtitleV(c, t) {
+  const l = LINES.find(l => t >= l.s && t < l.e);
+  if (!l) return;
+  const a = prog(t, l.s, l.s + 0.12) * (1 - prog(t, l.e - 0.12, l.e));
+  const n = Math.ceil(l.text.length * prog(t, l.s, l.s + (l.e - l.s) * l.speak));
+  c.save(); c.globalAlpha = a; c.font = '58px Jua';
+  const full = wrapText(c, l.text, 940);
+  const y0 = BAND_Y + BAND_H + 90;
+  c.font = '40px BHS'; const nw = c.measureText(l.who).width + 48;
+  c.fillStyle = l.col; c.beginPath(); c.roundRect(540 - nw / 2, y0 - 34, nw, 58, 16); c.fill();
+  c.fillStyle = '#1a0e24'; c.textAlign = 'center'; c.fillText(l.who, 540, y0 + 10);
+  c.font = '58px Jua'; c.lineWidth = 12; c.strokeStyle = '#0b0610'; c.fillStyle = '#fff';
+  let left = n;
+  full.forEach((ln, i) => {
+    const part = ln.slice(0, Math.max(0, left)); left -= ln.length + 1;
+    const y = y0 + 110 + i * 78;
+    c.textAlign = 'left'; const x = 540 - c.measureText(ln).width / 2;
+    c.strokeText(part, x, y); c.fillText(part, x, y);
+  });
+  c.restore();
+}
+function composeVertical(t, shot) {
+  const c = ctx;
+  c.save(); c.fillStyle = '#000'; c.fillRect(0, 0, VW, VH);
+  if (t >= 30) {
+    const a = prog(t, 33, 33.4) * (1 - prog(t, 35.6, 36));
+    if (a > 0) {
+      c.globalAlpha = a; c.fillStyle = '#f3eefc'; c.font = '50px Jua'; c.textAlign = 'center';
+      EP.closingCaption.forEach((ln, i) => c.fillText(ln, 540, 920 + i * 76));
+    }
+    c.restore(); return;
+  }
+  // blurred, darkened copy of the scene fills the frame behind the band
+  c.save(); c.filter = 'blur(28px) brightness(.45)';
+  const sc = VH / H; c.drawImage(sceneCv, (VW - W * sc) / 2, 0, W * sc, VH); c.restore();
+  const cx = (EP.crop && EP.crop[shot[3]]) || 640;
+  const x0 = clamp(cx - CROP_W / 2, 0, W - CROP_W);
+  c.drawImage(sceneCv, x0, 0, CROP_W, H, 0, BAND_Y, VW, BAND_H);
+  // header
+  const g = c.createLinearGradient(0, 0, 0, BAND_Y); g.addColorStop(0, 'rgba(10,4,20,.9)'); g.addColorStop(1, 'rgba(10,4,20,.55)');
+  c.fillStyle = g; c.fillRect(0, 0, VW, BAND_Y);
+  c.textAlign = 'center';
+  c.font = '46px Jua'; c.fillStyle = '#ffd98a'; c.fillText(EP.period, 540, 220);
+  c.font = '112px BHS'; c.lineWidth = 14; c.strokeStyle = '#2a0d1c'; c.strokeText(EP.title, 540, 360);
+  const tg = c.createLinearGradient(0, 270, 0, 370); tg.addColorStop(0, '#fff'); tg.addColorStop(1, '#ff8fc0');
+  c.fillStyle = tg; c.fillText(EP.title, 540, 360);
+  drawSubtitleV(c, t);
+  const f = Math.max(1 - prog(t, 0, 0.35), prog(t, 29.75, 30));
+  if (f > 0) { c.fillStyle = `rgba(0,0,0,${f})`; c.fillRect(0, 0, VW, VH); }
+  c.restore();
+}
+function renderFrame(t) {
+  T = t;
+  const shot = renderScene(sctx, t);
+  if (VERTICAL) composeVertical(t, shot);
+}
+// 9:16 thumbnail
+function renderThumb() {
+  T = 23.0;
+  const c = ctx;
+  cv.width = VW; cv.height = VH; cv.classList.add('v');
+  c.save();
+  const bg = c.createLinearGradient(0, 0, 0, VH); bg.addColorStop(0, '#5a0a0a'); bg.addColorStop(1, '#1a0404');
+  c.fillStyle = bg; c.fillRect(0, 0, VW, VH);
+  drawFocusLines(c, 540, 900, 420, '#b8261c', 1, 160, 3);
+  // raging 쌤 up top
+  drawBust(c, 540, 470, 1.55, CAST.teacher, { mouth: 0.9, expr: 'angry', vein: true, glint: 1 });
+  // the stomp pile at the bottom, drawn from the 16:9 scene
+  const off = Object.assign(document.createElement('canvas'), { width: W, height: H }).getContext('2d');
+  shotStomp(off, 20.37);
+  c.save(); c.beginPath(); c.rect(0, 1260, VW, VH - 1260); c.clip();
+  c.drawImage(off.canvas, 120, 60, 1100, 660, -40, 1250, 1160, 696); c.restore();
+  // center text
+  c.fillStyle = 'rgba(0,0,0,.55)'; c.fillRect(0, 760, VW, 520);
+  c.textAlign = 'center'; c.lineJoin = 'round';
+  const line = (txt, y, size, fill) => { c.font = `${size}px BHS`; c.lineWidth = size * 0.16; c.strokeStyle = '#0a0406'; c.strokeText(txt, 540, y); c.fillStyle = fill; c.fillText(txt, 540, y); };
+  line('ㅆㅃ', 900, 150, '#ff3b3b');
+  line('감히 여자가', 1060, 150, '#ffffff');
+  line('인권을?', 1225, 170, '#ffe14d');
+  c.restore();
 }
 window.renderFrame = renderFrame;
 
 const isRender = new URLSearchParams(location.search).has('render');
 if (isRender) document.body.classList.add('render');
-window.ready = Promise.all([document.fonts.load('40px Jua'), document.fonts.load('40px BHS')]).then(() => { renderFrame(isRender ? 0 : 1.2); return true; });
+if (VERTICAL) cv.classList.add('v');
+const isThumb = new URLSearchParams(location.search).has('thumb');
+window.ready = Promise.all([document.fonts.load('40px Jua'), document.fonts.load('40px BHS')]).then(() => { if (isThumb) renderThumb(); else renderFrame(isRender ? 0 : 1.2); return true; });
 
 // playback
 const audio = document.getElementById('bgm');
