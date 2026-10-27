@@ -30,8 +30,9 @@ EPISODES = {
         (112, 152, "roof", 0), (152, 166, "road", 0), (166, 212, "taxi", 0), (212, 228, "end", 0)]),
     # 인스타 릴스 1분 세로판, 1인칭: 소주 → 비틀비틀 택시 잡기 → 허무주의 기사. 음악은 처음부터 끝까지 음침하게
     "insta01": dict(script="insta01.txt", layout="reel", music="gloom", scenes=[
-        (0, 16, "soju", 0), (16, 26, "road", 3), (26, 60, "taxi", 11)],
-        drunk=[(0, 0.25), (5.0, 0.3), (6.5, 0.7), (16, 0.85), (26, 0.8), (31, 0.4), (60, 0.55)]),
+        (0, 15, "bench", 0), (15, 24, "road", 4.5), (24, 50, "taxi", 0), (50, 60, "block", 0)],
+        drunk=[(0, 0.25), (5.0, 0.3), (6.5, 0.7), (15, 0.85), (24, 0.7), (29, 0.4), (50, 0.5), (60, 0.55)],
+        taxi=dict(factory=(9.0, 21.0))),
 }
 SCENES = EPISODES["ep01"]["scenes"]
 DURATION = SCENES[-1][1]
@@ -627,12 +628,87 @@ class Road:
         return a
 
 
+class Block:
+    """밤, 철거 예정인 판상 아파트. 빨간 스프레이 X와 '철거'. 불 켜진 창 몇 개. 택시가 떠나고 고개를 들어 올려다본다."""
+    EXTRA = 80   # 위로 올려다볼 만큼 캔버스를 더 그린다
+
+    def __init__(self):
+        rng = np.random.default_rng(61)
+        TH = CH + self.EXTRA
+        self.TH = TH
+        g = np.linspace(0, 1, TH)[:, None, None]
+        a = C["sky0"] * 0.8 * (1 - g) + C["sky1"] * g
+        a = a * (0.75 + 0.45 * np.tile(CLOUD, (2, 1))[:TH, 200:200 + CW][..., None])
+        img = to_img(a)
+        d = ImageDraw.Draw(img)
+        gy = TH - 34                      # 땅 높이
+        self.gy = gy
+        x0, x1, top = 24, 312, 12
+        d.rectangle([x0, top, x1, gy], fill=(74, 76, 94))
+        self.windows = []
+        for r in range(13):
+            wy = top + 8 + r * 15
+            d.line([x0, wy - 4, x1, wy - 4], fill=(60, 62, 78))       # 조립식 패널 이음매
+            for c in range(13):
+                wx = x0 + 10 + c * 22
+                d.rectangle([wx, wy, wx + 9, wy + 7], fill=(34, 38, 54))
+                if wy + 7 < gy - 20:
+                    self.windows.append((wx, wy))
+        self.lit = [self.windows[i] for i in rng.choice(len(self.windows), 7, replace=False)]
+        # 1층 입구와 흐린 등
+        d.rectangle([150, gy - 22, 174, gy], fill=(28, 28, 36))
+        d.rectangle([156, gy - 28, 168, gy - 25], fill=(200, 190, 150))
+        # 빨간 스프레이 X와 '철거'
+        for (ax, ay, bx, by) in ((44, gy - 70, 120, gy - 6), (120, gy - 70, 44, gy - 6),
+                                 (210, gy - 64, 280, gy - 6), (280, gy - 64, 210, gy - 6)):
+            d.line([ax, ay, bx, by], fill=(150, 34, 36), width=3)
+        img2 = img
+        pixel_text(img2, (60, gy - 98), "철거", 20, (160, 40, 40))
+        # 땅
+        a = from_img(img2)
+        gr = gaussian_filter(rng.random((TH - gy, CW)), 0.6)
+        a[gy:] = (np.array([46, 48, 60]) * (0.75 + 0.5 * gr)[..., None])
+        # 가로등 (왼쪽)
+        a[gy - 90:gy, 8:10] = (20, 20, 26)
+        a[gy - 92:gy - 89, 8:18] = (20, 20, 26)
+        self.lamp = (15, gy - 88)
+        self.static = a
+
+    def frame(self, t):
+        oy = int(self.EXTRA * (1 - smoothstep(3.5, 8.5, t)))   # 처음엔 땅을 보다가 천천히 올려다봄
+        a = self.static[oy:oy + CH].copy()
+        for i, (wx, wy) in enumerate(self.lit):
+            y = wy - oy
+            if 0 <= y < CH - 8 and hash2(int(t * 0.7) + i, i) > 0.1:
+                a[y:y + 8, wx:wx + 10] = C["warm0"] if i % 2 else C["warm1"] * 0.9
+        lx, ly = self.lamp
+        yy, xx = np.mgrid[0:CH, 0:CW]
+        fl = 1.0 if hash2(int(t * 9), 13) > 0.15 else 0.25
+        a += np.array([80, 60, 30]) * np.exp(-(((xx - lx) / 26) ** 2 + ((yy - (ly - oy) - 30) / 40) ** 2))[..., None] * fl
+        # 떠나는 택시의 빨간 미등
+        if t < 5.0:
+            p = t / 5.0
+            tx = 190 + p * 150
+            ty = self.gy - oy + 8 - p * 6
+            r = max(1, int(3 - 2 * p))
+            for dx in (-6, 6):
+                x = int(tx + dx * (1 - p * 0.6))
+                if 0 <= x < CW - r and 0 <= ty < CH - r:
+                    a[int(ty):int(ty) + r, x:x + r] = (230, 40, 40)
+            a += np.array([90, 10, 10]) * np.exp(-(((xx - tx) / 30) ** 2 + ((yy - ty) / 10) ** 2))[..., None] * (1 - p)
+        rain(a, t, n=120, color=(110, 118, 150))
+        return a
+
+
 class Soju:
-    """1인칭, 편의점 앞 초록 플라스틱 테이블. 빈 소주병들과 소주잔. 뒤 가게는 초점 밖으로 뭉개진다."""
+    """1인칭 술자리. 'store'는 편의점 앞 초록 플라스틱 테이블, 'block'은 철거 예정 아파트 앞 콘크리트 테이블.
+    뒤 배경은 초점 밖으로 뭉개진다."""
     DRINK = (4.0, 6.2)   # 잔을 들이키는 구간 (장면 안 시간)
 
-    def __init__(self, store):
+    def __init__(self, store, block=None, variant="store"):
         self.store = store
+        self.block = block
+        self.variant = variant
 
     @staticmethod
     def bottle(d, x, base, h, level):
@@ -650,17 +726,36 @@ class Soju:
         d.line([x + 2, base - h + neck + 2, x + 2, base - 3], fill=(90, 170, 110))                   # 유리 하이라이트
 
     def frame(self, t):
-        bg = self.store.frame(t)
-        crop = to_img(bg[30:150, 110:CW])
+        concrete = self.variant == "block"
+        if concrete:
+            st = self.block.static
+            bg = st[st.shape[0] - 150:st.shape[0] - 10, 0:CW].copy()
+            for i, (wx, wy) in enumerate(self.block.lit):
+                y = wy - (st.shape[0] - 150)
+                if 0 <= y < bg.shape[0] - 8:
+                    bg[y:y + 8, wx:wx + 10] = C["warm1"] * 0.9
+            crop = to_img(bg)
+        else:
+            bg = self.store.frame(t)
+            crop = to_img(bg[30:150, 110:CW])
         a = from_img(crop.resize((CW, CH), Image.BILINEAR))
         a = gaussian_filter(a, (2.2, 2.2, 0)) * 0.85
         img = to_img(a)
         d = ImageDraw.Draw(img)
         # 테이블 상판 (원근)
-        d.polygon([(-40, 112), (CW + 40, 112), (CW + 120, CH), (-120, CH)], fill=(26, 72, 44))
-        d.line([(-40, 112), (CW + 40, 112)], fill=(60, 128, 80), width=2)
-        for gx in range(-200, CW + 200, 36):   # 플라스틱 테이블 홈
-            d.line([(CW / 2 + (gx - CW / 2) * 0.55, 114), (gx, CH)], fill=(22, 62, 38))
+        top_c, edge_c, line_c = ((62, 64, 72), (98, 98, 108), (54, 56, 64)) if concrete else \
+            ((26, 72, 44), (60, 128, 80), (22, 62, 38))
+        d.polygon([(-40, 112), (CW + 40, 112), (CW + 120, CH), (-120, CH)], fill=top_c)
+        d.line([(-40, 112), (CW + 40, 112)], fill=edge_c, width=2)
+        if concrete:   # 콘크리트 얼룩
+            rng = np.random.default_rng(71)
+            for _ in range(160):
+                x, y = int(rng.integers(0, CW)), int(rng.integers(114, CH))
+                v = int(rng.integers(-10, 10))
+                d.rectangle([x, y, x + 2, y + 1], fill=tuple(c + v for c in top_c))
+        else:
+            for gx in range(-200, CW + 200, 36):   # 플라스틱 테이블 홈
+                d.line([(CW / 2 + (gx - CW / 2) * 0.55, 114), (gx, CH)], fill=line_c)
         # 빈 병들 (뒤쪽), 하나는 누워 있음
         for x, h in ((26, 58), (54, 60), (250, 58)):
             self.bottle(d, x, 124, h, 0)
@@ -668,9 +763,9 @@ class Soju:
         d.rectangle([314, 121, 324, 128], fill=(46, 150, 70))
         # 반 남은 병 (앞쪽, 크게)
         self.bottle(d, 214, 160, 84, 0.45)
-        # 컵라면
-        d.rectangle([100, 120, 128, 140], fill=(200, 56, 40))
-        d.rectangle([98, 118, 130, 122], fill=(232, 232, 224))
+        if not concrete:   # 컵라면
+            d.rectangle([100, 120, 128, 140], fill=(200, 56, 40))
+            d.rectangle([98, 118, 130, 122], fill=(232, 232, 224))
         # 소주잔: 평소엔 테이블 위, 마실 땐 얼굴 쪽으로 올라온다
         d0, d1 = self.DRINK
         if d0 < t < d1:
@@ -688,9 +783,9 @@ class Soju:
                        (cx - gw * 0.38, cy - 1)], fill=(206, 226, 220))
         d.line([(cx - gw / 2, cy - gh), (cx + gw / 2, cy - gh)], fill=(230, 240, 236), width=max(1, int(sc)))
         a = from_img(img)
-        # 가게 불빛이 테이블에 번짐
+        # 뒤쪽 불빛이 테이블에 번짐
         yy, xx = np.mgrid[0:CH, 0:CW]
-        a += np.array([30, 34, 40]) * np.exp(-(((xx - 200) / 160) ** 2 + ((yy - 110) / 40) ** 2))[..., None]
+        a += np.array([30, 34, 40]) * (0.5 if concrete else 1.0) * np.exp(-(((xx - 200) / 160) ** 2 + ((yy - 110) / 40) ** 2))[..., None]
         a[112:] *= np.linspace(1.0, 0.55, CH - 112)[:, None, None]   # 앞쪽 테이블은 어둡게
         rain(a, t, n=90, color=(110, 120, 150))
         return a
@@ -716,7 +811,11 @@ def drunk(a, t, k):
 
 
 class Taxi:
-    """택시 뒷좌석. 거의 암전, 계기판 초록빛, 지나가는 가로등이 실내를 훑는다."""
+    """택시 뒷좌석. 거의 암전, 계기판 초록빛, 지나가는 가로등이 실내를 훑는다.
+    factory=(시작, 끝)이면 그 사이에 앞유리 너머로 꺼진 공장과 굴뚝이 지나간다."""
+
+    def __init__(self, factory=None):
+        self.factory = factory
 
     def frame(self, t):
         a = np.zeros((CH, CW, 3), np.float32)
@@ -732,6 +831,19 @@ class Taxi:
             ly = int(66 - ph ** 2 * 30)
             r = 1 + int(ph * 3)
             road[max(0, ly - r):ly + r, max(0, lx - r):lx + r] = (230, 170, 90)
+        if self.factory and self.factory[0] < t < self.factory[1]:
+            f0, f1 = self.factory
+            p = (t - f0) / (f1 - f0)
+            vis = min(1.0, p * 5, (1 - p) * 5)
+            road[40:70] = road[40:70] * (1 - vis) + np.array([30, 26, 34]) * vis    # 도시 불빛에 물든 하늘
+            fx = int(300 - p * 280)
+            sil = np.array([6, 6, 10])
+            for bx, bw, bh in ((0, 70, 10), (12, 8, 26), (34, 8, 30), (70, 40, 6)):
+                x0, x1 = max(0, fx + bx), max(0, min(CW, fx + bx + bw))
+                if x1 > x0:
+                    road[70 - bh:70, x0:x1] = road[70 - bh:70, x0:x1] * (1 - vis) + sil * vis
+            if int(t * 1.5) % 2 and 0 <= fx + 15 < CW:   # 굴뚝 꼭대기 빨간 항공등
+                road[43:45, fx + 15:fx + 17] = (200, 30, 30)
         a[ws] = road[ws]
         # 오른쪽 옆 창문: 도시 불빛이 흘러간다
         sw = (yy > 46) & (yy < 104) & (xx > 292) & (xx < CW - 2)
@@ -1156,8 +1268,9 @@ def synth_gloom(path, n, lines):
         amb = amb * (1 - e * 0.7) + rumble * e
     music = gloom_music(n, t, rng) * 0.4
     offs = {name: off for _, _, name, off in SCENES}
-    if "soju" in sc:   # 소주: 잔 부딪는 소리, 꿀꺽, 그리고 취하면서 소리가 먹먹해진다
-        s0 = sc["soju"][0] - offs["soju"]
+    drink = "soju" if "soju" in sc else "bench" if "bench" in sc else None
+    if drink:   # 소주: 잔 부딪는 소리, 꿀꺽, 그리고 취하면서 소리가 먹먹해진다
+        s0 = sc[drink][0] - offs[drink]
         amb = amb + bell(n, [s0 + Soju.DRINK[0] - 0.4], [2350], 0.05) + bell(n, [s0 + Soju.DRINK[0] - 0.33], [3120], 0.03)
         g = int((s0 + 5.0) * SR)
         L = int(0.18 * SR)
@@ -1168,7 +1281,11 @@ def synth_gloom(path, n, lines):
         approach = smoothstep(r0 + 5.5, r0 + 12.5, t) * env_scene(n, *sc["road"], 0.6)
         amb = amb + (butter_f(white, 180) * 0.6 + np.sin(2 * np.pi * 45 * t) * 0.04) * approach
     drunk_w = np.zeros(n, np.float32)
-    for nm in ("soju", "road"):
+    if "block" in sc:   # 내리고 나면 택시가 멀어진다
+        b0 = sc["block"][0]
+        leave = env_scene(n, *sc["block"], 0.3) * (1 - smoothstep(b0, b0 + 5, t))
+        amb = amb + (butter_f(white, 160) * 0.6 + np.sin(2 * np.pi * 40 * t) * 0.03) * leave
+    for nm in ("soju", "bench", "road"):
         if nm in sc:
             drunk_w += env_scene(n, *sc[nm], 1.0)
     drunk_w *= 0.65
@@ -1208,6 +1325,9 @@ def render(out, episode="ep01", start=0.0, end=None, still=None, audio_only=Fals
     fw, fh = (RW, RH) if reel else (OW, OH)
     objs = {"room": Room(), "street": Street(), "store": Store(), "roof": Roof(), "road": Road(), "taxi": Taxi()}
     objs["soju"] = Soju(objs["store"])
+    objs["block"] = Block()
+    objs["bench"] = Soju(objs["store"], objs["block"], "block")
+    objs["taxi"] = Taxi(**ep.get("taxi", {}))
     drunk_curve = ep.get("drunk")
     b_lines = [(a, b) for a, b, k, *_ in lines if k == "B"]
 
