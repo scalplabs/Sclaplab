@@ -17,6 +17,7 @@
   - **애드맨 v1 (oaiwan형, 현재 주력 템플릿)**: https://claude.ai/artifact/SQoDK94Cf7GycNCUJzx6SG
   - **애드맨 #002 카톡 속마음 분석 (VOL.002)**: https://claude.ai/artifact/SFGGWqUvvZkYic7iHdRWgh
   - **애드맨 #003 카드 명세서 새는 돈 (VOL.003)**: https://claude.ai/artifact/MSCT5XJ3en9Xnf87UHxHU5
+  - **애드맨 #004 냉장고 백종원 (VOL.004)**: https://claude.ai/artifact/3cm5eUfmCYjjTvoQjCj9KT
     - 스펙: 1080×1350, 사방 120px 여백, Pretendard(제목 76~84px/800, 부제 32px), 영문 라벨 IBM Plex Mono
     - 색: 배경 #0A0A0A, 카드 #141414, 회색 #8C8C8C/#6A6A6A, 강조 주황 #FF5A00(레부엘토 느낌) 하나만
     - 모서리 전부 각지게(radius 0), 카드 모서리 주황 꺾쇠·FIG 번호·VOL 머리말 같은 디테일
