@@ -29,17 +29,21 @@ Claude Code 없이 claude.ai 채팅에서 지금과 같은 디자인으로 카�
 ## 문구 규칙
 - 7장 구성: 1 훅 / 2 공감(BEFORE) / 3 방법(STEP 1) / 4 복붙 프롬프트(PROMPT) / 5 결과(RESULT) / 6 주의(WARNING) / 7 팔로우(FOLLOW)
 - 제목은 2줄(\n으로 줄바꿈), 한 줄 12자 안팎. 강조 단어 1~2개는 **두 별표**로 감싸기
-- 1장 제목: 숫자 + 일상 상황 + 결과. 예) "카톡 캡처 1장이면\n상대 **속마음** 다 보입니다"
+- 1장 제목: 평범한 목표 말고 "누구처럼 되기"로 바꿔 말하기. 다들 아는 사람·캐릭터 이름을 **강조**
+  예) 다리근육 키우기 → "한마 바키 다리 만들기" / 피부 좋아지기 → "손예진 피부 되기"
+      롤 잘하기 → "페이커 되는 법" / 그림 잘 그리기 → "피카소처럼 그리기" / 돈 모으기 → "워런 버핏처럼 돈 모으기"
+  숫자(1장, 3분 등)도 같이 넣기. 예) "카드 명세서 1장으로\n**워런 버핏**처럼 돈 모으기"
 - 1장 부제: 타겟을 콕 집기. 예) "○○하는 사람 필독", "○○ 모르면 손해"
 - 부제는 한 줄 20자 안팎, "~요/~니다" 구어체
 - 4장 프롬프트는 실제로 복붙해서 바로 쓸 수 있게. 번호 앞 ①②③는 **별표**로 강조
 - 5장 결과는 "예시" 태그 달기. 확인 안 된 수치·사실은 지어내지 않기
-- 7장은 권위자 톤 팔로우 유도. 예) "남들은 이미 AI한테\n○○ 맡기는 중" / "뒤처지기 싫으면 지금 팔로우하세요"
+- 7장은 댓글 참여 유도. card type 은 comment, 키워드는 주제에 맞는 2~3글자 한 단어
+  예) title:"댓글에 **'명세서'**\n남기면 바로 보내드림", sub:"이미지라 복사 안 되죠? 원문은 DM으로 드려요", card:{type:'comment', keyword:'명세서'}
 - hot:true 는 1장·6장·7장 라벨만. size:76 은 1장·7장만
-- 카드 type 은 chat / notes / prompt / rows / bars / profile 중에서 템플릿 예시 형식 그대로 사용 (bars 형식: items:[['라벨','값',퍼센트숫자,강조true/false]], big:'−90%', bigLabel:'시간 절약')
+- 카드 type 은 chat / notes / prompt / rows / bars / comment / profile 중에서 템플릿 예시 형식 그대로 사용 (bars 형식: items:[['라벨','값',퍼센트숫자,강조true/false]], big:'−90%', bigLabel:'시간 절약')
 
 ## 다 만들고 나서
-7장 제목·부제만 표로 짧게 보여주고, 인스타 캡션(해시태그 5개 이하, 댓글 키워드 유도 1줄 포함)을 같이 줘.
+7장 제목·부제만 표로 짧게 보여주고, 인스타 캡션(해시태그 5개 이하, 7장과 같은 키워드로 "댓글에 '○○' 남기면 프롬프트 원문 DM" 1줄 포함)을 같이 줘.
 
 [템플릿 HTML]
 ```html
@@ -123,8 +127,8 @@ const SLIDES = [
    card:{ type:'rows', head:'AI 분석 결과', tag:'예시', rows:[['① 말투 변화','초반보다 답이 짧아짐'],['② 신호','호감 · 거리 두기 구분'],['③ 추천 답장','가볍게 / 솔직하게 / 유머',true]] } },
  { fig:'CHECK', label:'WARNING', hot:true, title:'AI 분석은\n**정답**이 아닙니다', sub:'참고만 하고, 진짜 마음은 직접 물어보세요',
    card:{ type:'rows', head:'AI 분석 결과', tag:'GUESS', rows:[['상대 마음','추측',true],['근거','말투와 답장 길이뿐'],['확인 방법','직접 물어보기']] } },
- { fig:'PROFILE', label:'FOLLOW', hot:true, size:76, title:'남들은 이미 AI한테\n연애 상담받는 중', sub:'뒤처지기 싫으면 지금 팔로우하세요',
-   card:{ type:'profile' } },
+ { fig:'COMMENT', label:'COMMENT', hot:true, size:76, title:"댓글에 **'분석'**\n남기면 바로 보내드림", sub:'이미지라 복사 안 되죠? 원문은 DM으로 드려요',
+   card:{ type:'comment', keyword:'분석' } },
 ];
 /* ===== 여기까지 ===== */
 
@@ -139,6 +143,7 @@ function cardHtml(c){
   if(c.type==='prompt') return `<div class="ptxt">${em(c.text)}</div><div class="row2" style="padding-top:24px;border-top:1px solid rgba(255,255,255,.08)"><span style="font-size:22px;font-weight:700;color:var(--g3)">${esc(c.foot||'챗GPT · 클로드 · 제미나이')}</span><div class="send"><svg width="28" height="28" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="#0A0A0A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>`;
   if(c.type==='rows') return `<div class="row2"><span style="font-size:28px;font-weight:800">${esc(c.head||'')}</span>${c.tag?`<span class="tag">■ ${esc(c.tag)}</span>`:''}</div><div class="rows">${c.rows.map(([a,b,h])=>`<div><span style="color:var(--g2)">${esc(a)}</span><b${h?' class="em"':''}>${esc(b)}</b></div>`).join('')}</div>`;
   if(c.type==='bars') return `<div style="font-size:24px;font-weight:700;color:var(--g2)">${esc(c.head||'')}</div>`+c.items.map(([a,b,p,h])=>`<div style="display:flex;flex-direction:column;gap:14px"><div class="row2" style="font-size:28px;font-weight:700"><span${h?'':' style="color:var(--g2)"'}>${esc(a)}</span><span${h?' class="em"':' style="color:var(--g2)"'}>${esc(b)}</span></div><div class="track"><i style="width:${p}%;${h?'':'background:#3A3A3A'}"></i></div></div>`).join('')+(c.big?`<div style="display:flex;align-items:baseline;gap:18px;padding-top:32px;border-top:1px solid rgba(255,255,255,.08)"><span class="big">${esc(c.big)}</span><span style="font-size:26px;font-weight:700;color:var(--g2)">${esc(c.bigLabel||'')}</span></div>`:'');
+  if(c.type==='comment') return `<div class="row2" style="justify-content:flex-start;gap:18px;padding-bottom:22px;border-bottom:1px solid rgba(255,255,255,.08)"><div style="width:56px;height:56px;background:#3A3A3A"></div><div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:22px;font-weight:700;color:var(--g2)">댓글</span><span style="font-size:30px;font-weight:800">${esc(c.keyword)}</span></div></div><div class="row2" style="justify-content:flex-start;gap:18px">${avHtml(56)}<span style="font-size:24px;font-weight:700;color:var(--g2)">${esc(ACCOUNT.handle)} · DM</span></div><div class="bub r">${esc(c.reply||'요청하신 프롬프트 원문 보내드려요')}</div><div class="cta"><div>댓글 남기기</div><div>팔로우</div></div>`;
   if(c.type==='profile') return `<div style="display:flex;align-items:center;gap:28px">${avHtml(128)}<div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:38px;font-weight:800">${esc(ACCOUNT.name)}</span><span style="font-size:26px;font-weight:700;color:var(--g2)">${esc(ACCOUNT.handle)}</span></div></div><div style="font-size:27px;font-weight:500;line-height:1.6;color:var(--g1);white-space:pre-line">${esc(ACCOUNT.bio)}</div><div class="cta"><div>팔로우</div><div>저장하기</div></div>`;
   return '';
 }
