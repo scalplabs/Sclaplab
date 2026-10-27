@@ -19,7 +19,8 @@ body.render button{display:none}
 <body>
 <canvas id="c" width="1280" height="720"></canvas>
 <button id="play">▶ 재생</button>
-<audio id="bgm" src="soundtrack.m4a" preload="auto"></audio>
+<audio id="bgm" preload="auto"></audio>
+<script src="episodes.js"></script>
 <script>
 const W = 1280, H = 720, DUR = 30;
 const cv = document.getElementById('c');
@@ -37,22 +38,19 @@ function rng(seed) { let s = seed >>> 0; return () => (s = (s * 1664525 + 101390
 
 // ---------- script ----------
 const TEACHER = '선생님';
-const LINES = [
-  { s: 2.8,  e: 7.7,  who: TEACHER, col: '#ffb36b', text: '자, 오늘의 주제는… 「완벽한 범죄는 존재할까?」' },
-  { s: 7.95, e: 11.7, who: '하나',   col: '#ff8fc0', text: '선생님! 장갑 끼면 지문 안 남잖아요?' },
-  { s: 11.95,e: 16.9, who: TEACHER, col: '#ffb36b', text: '로카르의 교환 법칙. 모든 접촉은 반드시 흔적을 남긴다.' },
-  { s: 17.1, e: 20.9, who: '민준',   col: '#8fcfff', text: '그, 그럼… 머리카락 한 올도요?' },
-  { s: 21.1, e: 25.0, who: TEACHER, col: '#ffb36b', text: '피부세포 몇 개면 DNA가 나와. 너희는 이미 증거투성이야.' },
-  { s: 25.3, e: 27.5, who: '태오',   col: '#c4f28a', text: '…근데 쌤은 해보셨어요?' },
-  { s: 28.35,e: 30.0, who: TEACHER, col: '#ffb36b', text: '……그건 시험에 안 나온다.' },
-];
+const EP_NUM = +(new URLSearchParams(location.search).get('ep') || 1);
+const EP = EPISODES[EP_NUM];
+const LINES = EP.lines.map(l => ({ ...l, col: SPEAKER_COLORS[l.who], speak: l.speak || 0.6 }));
+const BLEEP = '(삐-)';
+const SPOKEN = /[가-힣A-Za-z0-9]/;
 function talk(who, t) {
   for (const l of LINES) {
-    const end = l.s + (l.e - l.s) * 0.62;
-    if (l.who === who && t >= l.s && t < end) {
-      const k = t - l.s;
-      return clamp(0.25 + 0.75 * Math.abs(Math.sin(k * 15)) * (0.6 + 0.4 * Math.sin(k * 5.3)));
-    }
+    const span = (l.e - l.s) * l.speak;
+    if (l.who !== who || t < l.s || t >= l.s + span) continue;
+    const f = (t - l.s) / span * l.text.length, i = Math.floor(f);
+    const b = l.text.indexOf(BLEEP);
+    if (b >= 0 && i >= b && i < b + BLEEP.length) return 0.85;
+    return SPOKEN.test(l.text[i] || '') ? 0.2 + 0.8 * Math.sin(Math.PI * (f - i)) : 0;
   }
   return 0;
 }
@@ -194,6 +192,7 @@ function drawHead(c, o, st) {
     c.beginPath();
     if (expr === 'nervous') { c.moveTo(sd * 18, -30); c.lineTo(sd * 58, -20); }
     else if (expr === 'smug') { c.moveTo(sd * 18, -18); c.lineTo(sd * 58, -26); }
+    else if (expr === 'angry') { c.moveTo(sd * 16, -14); c.lineTo(sd * 60, -36); }
     else if (expr === 'shock') { c.moveTo(sd * 20, -42); c.quadraticCurveTo(sd * 40, -50, sd * 60, -40); }
     else { c.moveTo(sd * 18, -28); c.quadraticCurveTo(sd * 40, -36, sd * 60, -28); }
     c.stroke(); c.restore();
@@ -211,6 +210,7 @@ function drawHead(c, o, st) {
   } else {
     c.strokeStyle = INK; c.lineWidth = 3.5; c.lineCap = 'round'; c.beginPath();
     if (expr === 'smug') { c.moveTo(-14, 0); c.quadraticCurveTo(4, 6, 16, -6); }
+    else if (expr === 'angry') { c.fillStyle = '#fff'; c.fillRect(-18, -6, 36, 12); c.strokeRect(-18, -6, 36, 12); c.moveTo(-18, 0); c.lineTo(18, 0); }
     else if (expr === 'nervous') { c.moveTo(-12, 4); c.lineTo(-4, 0); c.lineTo(4, 4); c.lineTo(12, 0); }
     else { c.moveTo(-11, -1); c.quadraticCurveTo(0, 6, 11, -1); }
     c.stroke();
@@ -271,6 +271,12 @@ function drawHead(c, o, st) {
     c.beginPath(); c.moveTo(-6, 16); c.quadraticCurveTo(0, 10, 6, 16); c.stroke();
   }
   // manga marks
+  if (st.vein) {
+    c.save(); c.translate(-62, -84); c.strokeStyle = '#e8202a'; c.lineWidth = 7; c.lineCap = 'round';
+    const k = 1 + Math.sin(T * 20) * 0.12; c.scale(k, k);
+    [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(([a, b]) => { c.beginPath(); c.moveTo(a * 6, b * 22); c.quadraticCurveTo(a * 6, b * 6, a * 22, b * 6); c.stroke(); });
+    c.restore();
+  }
   if (st.sweat) {
     c.save(); c.translate(100, -50 + Math.sin(T * 4) * 4);
     c.fillStyle = '#9fd8ff'; c.strokeStyle = '#3a7bd5'; c.lineWidth = 3;
@@ -362,18 +368,34 @@ function chalk(c, text, x, y, size, p, color = '#f4f2e6', font = 'Jua') {
   return w;
 }
 // board content in a 600x230 canonical space
-function drawBoardContent(c, t) {
-  chalk(c, '오늘의 주제', 22, 38, 22, prog(t, 3.0, 3.6), '#bfe6c8');
-  chalk(c, '완벽한 범죄는 존재할까?', 22, 86, 40, prog(t, 3.6, 6.4));
-  chalk(c, '① 로카르의 교환 법칙 (1910)', 22, 132, 25, prog(t, 12.3, 13.6), '#bfe6c8');
-  const w = chalk(c, '"모든 접촉은 흔적을 남긴다"', 40, 172, 30, prog(t, 13.8, 15.4), '#ffd98a');
-  const u = prog(t, 15.4, 15.9);
-  if (u > 0 && w) {
-    c.save(); c.strokeStyle = '#ffd98a'; c.globalAlpha = .9; c.lineWidth = 3; c.beginPath();
-    for (let x = 0; x <= w * u; x += 4) c.lineTo(40 + x, 182 + Math.sin(x / 7) * 3);
-    c.stroke(); c.restore();
+function drawRamenDoodle(c, t) {
+  const fp = prog(t, 6.4, 7.4);
+  if (fp <= 0) return;
+  c.save(); c.translate(530, 78); c.strokeStyle = '#f4f2e6'; c.globalAlpha = .85; c.lineWidth = 3; c.lineCap = 'round';
+  c.beginPath(); c.rect(-60, -70, 120 * fp, 140); c.clip();
+  c.beginPath(); c.moveTo(-52, 0); c.quadraticCurveTo(0, 70, 52, 0); c.closePath(); c.stroke();
+  for (let i = 0; i < 3; i++) { c.beginPath(); for (let x = -40; x <= 40; x += 4) c.lineTo(x, -6 + i * 8 + Math.sin(x / 5 + i) * 3); c.stroke(); }
+  c.beginPath(); c.moveTo(10, -10); c.lineTo(50, -62); c.moveTo(22, -6); c.lineTo(60, -56); c.stroke();
+  for (let i = -1; i <= 1; i++) { c.beginPath(); c.moveTo(i * 18, -20); c.bezierCurveTo(i * 18 - 8, -32, i * 18 + 8, -40, i * 18, -54 - Math.sin(t * 4 + i) * 3); c.stroke(); }
+  c.restore();
+  const xp = prog(t, 13.8, 14.2);
+  if (xp > 0) {
+    c.save(); c.translate(530, 78); c.strokeStyle = '#ff7a7a'; c.lineWidth = 5; c.globalAlpha = .9;
+    c.beginPath(); c.ellipse(0, 0, 70, 66, -0.2, 0, Math.PI * 2 * xp); c.stroke();
+    c.font = '26px BHS'; c.fillStyle = '#ff7a7a'; c.globalAlpha = .9 * xp; c.fillText('550ml!!', -150, 74); c.restore();
   }
-  chalk(c, '② DNA · 섬유 · 흙 · 피부세포', 22, 216, 25, prog(t, 21.6, 23.4), '#bfe6c8');
+}
+function drawBoardContent(c, t) {
+  for (const it of EP.board) {
+    const w = chalk(c, it.text, it.x, it.y, it.size, prog(t, it.a, it.b), it.color);
+    const u = prog(t, it.b, it.b + 0.5);
+    if (it.underline && u > 0 && w) {
+      c.save(); c.strokeStyle = it.color; c.globalAlpha = .9; c.lineWidth = 3; c.beginPath();
+      for (let x = 0; x <= w * u; x += 4) c.lineTo(it.x + x, it.y + 10 + Math.sin(x / 7) * 3);
+      c.stroke(); c.restore();
+    }
+  }
+  if (EP.doodle === 'ramen') { drawRamenDoodle(c, t); return; }
   // fingerprint doodle
   const fp = prog(t, 6.4, 7.4);
   if (fp > 0) {
@@ -429,8 +451,8 @@ function drawClassroomWide(c, t, opts = {}) {
   c.beginPath(); c.arc(0, 0, 36, 0, 7); c.fill(); c.stroke();
   c.lineWidth = 4; c.beginPath(); c.moveTo(0, 0); c.lineTo(0, -24); c.moveTo(0, 0); c.lineTo(Math.cos(t * 0.6) * 18, Math.sin(t * 0.6) * 18); c.stroke(); c.restore();
   c.save(); c.translate(1020, 190); c.rotate(.03); c.fillStyle = '#fff8e8'; c.fillRect(0, 0, 160, 120);
-  c.fillStyle = '#d6404e'; c.font = '26px BHS'; c.fillText('법과학 동아리', 8, 38);
-  c.fillStyle = '#4a3a2a'; c.font = '18px Jua'; c.fillText('신입 부원 모집!', 18, 72); c.fillText('🔍 진실은 하나', 14, 102); c.restore();
+  c.fillStyle = '#d6404e'; c.font = '26px BHS'; c.fillText(EP.poster[0], 8, 38);
+  c.fillStyle = '#4a3a2a'; c.font = '18px Jua'; c.fillText(EP.poster[1], 18, 72); c.fillText(EP.poster[2], 14, 102); c.restore();
   // teacher's desk
   c.fillStyle = '#9a6a42'; c.fillRect(540, 352, 260, 70); c.fillStyle = '#7c522f'; c.fillRect(540, 352, 260, 12);
   // teacher (full body, small)
@@ -587,10 +609,35 @@ function shotMinjun(c, t) {
       drawArm(cc, -170, 540, lerp(-200, -120, p), lerp(400, -90, p), '#283456', CAST.minjun.skin, '#f6f7fb');
     } });
   c.restore();
+  if (EP.minjunProp === 'soup') {
+    // a soup packet floating like a sacred relic
+    c.save(); const sy = 170 + Math.sin(t * 2) * 10; c.globalAlpha = prog(t, 18.6, 19.0);
+    c.translate(400, sy); c.rotate(-0.2 + Math.sin(t * 3) * 0.05);
+    c.fillStyle = '#e8332f'; c.strokeStyle = '#7a1010'; c.lineWidth = 3; c.beginPath(); c.roundRect(-46, -30, 92, 60, 6); c.fill(); c.stroke();
+    c.fillStyle = '#ffe14d'; c.font = '30px BHS'; c.textAlign = 'center'; c.fillText('스프', 0, 11); c.restore();
+    if (t > 19.0) { sparkle(c, 455, sy - 30, 16, (Math.sin(t * 10) + 1) / 2); sparkle(c, 350, sy + 26, 10, (Math.cos(t * 9) + 1) / 2); }
+    return;
+  }
   // a single hair strand floating
   c.save(); c.strokeStyle = '#34477d'; c.lineWidth = 3; c.globalAlpha = prog(t, 18.6, 19.0);
   c.beginPath(); const hy = 160 + Math.sin(t * 2) * 10; c.moveTo(380, hy); c.bezierCurveTo(400, hy - 40, 440, hy + 30, 460, hy - 10); c.stroke();
   if (t > 19.0) { sparkle(c, 470, hy - 14, 14, (Math.sin(t * 10) + 1) / 2); }
+  c.restore();
+}
+function drawCupRamen(c, t, x, y) {
+  c.save(); c.translate(x, y);
+  // steam
+  c.strokeStyle = 'rgba(255,255,255,.75)'; c.lineWidth = 6; c.lineCap = 'round';
+  for (let i = -1; i <= 1; i++) { c.beginPath(); c.moveTo(i * 30, -130); c.bezierCurveTo(i * 30 - 20, -170, i * 30 + 20, -200, i * 30 + Math.sin(t * 3 + i) * 8, -240); c.stroke(); }
+  // cup
+  c.fillStyle = '#fff'; c.strokeStyle = '#5a3a2a'; c.lineWidth = 4;
+  c.beginPath(); c.moveTo(-80, -120); c.lineTo(80, -120); c.lineTo(62, 20); c.lineTo(-62, 20); c.closePath(); c.fill(); c.stroke();
+  c.fillStyle = '#e8332f'; c.beginPath(); c.moveTo(-76, -90); c.lineTo(76, -90); c.lineTo(70, -40); c.lineTo(-70, -40); c.closePath(); c.fill();
+  c.fillStyle = '#fff'; c.font = '28px BHS'; c.textAlign = 'center'; c.fillText('쌤 거', 0, -54);
+  c.fillStyle = '#ffd36b'; c.beginPath(); c.ellipse(0, -120, 80, 14, 0, 0, 7); c.fill(); c.stroke();
+  // chopsticks
+  c.strokeStyle = '#b0773d'; c.lineWidth = 7;
+  c.beginPath(); c.moveTo(-20, -126); c.lineTo(-90, -230); c.moveTo(0, -126); c.lineTo(-60, -240); c.stroke();
   c.restore();
 }
 function shotTaeo(c, t) {
@@ -599,8 +646,9 @@ function shotTaeo(c, t) {
   if (wake > 0 && wake < 1) drawFocusLines(c, 640, 300, 250, '#fff', 0.8 * (1 - wake), 70, 31);
   // desk
   c.fillStyle = '#d9b07c'; c.fillRect(0, 590, W, 130); c.fillStyle = '#a77d4c'; c.fillRect(0, 590, W, 12);
-  c.fillStyle = '#fff'; c.save(); c.translate(860, 620); c.rotate(-.1); c.fillRect(0, 0, 220, 80);
-  c.strokeStyle = '#9fb7e0'; c.lineWidth = 2; for (let y = 16; y < 80; y += 14) { c.beginPath(); c.moveTo(6, y); c.lineTo(214, y); c.stroke(); } c.restore();
+  if (EP.taeoProp === 'cupramen') drawCupRamen(c, t, 930, 600);
+  else { c.fillStyle = '#fff'; c.save(); c.translate(860, 620); c.rotate(-.1); c.fillRect(0, 0, 220, 80);
+  c.strokeStyle = '#9fb7e0'; c.lineWidth = 2; for (let y = 16; y < 80; y += 14) { c.beginPath(); c.moveTo(6, y); c.lineTo(214, y); c.stroke(); } c.restore(); }
   const y = lerp(560, 300, wake), tilt = lerp(-0.9, -0.04, wake);
   drawBust(c, 620, y, 1.22, CAST.taeo, {
     mouth: talk('태오', t), blink: wake < 0.5 ? 1 : blinkAt(t, 0.2), expr: 'sleepy', tilt,
@@ -625,12 +673,14 @@ function shotGasp(c, t) {
   c.strokeStyle = '#201020'; c.lineWidth = 8; c.strokeText('(정적)', 640, 70); c.fillText('(정적)', 640, 70); c.restore();
 }
 function shotTeacherFinal(c, t) {
-  c.fillStyle = '#1a0e2c'; c.fillRect(0, 0, W, H);
-  drawFocusLines(c, 640, 330, 380, '#3a2a60', 1, 120, 9 + Math.floor(t * 12));
+  const mad = EP.finale === 'angry';
+  c.fillStyle = mad ? '#3a0a0a' : '#1a0e2c'; c.fillRect(0, 0, W, H);
+  drawFocusLines(c, 640, 330, 380, mad ? '#a8201a' : '#3a2a60', 1, 120, 9 + Math.floor(t * 12));
   const z = lerp(1, 1.08, easeOut(prog(t, 28.3, 30)));
   c.save(); c.translate(640, 330); c.scale(z, z); c.translate(-640, -330);
   const glint = prog(t, 28.55, 28.65);
-  drawBust(c, 640, 370, 2.0, CAST.teacher, { mouth: talk(TEACHER, t), expr: 'smug', glint, shadow: .55 });
+  const angry = EP.finale === 'angry';
+  drawBust(c, 640 + (angry ? Math.sin(t * 70) * 5 : 0), 370, 2.0, CAST.teacher, { mouth: talk(TEACHER, t), expr: angry ? 'angry' : 'smug', glint, shadow: angry ? 0 : .55, vein: angry });
   c.restore();
   if (t > 28.55) {
     const a = prog(t, 28.55, 28.75) * (1 - prog(t, 29.1, 29.4));
@@ -642,7 +692,7 @@ function shotTeacherFinal(c, t) {
   if (e > 0) {
     c.save(); c.globalAlpha = e; c.fillStyle = 'rgba(10,4,20,.6)'; c.fillRect(0, 0, W, 120);
     c.font = '30px Jua'; c.fillStyle = '#c9b6ff'; c.textAlign = 'right'; c.fillText('다음 화', 1240, 52);
-    c.font = '46px BHS'; c.fillStyle = '#fff'; c.fillText('「선생님의 알리바이」', 1240, 102); c.restore();
+    c.font = '46px BHS'; c.fillStyle = '#fff'; c.fillText(EP.next, 1240, 102); c.restore();
   }
 }
 
@@ -654,10 +704,10 @@ function drawTitleCard(c, t) {
   c.fillStyle = 'rgba(20,10,30,.55)'; c.fillRect(0, 250, W, 210);
   const x = lerp(-200, 0, easeOut(prog(t, 0.1, 0.7)));
   c.translate(x, 0); c.textAlign = 'center';
-  c.font = '34px Jua'; c.fillStyle = '#ffd98a'; c.fillText('제1화 · 1교시 법과학', 640, 300);
-  c.font = '110px BHS'; c.lineWidth = 10; c.strokeStyle = '#2a0d1c'; c.strokeText('완벽한 범죄', 640, 412);
+  c.font = '34px Jua'; c.fillStyle = '#ffd98a'; c.fillText(EP.period, 640, 300);
+  c.font = '110px BHS'; c.lineWidth = 10; c.strokeStyle = '#2a0d1c'; c.strokeText(EP.title, 640, 412);
   const g = c.createLinearGradient(0, 330, 0, 420); g.addColorStop(0, '#fff'); g.addColorStop(1, '#ff8fc0');
-  c.fillStyle = g; c.fillText('완벽한 범죄', 640, 412);
+  c.fillStyle = g; c.fillText(EP.title, 640, 412);
   c.restore();
   // bell notes
   c.save(); c.globalAlpha = 1 - prog(t, 2.2, 2.6); c.font = '40px Jua'; c.fillStyle = '#5a3a2a';
@@ -674,7 +724,7 @@ function drawSubtitle(c, t) {
   const l = LINES.find(l => t >= l.s && t < l.e);
   if (!l) return;
   const a = prog(t, l.s, l.s + 0.12) * (1 - prog(t, l.e - 0.12, l.e));
-  const n = Math.ceil(l.text.length * prog(t, l.s, l.s + (l.e - l.s) * 0.6));
+  const n = Math.ceil(l.text.length * prog(t, l.s, l.s + (l.e - l.s) * l.speak));
   c.save(); c.globalAlpha = a; c.font = '34px Jua';
   const full = wrapText(c, l.text, 1000);
   const boxH = 30 + full.length * 46;
@@ -724,6 +774,7 @@ window.ready = Promise.all([document.fonts.load('40px Jua'), document.fonts.load
 
 // playback
 const audio = document.getElementById('bgm');
+audio.src = `soundtrack_ep${EP_NUM}.m4a`;
 document.getElementById('play').onclick = () => {
   audio.currentTime = 0; audio.play().catch(() => {});
   const start = performance.now();

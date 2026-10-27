@@ -1,4 +1,4 @@
-// Usage: node tools/render.js <outDir> [fps] [t1,t2,...]  — renders anime/index.html frames to JPEG
+// Usage: EP=2 node tools/render.js <outDir> [fps] [t1,t2,...]  — renders anime/index.html frames to JPEG
 const { chromium } = require('playwright');
 const fs = require('fs'), path = require('path');
 (async () => {
@@ -8,7 +8,7 @@ const fs = require('fs'), path = require('path');
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
   page.on('pageerror', e => { console.error('PAGE ERROR', e); process.exit(1); });
-  await page.goto('file://' + path.resolve(__dirname, '../index.html') + '?render');
+  await page.goto('file://' + path.resolve(__dirname, '../index.html') + '?render&ep=' + (process.env.EP || 1));
   await page.evaluate(() => window.ready);
   const times = only || Array.from({ length: 30 * fps }, (_, i) => i / fps);
   for (let i = 0; i < times.length; i++) {
