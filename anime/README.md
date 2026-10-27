@@ -6,8 +6,9 @@ Canvas 코드로 직접 그린 30초 애니메이션. 선생님이 수업하고,
 |---|---|---|
 | 1 | 완벽한 범죄 (법과학) | `ep1_perfect_crime.mp4` |
 | 2 | 라면은 과학이다 (병맛) | `ep2_ramen_science.mp4` |
+| 3 | 남자는 후륜이다 (매운맛) | `ep3_rwd_bmw.mp4` |
 
-- `episodes.js`: 화별 대사, 칠판 내용, 소품, 타이틀. **새 화는 여기에 항목 하나만 추가하면 된다.**
+- `episodes.js`: 화별 대사, 칠판 내용, 소품, 타이틀, 장면 구성(`shots`). **새 화는 여기에 항목 하나만 추가하면 된다.** 대사별로 `voice`(목소리 톤 바꾸기), `speak`(말하는 속도)를 줄 수 있다.
 - `index.html`: 그림 코드. `index.html?ep=2`로 열고 ▶ 재생을 누르면 된다.
 - `tools/render.js`: 프레임 렌더 (`EP=2 node tools/render.js <outDir>`)
 - `tools/soundtrack.py`: 종소리, BGM, 기계음 목소리, 효과음 합성 (`python3 tools/soundtrack.py 2 out.wav`)

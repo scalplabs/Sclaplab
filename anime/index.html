@@ -167,6 +167,7 @@ function drawHead(c, o, st) {
     let open = 1 - (st.blink || 0);
     if (expr === 'sleepy') open *= 0.32;
     if (expr === 'smug') open *= 0.62;
+    if (expr === 'dead') open *= 0.5;
     if (open < 0.14) {
       c.strokeStyle = INK; c.lineWidth = 6; c.lineCap = 'round';
       c.beginPath(); c.moveTo(-24, 4); c.quadraticCurveTo(0, 14, 24, 4); c.stroke();
@@ -175,6 +176,9 @@ function drawHead(c, o, st) {
       c.fillStyle = '#fff'; c.beginPath(); c.ellipse(0, 2, 25, 30, 0, 0, 7); c.fill();
       if (expr === 'shock') {
         c.fillStyle = o.eye; c.beginPath(); c.ellipse(0, 2, 7, 9, 0, 0, 7); c.fill();
+      } else if (expr === 'dead') {
+        // flat, highlight-less eyes
+        c.fillStyle = '#3a2030'; c.beginPath(); c.ellipse(0, 6, 18, 25, 0, 0, 7); c.fill();
       } else {
         const g = c.createLinearGradient(0, -22, 0, 30); g.addColorStop(0, '#1c1020'); g.addColorStop(1, o.eye);
         c.fillStyle = g; c.beginPath(); c.ellipse(0, 6, 18, 25, 0, 0, 7); c.fill();
@@ -193,6 +197,7 @@ function drawHead(c, o, st) {
     if (expr === 'nervous') { c.moveTo(sd * 18, -30); c.lineTo(sd * 58, -20); }
     else if (expr === 'smug') { c.moveTo(sd * 18, -18); c.lineTo(sd * 58, -26); }
     else if (expr === 'angry') { c.moveTo(sd * 16, -14); c.lineTo(sd * 60, -36); }
+    else if (expr === 'dead') { c.moveTo(sd * 18, -22); c.lineTo(sd * 60, -22); }
     else if (expr === 'shock') { c.moveTo(sd * 20, -42); c.quadraticCurveTo(sd * 40, -50, sd * 60, -40); }
     else { c.moveTo(sd * 18, -28); c.quadraticCurveTo(sd * 40, -36, sd * 60, -28); }
     c.stroke(); c.restore();
@@ -210,6 +215,7 @@ function drawHead(c, o, st) {
   } else {
     c.strokeStyle = INK; c.lineWidth = 3.5; c.lineCap = 'round'; c.beginPath();
     if (expr === 'smug') { c.moveTo(-14, 0); c.quadraticCurveTo(4, 6, 16, -6); }
+    else if (expr === 'dead') { c.moveTo(-12, 0); c.lineTo(12, 0); }
     else if (expr === 'angry') { c.fillStyle = '#fff'; c.fillRect(-18, -6, 36, 12); c.strokeRect(-18, -6, 36, 12); c.moveTo(-18, 0); c.lineTo(18, 0); }
     else if (expr === 'nervous') { c.moveTo(-12, 4); c.lineTo(-4, 0); c.lineTo(4, 4); c.lineTo(12, 0); }
     else { c.moveTo(-11, -1); c.quadraticCurveTo(0, 6, 11, -1); }
@@ -385,6 +391,25 @@ function drawRamenDoodle(c, t) {
     c.font = '26px BHS'; c.fillStyle = '#ff7a7a'; c.globalAlpha = .9 * xp; c.fillText('550ml!!', -150, 74); c.restore();
   }
 }
+function drawCarDoodle(c, t) {
+  const fp = prog(t, 6.4, 7.4);
+  if (fp <= 0) return;
+  c.save(); c.translate(520, 86); c.strokeStyle = '#f4f2e6'; c.globalAlpha = .85; c.lineWidth = 3; c.lineJoin = 'round';
+  c.beginPath(); c.rect(-80, -60, 160 * fp, 120); c.clip();
+  c.beginPath(); c.moveTo(-72, 14); c.lineTo(-72, -4); c.lineTo(-40, -8); c.lineTo(-18, -32); c.lineTo(28, -32); c.lineTo(52, -8); c.lineTo(74, -2); c.lineTo(74, 14); c.closePath(); c.stroke();
+  c.beginPath(); c.moveTo(-14, -28); c.lineTo(-30, -9); c.lineTo(0, -9); c.lineTo(0, -28); c.moveTo(6, -28); c.lineTo(6, -9); c.lineTo(42, -9); c.lineTo(26, -28); c.stroke();
+  [-44, 46].forEach(x => { c.beginPath(); c.arc(x, 16, 13, 0, 7); c.stroke(); c.beginPath(); c.arc(x, 16, 4, 0, 7); c.stroke(); });
+  c.restore();
+  // rear-wheel push arrow
+  const ap = prog(t, 13.8, 14.3);
+  if (ap > 0) {
+    c.save(); c.translate(520, 86); c.strokeStyle = '#ff7a7a'; c.fillStyle = '#ff7a7a'; c.lineWidth = 6; c.lineCap = 'round'; c.globalAlpha = .95;
+    c.beginPath(); c.arc(-44, 16, 22, 0, 7); c.stroke();
+    c.beginPath(); c.moveTo(-120, 16); c.lineTo(-120 + 52 * ap, 16); c.stroke();
+    if (ap >= 1) { c.beginPath(); c.moveTo(-64, 16); c.lineTo(-78, 6); c.lineTo(-78, 26); c.fill(); }
+    c.font = '24px BHS'; c.globalAlpha = .95 * ap; c.fillText('밀어!!', -134, 60); c.restore();
+  }
+}
 function drawBoardContent(c, t) {
   for (const it of EP.board) {
     const w = chalk(c, it.text, it.x, it.y, it.size, prog(t, it.a, it.b), it.color);
@@ -396,6 +421,7 @@ function drawBoardContent(c, t) {
     }
   }
   if (EP.doodle === 'ramen') { drawRamenDoodle(c, t); return; }
+  if (EP.doodle === 'car') { drawCarDoodle(c, t); return; }
   // fingerprint doodle
   const fp = prog(t, 6.4, 7.4);
   if (fp > 0) {
@@ -551,6 +577,7 @@ function shotHana(c, t) {
   c.restore();
 }
 function shotTeacherMid(c, t, dark) {
+  const d = dark ? (EP.darkAt ?? 21) - 21 : 0;  // dark-shot cues are authored for 21s
   // board fills background
   c.fillStyle = '#8a5a34'; c.fillRect(0, 0, W, H);
   const g = c.createLinearGradient(0, 30, 0, 620); g.addColorStop(0, '#30604a'); g.addColorStop(1, '#22473a');
@@ -567,8 +594,8 @@ function shotTeacherMid(c, t, dark) {
     st = { mouth: talk(TEACHER, t), blink: blinkAt(t, 2.1), lookX: -0.6, expr: t > 15.5 ? 'smug' : 'normal' };
     pose = { arm: cc => drawArm(cc, -170, 230, lerp(-200, -470, p), lerp(480, -40, p) + Math.sin(t * 3) * 6, '#f4f6fb', CAST.teacher.skin, '#ffffff') };
   } else {
-    const p = easeOut(prog(t, 22.6, 23.1));
-    st = { mouth: talk(TEACHER, t), blink: 0, expr: 'smug', shadow: prog(t, 21.2, 22.4), glint: prog(t, 23.0, 23.15) * (1 - prog(t, 24.3, 24.6)) };
+    const p = easeOut(prog(t - d, 22.6, 23.1));
+    st = { mouth: talk(TEACHER, t), blink: 0, expr: 'smug', shadow: prog(t - d, 21.2, 22.4), glint: prog(t - d, 23.0, 23.15) * (1 - prog(t - d, 24.3, 24.6)) };
     pose = { arm: cc => {
       if (p <= 0) return;
       // push up glasses
@@ -580,13 +607,13 @@ function shotTeacherMid(c, t, dark) {
   const bob = Math.sin(t * 2) * 3;
   drawBust(c, 1000, 250 + bob, 1.05, CAST.teacher, st, pose);
   if (dark) {
-    const v = prog(t, 21.1, 22.0);
+    const v = prog(t - d, 21.1, 22.0);
     const rg = c.createRadialGradient(900, 300, 120, 640, 360, 900);
     rg.addColorStop(0, 'rgba(30,0,50,0)'); rg.addColorStop(1, `rgba(20,0,40,${0.75 * v})`);
     c.fillStyle = rg; c.fillRect(0, 0, W, H);
     c.fillStyle = `rgba(60,20,110,${0.25 * v})`; c.fillRect(0, 0, W, H);
-    if (t > 23.0) {
-      c.save(); c.font = '64px BHS'; c.fillStyle = `rgba(200,170,255,${prog(t, 23.0, 23.3) * 0.8})`; c.textAlign = 'center';
+    if (t - d > 23.0) {
+      c.save(); c.font = '64px BHS'; c.fillStyle = `rgba(200,170,255,${prog(t - d, 23.0, 23.3) * 0.8})`; c.textAlign = 'center';
       c.translate(240, 560); c.rotate(-.08);
       c.fillText('쿠구구구…', 0, 0); c.restore();
     }
@@ -609,6 +636,7 @@ function shotMinjun(c, t) {
       drawArm(cc, -170, 540, lerp(-200, -120, p), lerp(400, -90, p), '#283456', CAST.minjun.skin, '#f6f7fb');
     } });
   c.restore();
+  if (EP.minjunProp === 'none') return;
   if (EP.minjunProp === 'soup') {
     // a soup packet floating like a sacred relic
     c.save(); const sy = 170 + Math.sin(t * 2) * 10; c.globalAlpha = prog(t, 18.6, 19.0);
@@ -640,6 +668,34 @@ function drawCupRamen(c, t, x, y) {
   c.beginPath(); c.moveTo(-20, -126); c.lineTo(-90, -230); c.moveTo(0, -126); c.lineTo(-60, -240); c.stroke();
   c.restore();
 }
+function drawToyCar(c, t, x, y) {
+  // a tiny pink compact car toy
+  c.save(); c.translate(x, y); c.rotate(-0.06);
+  c.fillStyle = '#ff9ec4'; c.strokeStyle = '#5a3a2a'; c.lineWidth = 4;
+  c.beginPath(); c.moveTo(-90, 0); c.lineTo(-90, -40); c.quadraticCurveTo(-70, -100, 0, -100); c.quadraticCurveTo(70, -100, 90, -40); c.lineTo(90, 0); c.closePath(); c.fill(); c.stroke();
+  c.fillStyle = '#d8f0ff'; c.beginPath(); c.moveTo(-60, -45); c.quadraticCurveTo(-50, -84, 0, -84); c.quadraticCurveTo(50, -84, 60, -45); c.closePath(); c.fill(); c.stroke();
+  c.fillStyle = '#2a2a33'; [-55, 55].forEach(wx => { c.beginPath(); c.arc(wx, 2, 20, 0, 7); c.fill(); });
+  c.fillStyle = '#fff'; c.font = '22px BHS'; c.textAlign = 'center'; c.fillText('경차', 0, -14);
+  c.restore();
+}
+function shotHanaSwear(c, t) {
+  // everything freezes grey; 하나 goes dead-eyed and unloads
+  c.fillStyle = '#4a4650'; c.fillRect(0, 0, W, H);
+  drawFocusLines(c, 640, 320, 300, '#2a2630', 1, 110, 77 + Math.floor(t * 10));
+  const snap = easeOut(prog(t, 19.0, 19.15));
+  const z = lerp(1.25, 1.0, snap) + 0.04 * prog(t, 19.15, 21.5);
+  c.save(); c.translate(640, 320); c.scale(z, z); c.translate(-640, -320);
+  drawBust(c, 640, 300, 1.25, CAST.hana, { mouth: talk('하나', t), blink: 0, expr: 'dead', gloom: true, tilt: 0.03 });
+  c.restore();
+  // 민준's shoulder in the foreground, trembling
+  drawStudentBack(c, 1180 + Math.sin(t * 50) * 3, 560, 0.9, CAST.minjun);
+  const k = backOut(prog(t, 19.2, 19.45));
+  if (k > 0) {
+    c.save(); c.translate(250, 140); c.rotate(-0.12); c.scale(k, k);
+    c.font = '54px BHS'; c.textAlign = 'center'; c.lineWidth = 10; c.strokeStyle = '#120a14'; c.strokeText('(정색)', 0, 0);
+    c.fillStyle = '#ff4a5a'; c.fillText('(정색)', 0, 0); c.restore();
+  }
+}
 function shotTaeo(c, t) {
   closeupBG(c, t, 95);
   const wake = easeOut(prog(t, 25.25, 25.7));
@@ -647,6 +703,7 @@ function shotTaeo(c, t) {
   // desk
   c.fillStyle = '#d9b07c'; c.fillRect(0, 590, W, 130); c.fillStyle = '#a77d4c'; c.fillRect(0, 590, W, 12);
   if (EP.taeoProp === 'cupramen') drawCupRamen(c, t, 930, 600);
+  else if (EP.taeoProp === 'toycar') drawToyCar(c, t, 960, 610);
   else { c.fillStyle = '#fff'; c.save(); c.translate(860, 620); c.rotate(-.1); c.fillRect(0, 0, 220, 80);
   c.strokeStyle = '#9fb7e0'; c.lineWidth = 2; for (let y = 16; y < 80; y += 14) { c.beginPath(); c.moveTo(6, y); c.lineTo(214, y); c.stroke(); } c.restore(); }
   const y = lerp(560, 300, wake), tilt = lerp(-0.9, -0.04, wake);
@@ -741,11 +798,16 @@ function drawSubtitle(c, t) {
 }
 
 // ---------- master ----------
-const SHOTS = [
-  [0, 7.8, shotWide], [7.8, 11.8, shotHana], [11.8, 17.0, (c, t) => shotTeacherMid(c, t, false)],
-  [17.0, 21.0, shotMinjun], [21.0, 25.15, (c, t) => shotTeacherMid(c, t, true)], [25.15, 27.5, shotTaeo],
-  [27.5, 28.3, shotGasp], [28.3, 30.01, shotTeacherFinal],
+const SHOT_FNS = {
+  wide: shotWide, hana: shotHana, teacher: (c, t) => shotTeacherMid(c, t, false), minjun: shotMinjun,
+  hanaSwear: shotHanaSwear, teacherDark: (c, t) => shotTeacherMid(c, t, true), taeo: shotTaeo,
+  gasp: shotGasp, final: shotTeacherFinal,
+};
+const DEFAULT_SHOTS = [
+  [0, 7.8, 'wide'], [7.8, 11.8, 'hana'], [11.8, 17.0, 'teacher'], [17.0, 21.0, 'minjun'],
+  [21.0, 25.15, 'teacherDark'], [25.15, 27.5, 'taeo'], [27.5, 28.3, 'gasp'], [28.3, 30.01, 'final'],
 ];
+const SHOTS = (EP.shots || DEFAULT_SHOTS).map(([a, b, name]) => [a, b, SHOT_FNS[name]]);
 function renderFrame(t) {
   T = t;
   const c = ctx;

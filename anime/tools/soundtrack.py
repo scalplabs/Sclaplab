@@ -57,6 +57,7 @@ VOICES = {
     '선생님': dict(f0=118, sr=11025, bits=6, gain=-15, fall=0.10, jitter=0.05, tremble=0, ring=0),
     '하나':   dict(f0=262, sr=11025, bits=6, gain=-16, fall=0.04, jitter=0.12, tremble=0, ring=0),
     '민준':   dict(f0=196, sr=11025, bits=6, gain=-17, fall=0.06, jitter=0.10, tremble=9, ring=0),
+    '하나정색': dict(f0=175, sr=11025, bits=5, gain=-14, fall=0.18, jitter=0.02, tremble=0, ring=0),  # 죽은 눈 정색
     '태오':   dict(f0=140, sr=8000,  bits=5, gain=-17, fall=0.14, jitter=0.04, tremble=0, ring=0.3),
 }
 
@@ -95,7 +96,7 @@ def syllable(cho, jung, jong, f0, L, rng, tremble):
 
 def speak_line(line, rng):
     """Returns (start_sample, audio) for one line; syllable i sits in character slot i."""
-    v = VOICES[line['who']]
+    v = VOICES[line.get('voice', line['who'])]
     text = line['text']
     span = (line['e'] - line['s']) * line.get('speak', 0.6)
     slot = span / len(text)
@@ -186,10 +187,11 @@ def main(ep, path):
 
     beat = 60 / E['bpm']
     chords = [[60, 64, 67], [55, 59, 62], [57, 60, 64], [53, 57, 60]]
+    dark_at = E.get('darkAt', 21.0)
     t0, tend, k = 2.6, 27.45, 0
     while t0 < tend:
         ch = chords[k % 4]
-        dark = 21.0 <= t0 < 25.2
+        dark = dark_at <= t0 < 25.2
         if dark: ch = [c - 1 for c in ch]
         bar = beat * 4
         add(music, t0, pad(hz(ch[0] - 12), min(bar, tend - t0)), 0.05)
@@ -214,7 +216,7 @@ def main(ep, path):
 
     add(sfx, 7.78, whoosh(), 0.15)
     add(sfx, 13.8, hit(70, .6), 0.35)
-    add(sfx, 21.0, hit(45, 1.6), 0.3)
+    add(sfx, dark_at, hit(45, 1.6), 0.3)
     add(sfx, 25.2, whoosh(.25), 0.18)
     tt = t_(1.0)
     add(sfx, 27.5, sum(np.sin(2 * np.pi * hz(n) * tt) for n in (71, 72, 77)) * np.exp(-tt * 3), 0.12)
@@ -224,6 +226,15 @@ def main(ep, path):
     if E['finale'] == 'angry':
         add(sfx, 28.3, hit(40, 1.0), 0.45)            # 쾅
     add(sfx, 29.25, sum(pluck(hz(n), 0.8) for n in (48, 55, 63)), 0.2)
+
+    if 'silence' in E:   # music cuts out (record scratch) and comes back
+        a, b = E['silence']
+        gate = np.ones(N); ia, ib = int(a * SR), int(b * SR); r = int(0.03 * SR)
+        gate[ia:ib] = 0; gate[ia - r:ia] = np.linspace(1, 0, r); gate[ib:ib + r] = np.linspace(0, 1, r)
+        music *= gate
+        tt = t_(0.35)
+        scratch = np.sin(2 * np.pi * np.cumsum(np.linspace(900, 120, len(tt))) / SR) * np.exp(-tt * 6)
+        add(sfx, a - 0.05, scratch + butter_f(rng.standard_normal(len(tt)), 2000, 'high') * 0.3 * np.exp(-tt * 10), 0.25)
 
     voice, duck = voice_track(E['lines'])
     out = music * (1 - 0.55 * duck) + sfx + voice

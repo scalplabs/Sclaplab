@@ -56,6 +56,41 @@ const EPISODES = {
       { text: '② 면 먼저파 = 이단 (질문 금지)', x: 22, y: 216, size: 25, a: 21.6, b: 23.4, color: '#ff9d9d' },
     ],
   },
+  3: {
+    period: '제3화 · 4교시 자동차윤리',
+    title: '남자는 후륜이다',
+    next: '「쌤 할부 연체 사건」',
+    bpm: 112,
+    poster: ['자동차부', '후륜만 받음', '🚗 사륜 출입금지'],
+    doodle: 'car',
+    minjunProp: 'none',
+    taeoProp: 'toycar',
+    finale: 'angry',
+    darkAt: 21.5,
+    silence: [19.0, 21.5],  // music cuts out while 하나 swears
+    shots: [
+      [0, 7.8, 'wide'], [7.8, 11.8, 'hana'], [11.8, 16.4, 'teacher'], [16.4, 19.0, 'minjun'],
+      [19.0, 21.5, 'hanaSwear'], [21.5, 25.15, 'teacherDark'], [25.15, 27.5, 'taeo'],
+      [27.5, 28.3, 'gasp'], [28.3, 30.01, 'final'],
+    ],
+    lines: [
+      { s: 2.8,  e: 7.7,  who: '선생님', text: '잘 들어 이 새끼들아. 대한민국 남자로 태어났으면 후륜 BMW 타는 거다.', speak: 0.78 },
+      { s: 7.95, e: 11.7, who: '하나',   text: '쌤, 앞바퀴든 뒷바퀴든 굴러가기만 하면 되잖아요?', speak: 0.72 },
+      { s: 11.95,e: 16.3, who: '선생님', text: '아 씨발, 앞바퀴는 끄는 거고 뒷바퀴는 미는 거야. 그게 낭만이라고.', speak: 0.8 },
+      { s: 16.55,e: 18.9, who: '민준',   text: '그, 그럼… 아우디도 좋지 않아요?', speak: 0.75 },
+      { s: 19.1, e: 21.4, who: '하나',   text: '븅신새끼야, 그런 개븅신 같은 차를 왜 타냐.', speak: 0.8, voice: '하나정색' },
+      { s: 21.6, e: 25.0, who: '선생님', text: '…하나 말이 맞다. 그리고 60개월 할부는 남자의 훈장이다, 알겠냐?', speak: 0.8 },
+      { s: 25.3, e: 27.5, who: '태오',   text: '…근데 쌤 아까 모닝 타고 오시던데요?', speak: 0.7 },
+      { s: 28.3, e: 30.0, who: '선생님', text: '그건 와이프 차라고 이 개새끼야!!', speak: 0.72 },
+    ],
+    board: [
+      { text: '오늘의 주제', x: 22, y: 38, size: 22, a: 3.0, b: 3.6, color: '#bfe6c8' },
+      { text: '남자 = 후륜 BMW', x: 22, y: 86, size: 40, a: 3.6, b: 6.4 },
+      { text: '① 앞바퀴 = 끈다 / 뒷바퀴 = 민다', x: 22, y: 132, size: 24, a: 12.3, b: 13.6, color: '#bfe6c8' },
+      { text: '"드리프트는 인생이다"', x: 40, y: 172, size: 30, a: 13.8, b: 15.4, color: '#ffd98a', underline: true },
+      { text: '② 아우디 ✕ · 할부 60개월 = 훈장', x: 22, y: 216, size: 25, a: 22.0, b: 23.8, color: '#ff9d9d' },
+    ],
+  },
 };
 const SPEAKER_COLORS = { '선생님': '#ffb36b', '하나': '#ff8fc0', '민준': '#8fcfff', '태오': '#c4f28a' };
 if (typeof module !== 'undefined') module.exports = { EPISODES, SPEAKER_COLORS };
