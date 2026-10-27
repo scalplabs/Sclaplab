@@ -40,6 +40,7 @@ Claude Code 없이 claude.ai 채팅에서 지금과 같은 디자인으로 카�
 - 7장은 댓글 참여 유도. card type 은 comment, 키워드는 주제에 맞는 2~3글자 한 단어
   예) title:"댓글에 **'명세서'**\n남기면 바로 보내드림", sub:"이미지라 복사 안 되죠? 원문은 DM으로 드려요", card:{type:'comment', keyword:'명세서'}
 - hot:true 는 1장·6장·7장 라벨만. size:76 은 1장·7장만
+- 1장은 hero:true (표 없이 사진을 크게, 아래만 어둡게). 사진은 실존 연예인 말고 무료 사진으로: 주제 분위기에 맞는 뒷모습·옆모습·클로즈업
 - 카드 type 은 chat / notes / prompt / rows / bars / comment / profile 중에서 템플릿 예시 형식 그대로 사용 (bars 형식: items:[['라벨','값',퍼센트숫자,강조true/false]], big:'−90%', bigLabel:'시간 절약')
 
 ## 다 만들고 나서
@@ -114,7 +115,7 @@ const ACCOUNT = { name:'애드맨', handle:'@adman_park', vol:'VOL.002',
   bio:'남들은 이미 AI로 앞서가는 중.\n모르면 손해 보는 AI 정보\n알아두면 쓸모 있는 AI 꿀팁' };
 
 const SLIDES = [
- { fig:'CHAT', label:'AI 꿀팁 · 연애', hot:true, size:76,
+ { fig:'CHAT', label:'AI 꿀팁 · 연애', hot:true, size:76, hero:true,
    title:'카톡 캡처 1장이면\n상대 **속마음** 다 보입니다', sub:'읽씹당하고 혼자 고민하는 사람 필독',
    card:{ type:'chat', items:[['l','오늘 좀 바빠서 ㅎㅎ'],['r','아 그래? 괜찮아!'],['l','ㅇㅇ']], tag:'AI ANALYSIS', note:'신호 **3개** 발견' } },
  { fig:'OVERTHINK', label:'BEFORE', title:'혼자 해석하면\n**꼭** 꼬입니다', sub:'답장 하나에 밤새 고민한 적 있죠?',
@@ -149,9 +150,10 @@ function cardHtml(c){
 }
 function slideHtml(s,i){
   const n=String(i+1).padStart(2,'0'), t=String(SLIDES.length).padStart(2,'0');
-  return `${photos[i]?`<img class="bgp" src="${photos[i]}" alt="">`:''}<div class="dim"></div>
+  const bg=s.hero?(photos[i]?`<img src="${photos[i]}" alt="" style="position:absolute;inset:0;width:1080px;height:1350px;object-fit:cover;object-position:30% 20%"><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,10,.25) 0%,rgba(10,10,10,.1) 30%,rgba(10,10,10,.75) 58%,rgba(10,10,10,.96) 78%)"></div>`:'<div class="dim"></div>'):`${photos[i]?`<img class="bgp" src="${photos[i]}" alt="">`:''}<div class="dim"></div>`;
+  return `${bg}
   <div class="head"><span>${esc(ACCOUNT.name==='애드맨'?'ADMAN':ACCOUNT.name)} — AI REPORT</span><span><i></i>${esc(ACCOUNT.vol)}</span></div>
-  ${s.card?`<div class="card"><div class="fig">FIG.${n} — ${esc(s.fig||'')}</div><div class="br a"></div><div class="br b"></div><div class="br c"></div><div class="br d"></div>${cardHtml(s.card)}</div>`:''}
+  ${s.card&&!s.hero?`<div class="card"><div class="fig">FIG.${n} — ${esc(s.fig||'')}</div><div class="br a"></div><div class="br b"></div><div class="br c"></div><div class="br d"></div>${cardHtml(s.card)}</div>`:''}
   <div class="txt"><div class="rule"></div><div class="label${s.hot?' hot':''}">${esc(s.label)}</div><div class="title" style="font-size:${s.size||84}px">${em(s.title)}</div><p class="sub">${esc(s.sub)}</p></div>
   <div class="foot"><span>${avHtml(44)}${esc(ACCOUNT.handle)}</span><span>${n} / ${t}</span></div>`;
 }
