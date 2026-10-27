@@ -78,8 +78,8 @@ const SLIDES = [
    card:{ type:'rows', head:'AI 분석 결과', tag:'예시', rows:[['① 말투 변화','초반보다 답이 짧아짐'],['② 신호','호감 · 거리 두기 구분'],['③ 추천 답장','가볍게 / 솔직하게 / 유머',true]] } },
  { fig:'CHECK', label:'WARNING', hot:true, title:'AI 분석은\n**정답**이 아닙니다', sub:'참고만 하고, 진짜 마음은 직접 물어보세요',
    card:{ type:'rows', head:'AI 분석 결과', tag:'GUESS', rows:[['상대 마음','추측',true],['근거','말투와 답장 길이뿐'],['확인 방법','직접 물어보기']] } },
- { fig:'PROFILE', label:'FOLLOW', hot:true, size:76, title:'남들은 이미 AI한테\n연애 상담받는 중', sub:'뒤처지기 싫으면 지금 팔로우하세요',
-   card:{ type:'profile' } },
+ { fig:'COMMENT', label:'COMMENT', hot:true, size:76, title:"댓글에 **'분석'**\n남기면 바로 보내드림", sub:'이미지라 복사 안 되죠? 원문은 DM으로 드려요',
+   card:{ type:'comment', keyword:'분석' } },
 ];
 /* ===== 여기까지 ===== */
 
@@ -94,6 +94,7 @@ function cardHtml(c){
   if(c.type==='prompt') return `<div class="ptxt">${em(c.text)}</div><div class="row2" style="padding-top:24px;border-top:1px solid rgba(255,255,255,.08)"><span style="font-size:22px;font-weight:700;color:var(--g3)">${esc(c.foot||'챗GPT · 클로드 · 제미나이')}</span><div class="send"><svg width="28" height="28" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="#0A0A0A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>`;
   if(c.type==='rows') return `<div class="row2"><span style="font-size:28px;font-weight:800">${esc(c.head||'')}</span>${c.tag?`<span class="tag">■ ${esc(c.tag)}</span>`:''}</div><div class="rows">${c.rows.map(([a,b,h])=>`<div><span style="color:var(--g2)">${esc(a)}</span><b${h?' class="em"':''}>${esc(b)}</b></div>`).join('')}</div>`;
   if(c.type==='bars') return `<div style="font-size:24px;font-weight:700;color:var(--g2)">${esc(c.head||'')}</div>`+c.items.map(([a,b,p,h])=>`<div style="display:flex;flex-direction:column;gap:14px"><div class="row2" style="font-size:28px;font-weight:700"><span${h?'':' style="color:var(--g2)"'}>${esc(a)}</span><span${h?' class="em"':' style="color:var(--g2)"'}>${esc(b)}</span></div><div class="track"><i style="width:${p}%;${h?'':'background:#3A3A3A'}"></i></div></div>`).join('')+(c.big?`<div style="display:flex;align-items:baseline;gap:18px;padding-top:32px;border-top:1px solid rgba(255,255,255,.08)"><span class="big">${esc(c.big)}</span><span style="font-size:26px;font-weight:700;color:var(--g2)">${esc(c.bigLabel||'')}</span></div>`:'');
+  if(c.type==='comment') return `<div class="row2" style="justify-content:flex-start;gap:18px;padding-bottom:22px;border-bottom:1px solid rgba(255,255,255,.08)"><div style="width:56px;height:56px;background:#3A3A3A"></div><div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:22px;font-weight:700;color:var(--g2)">댓글</span><span style="font-size:30px;font-weight:800">${esc(c.keyword)}</span></div></div><div class="row2" style="justify-content:flex-start;gap:18px">${avHtml(56)}<span style="font-size:24px;font-weight:700;color:var(--g2)">${esc(ACCOUNT.handle)} · DM</span></div><div class="bub r">${esc(c.reply||'요청하신 프롬프트 원문 보내드려요')}</div><div class="cta"><div>댓글 남기기</div><div>팔로우</div></div>`;
   if(c.type==='profile') return `<div style="display:flex;align-items:center;gap:28px">${avHtml(128)}<div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:38px;font-weight:800">${esc(ACCOUNT.name)}</span><span style="font-size:26px;font-weight:700;color:var(--g2)">${esc(ACCOUNT.handle)}</span></div></div><div style="font-size:27px;font-weight:500;line-height:1.6;color:var(--g1);white-space:pre-line">${esc(ACCOUNT.bio)}</div><div class="cta"><div>팔로우</div><div>저장하기</div></div>`;
   return '';
 }
