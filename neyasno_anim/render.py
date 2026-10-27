@@ -30,9 +30,9 @@ EPISODES = {
         (112, 152, "roof", 0), (152, 166, "road", 0), (166, 212, "taxi", 0), (212, 228, "end", 0)]),
     # 인스타 릴스 1분 세로판, 1인칭: 소주 → 비틀비틀 택시 잡기 → 허무주의 기사. 음악은 처음부터 끝까지 음침하게
     "insta01": dict(script="insta01.txt", layout="reel", music="gloom", scenes=[
-        (0, 15, "bench", 0), (15, 24, "road", 4.5), (24, 50, "taxi", 0), (50, 60, "block", 0)],
-        drunk=[(0, 0.25), (5.0, 0.3), (6.5, 0.7), (15, 0.85), (24, 0.7), (29, 0.4), (50, 0.5), (60, 0.55)],
-        taxi=dict(factory=(9.0, 21.0))),
+        (0, 12, "bench", 0), (12, 20, "road", 4.5), (20, 68, "taxi", 0), (68, 79, "block", 0)],
+        drunk=[(0, 0.25), (5.0, 0.3), (6.5, 0.7), (12, 0.85), (20, 0.7), (25, 0.4), (68, 0.45), (79, 0.5)],
+        taxi=dict(factory=(18.5, 30.0), sleep=False), header="7단지 4동"),
 }
 SCENES = EPISODES["ep01"]["scenes"]
 DURATION = SCENES[-1][1]
@@ -654,7 +654,7 @@ class Block:
                 d.rectangle([wx, wy, wx + 9, wy + 7], fill=(34, 38, 54))
                 if wy + 7 < gy - 20:
                     self.windows.append((wx, wy))
-        self.lit = [self.windows[i] for i in rng.choice(len(self.windows), 7, replace=False)]
+        self.lit = [self.windows[5 * 13 + 7]]   # 불 꺼진 동에 아버지 방 하나만
         # 1층 입구와 흐린 등
         d.rectangle([150, gy - 22, 174, gy], fill=(28, 28, 36))
         d.rectangle([156, gy - 28, 168, gy - 25], fill=(200, 190, 150))
@@ -690,12 +690,12 @@ class Block:
             p = t / 5.0
             tx = 190 + p * 150
             ty = self.gy - oy + 8 - p * 6
-            r = max(1, int(3 - 2 * p))
+            r = 3 if p < 0.5 else 2
             for dx in (-6, 6):
                 x = int(tx + dx * (1 - p * 0.6))
                 if 0 <= x < CW - r and 0 <= ty < CH - r:
                     a[int(ty):int(ty) + r, x:x + r] = (230, 40, 40)
-            a += np.array([90, 10, 10]) * np.exp(-(((xx - tx) / 30) ** 2 + ((yy - ty) / 10) ** 2))[..., None] * (1 - p)
+            a += np.array([150, 16, 16]) * np.exp(-(((xx - tx) / 30) ** 2 + ((yy - ty) / 10) ** 2))[..., None] * (1 - p)
         rain(a, t, n=120, color=(110, 118, 150))
         return a
 
@@ -814,8 +814,9 @@ class Taxi:
     """택시 뒷좌석. 거의 암전, 계기판 초록빛, 지나가는 가로등이 실내를 훑는다.
     factory=(시작, 끝)이면 그 사이에 앞유리 너머로 꺼진 공장과 굴뚝이 지나간다."""
 
-    def __init__(self, factory=None):
+    def __init__(self, factory=None, sleep=True):
         self.factory = factory
+        self.sleep = sleep   # 장면 끝에 눈이 감기는지
 
     def frame(self, t):
         a = np.zeros((CH, CW, 3), np.float32)
@@ -835,10 +836,10 @@ class Taxi:
             f0, f1 = self.factory
             p = (t - f0) / (f1 - f0)
             vis = min(1.0, p * 5, (1 - p) * 5)
-            road[40:70] = road[40:70] * (1 - vis) + np.array([30, 26, 34]) * vis    # 도시 불빛에 물든 하늘
-            fx = int(300 - p * 280)
-            sil = np.array([6, 6, 10])
-            for bx, bw, bh in ((0, 70, 10), (12, 8, 26), (34, 8, 30), (70, 40, 6)):
+            road[40:70] = road[40:70] * (1 - vis) + np.array([64, 44, 40]) * vis    # 도시 불빛에 물든 하늘
+            fx = int(250 - p * 230)
+            sil = np.array([4, 4, 8])
+            for bx, bw, bh in ((0, 80, 12), (12, 9, 28), (36, 9, 30), (80, 40, 7)):
                 x0, x1 = max(0, fx + bx), max(0, min(CW, fx + bx + bw))
                 if x1 > x0:
                     road[70 - bh:70, x0:x1] = road[70 - bh:70, x0:x1] * (1 - vis) + sil * vis
@@ -886,7 +887,7 @@ class Taxi:
         blink = 0.0
         if 36.0 < t < 36.4 or 38.6 < t < 39.2:
             blink = 0.6
-        lid = max(close, blink)
+        lid = max(close, blink) if self.sleep else 0.0
         if lid > 0:
             cut = int(lid * CH / 2)
             a[:cut] = 0
@@ -1361,7 +1362,7 @@ def render(out, episode="ep01", start=0.0, end=None, still=None, audio_only=Fals
             img = Image.new("RGB", (RW, RH), (0, 0, 0))
             img.paste(to_img(a).resize((W * RS, H * RS), Image.NEAREST), ((RW - W * RS) // 2, RY))
             hd = ImageDraw.Draw(img)
-            hd.text((RW / 2, RY - 70), "확실한 건 없다", font=subs.fen_title, fill=(150, 150, 160), anchor="mm")
+            hd.text((RW / 2, RY - 70), ep.get("header", ""), font=subs.fen_title, fill=(150, 150, 160), anchor="mm")
         else:
             img = to_img(a).resize((OW, OH), Image.NEAREST)
         subs.draw(img, lines, t)
