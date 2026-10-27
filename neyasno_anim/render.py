@@ -30,9 +30,10 @@ EPISODES = {
         (112, 152, "roof", 0), (152, 166, "road", 0), (166, 212, "taxi", 0), (212, 228, "end", 0)]),
     # 인스타 릴스 1분 세로판, 1인칭: 소주 → 비틀비틀 택시 잡기 → 허무주의 기사. 음악은 처음부터 끝까지 음침하게
     "insta01": dict(script="insta01.txt", layout="reel", music="gloom", scenes=[
-        (0, 12, "bench", 0), (12, 20, "road", 4.5), (20, 68, "taxi", 0), (68, 79, "block", 0)],
-        drunk=[(0, 0.25), (5.0, 0.3), (6.5, 0.7), (12, 0.85), (20, 0.7), (25, 0.4), (68, 0.45), (79, 0.5)],
-        taxi=dict(factory=(18.5, 30.0), sleep=False), header="7단지 4동"),
+        (0, 11, "bench", 0), (11, 18, "road", 5.5), (18, 87, "taxi", 0), (87, 94, "block", 0)],
+        drunk=[(0, 0.25), (5.0, 0.3), (6.5, 0.7), (11, 0.85), (18, 0.7), (23, 0.4), (87, 0.45), (94, 0.5)],
+        taxi=dict(factory=(24.0, 34.0), sleep=False, meter=True, meter_off=61.8, stop_at=57.5),
+        block=dict(nlit=5), header="미터기"),
 }
 SCENES = EPISODES["ep01"]["scenes"]
 DURATION = SCENES[-1][1]
@@ -632,7 +633,7 @@ class Block:
     """밤, 철거 예정인 판상 아파트. 빨간 스프레이 X와 '철거'. 불 켜진 창 몇 개. 택시가 떠나고 고개를 들어 올려다본다."""
     EXTRA = 80   # 위로 올려다볼 만큼 캔버스를 더 그린다
 
-    def __init__(self):
+    def __init__(self, nlit=1):
         rng = np.random.default_rng(61)
         TH = CH + self.EXTRA
         self.TH = TH
@@ -654,7 +655,10 @@ class Block:
                 d.rectangle([wx, wy, wx + 9, wy + 7], fill=(34, 38, 54))
                 if wy + 7 < gy - 20:
                     self.windows.append((wx, wy))
-        self.lit = [self.windows[5 * 13 + 7]]   # 불 꺼진 동에 아버지 방 하나만
+        if nlit == 1:
+            self.lit = [self.windows[5 * 13 + 7]]   # 불 꺼진 동에 창 하나만
+        else:
+            self.lit = [self.windows[i] for i in rng.choice(len(self.windows), nlit, replace=False)]
         # 1층 입구와 흐린 등
         d.rectangle([150, gy - 22, 174, gy], fill=(28, 28, 36))
         d.rectangle([156, gy - 28, 168, gy - 25], fill=(200, 190, 150))
@@ -814,20 +818,43 @@ class Taxi:
     """택시 뒷좌석. 거의 암전, 계기판 초록빛, 지나가는 가로등이 실내를 훑는다.
     factory=(시작, 끝)이면 그 사이에 앞유리 너머로 꺼진 공장과 굴뚝이 지나간다."""
 
-    def __init__(self, factory=None, sleep=True):
+    # 미터기용 3x5 픽셀 숫자
+    DIGITS = {"0": "111101101101111", "1": "010110010010111", "2": "111001111100111", "3": "111001111001111",
+              "4": "101101111001001", "5": "111100111001111", "6": "111100111101111", "7": "111001001001001",
+              "8": "111101111101111", "9": "111101111001111"}
+
+    def __init__(self, factory=None, sleep=True, meter=False, meter_off=None, stop_at=None):
         self.factory = factory
-        self.sleep = sleep   # 장면 끝에 눈이 감기는지
+        self.sleep = sleep          # 장면 끝에 눈이 감기는지
+        self.meter = meter          # 계기판 옆 빨간 미터기
+        self.meter_off = meter_off  # 이 시각에 미터기를 끈다
+        self.stop_at = stop_at      # 이 시각에 차가 멈춘다 (창밖 불빛 정지)
+
+    def draw_meter(self, a, t):
+        x0, y0 = 184, 97
+        a[y0 - 2:y0 + 8, x0 - 3:x0 + 26] = (8, 6, 6)
+        if self.meter_off is not None and t >= self.meter_off:
+            return
+        fare = 4800 + 100 * int(min(t, self.stop_at or t) / 2.6)
+        for i, ch in enumerate(str(fare)):
+            g = self.DIGITS[ch]
+            for k, bit in enumerate(g):
+                if bit == "1":
+                    a[y0 + k // 3, x0 + i * 6 + k % 3] = (255, 60, 40)
+        yy, xx = np.mgrid[0:CH, 0:CW]
+        a += np.array([90, 14, 10]) * np.exp(-(((xx - x0 - 11) / 14) ** 2 + ((yy - y0 - 2) / 5) ** 2))[..., None]
 
     def frame(self, t):
         a = np.zeros((CH, CW, 3), np.float32)
         yy, xx = np.mgrid[0:CH, 0:CW]
+        tm = t if self.stop_at is None else min(t, self.stop_at)   # 창밖 움직임용 시간
         # 앞유리 너머 도로
         ws = (yy > 40) & (yy < 96) & (xx > 70 + (96 - yy) * 0.6) & (xx < 280 - (96 - yy) * 0.6)
         road = np.zeros_like(a)
         road[:] = (10, 14, 28)
         road[70:96] = (16, 20, 34)
         for i in range(6):   # 가로등이 다가와 지나감
-            ph = (t * 0.35 + i / 6) % 1
+            ph = (tm * 0.35 + i / 6) % 1
             lx = int(CW / 2 + 20 + ph ** 2 * 140)
             ly = int(66 - ph ** 2 * 30)
             r = 1 + int(ph * 3)
@@ -852,7 +879,7 @@ class Taxi:
         side[:] = (12, 16, 30)
         for i in range(40):
             hy = 60 + int(hash2(i, 2) * 36)
-            hxp = int((hash2(i, 3) * 400 - t * 60) % 400) - 40 + 290
+            hxp = int((hash2(i, 3) * 400 - tm * 60) % 400) - 40 + 290
             col = (240, 190, 110) if hash2(i, 4) > 0.3 else (120, 150, 230)
             side[hy:hy + 2, max(0, hxp):max(0, hxp + 6)] = col
         a[sw] = side[sw]
@@ -878,8 +905,10 @@ class Taxi:
         dash = np.exp(-(((xx - 166) / 14) ** 2 + ((yy - 104) / 7) ** 2))
         a += np.array([20, 120, 50]) * dash[..., None]
         a[102:105, 160:173] += np.array([30, 140, 60])
+        if self.meter:
+            self.draw_meter(a, t)
         # 가로등 스윕: 주기적으로 실내가 주황빛으로 밝아짐
-        sweep_ph = (t * 0.35) % 1
+        sweep_ph = (tm * 0.35) % 1
         sweep = np.exp(-((xx - (CW - sweep_ph * CW * 1.6)) / 70.0) ** 2) * np.exp(-((sweep_ph - 0.5) / 0.3) ** 2)
         a += np.array([60, 38, 14]) * sweep[..., None] * 0.6
         # 잠드는 눈꺼풀 (택시 장면 끝)
@@ -932,7 +961,6 @@ class Subs:
         for t0, t1, kind, ko, en in lines:
             if not (t0 <= t < t1):
                 continue
-            alpha = min(1.0, (t - t0) / 0.15, (t1 - t) / 0.15)
             if kind == "T":
                 a = int(255 * min(1.0, (t - t0) / 0.6, (t1 - t) / 0.6))
                 layer = Image.new("RGBA", img.size, (0, 0, 0, 0))
@@ -940,14 +968,24 @@ class Subs:
                 img.paste(layer, (0, 0), layer)
             elif kind in ("A", "A!", "A~"):
                 f = self.fa_big if kind == "A!" else self.fa
-                d.text((self.cx, self.ya), ko, font=f, fill=(255, 255, 255), anchor="mm",
-                       stroke_width=3, stroke_fill=(0, 0, 0))
+                self.block(d, ko, f, self.ya, (255, 255, 255), 3)
             elif kind == "B":
-                d.text((self.cx, self.yb), ko, font=self.fb, fill=(245, 214, 58), anchor="mm",
-                       stroke_width=2, stroke_fill=(0, 0, 0))
-                d.text((self.cx, self.yen), en, font=self.fen, fill=(235, 235, 235), anchor="mm",
-                       stroke_width=1, stroke_fill=(0, 0, 0))
-            _ = alpha
+                y = self.block(d, ko, self.fb, self.yb, (245, 214, 58), 2)
+                self.block(d, en, self.fen, max(self.yen, y + self.fen.size * 0.9), (235, 235, 235), 1)
+
+    def block(self, d, text, font, y, fill, stroke):
+        """화면 폭을 넘으면 가운데에 가까운 띄어쓰기에서 두 줄로 나눠 그린다. 마지막 줄의 y를 돌려준다."""
+        maxw = self.cx * 2 - 90
+        rows = [text]
+        if font.getlength(text) > maxw and " " in text:
+            spaces = [i for i, ch in enumerate(text) if ch == " "]
+            cut = min(spaces, key=lambda i: abs(i - len(text) / 2))
+            rows = [text[:cut], text[cut + 1:]]
+        step = font.size * 1.25
+        for k, row in enumerate(rows):
+            d.text((self.cx, y + k * step), row, font=font, fill=fill, anchor="mm",
+                   stroke_width=stroke, stroke_fill=(0, 0, 0))
+        return y + (len(rows) - 1) * step
 
 
 # ================================================================ 사운드
@@ -1326,7 +1364,7 @@ def render(out, episode="ep01", start=0.0, end=None, still=None, audio_only=Fals
     fw, fh = (RW, RH) if reel else (OW, OH)
     objs = {"room": Room(), "street": Street(), "store": Store(), "roof": Roof(), "road": Road(), "taxi": Taxi()}
     objs["soju"] = Soju(objs["store"])
-    objs["block"] = Block()
+    objs["block"] = Block(**ep.get("block", {}))
     objs["bench"] = Soju(objs["store"], objs["block"], "block")
     objs["taxi"] = Taxi(**ep.get("taxi", {}))
     drunk_curve = ep.get("drunk")
