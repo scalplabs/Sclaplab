@@ -1053,15 +1053,19 @@ function renderThumb() {
   // the stomp pile at the bottom, drawn from the 16:9 scene
   const off = Object.assign(document.createElement('canvas'), { width: W, height: H }).getContext('2d');
   shotStomp(off, 20.37);
-  c.save(); c.beginPath(); c.rect(0, 1260, VW, VH - 1260); c.clip();
-  c.drawImage(off.canvas, 120, 60, 1100, 660, -40, 1250, 1160, 696); c.restore();
-  // center text
-  c.fillStyle = 'rgba(0,0,0,.55)'; c.fillRect(0, 760, VW, 520);
+  c.save(); c.beginPath(); c.rect(0, 1460, VW, VH - 1460); c.clip();
+  c.drawImage(off.canvas, 120, 160, 1100, 560, -40, 1420, 1160, 590); c.restore();
+  // crude, slapped-on red text
   c.textAlign = 'center'; c.lineJoin = 'round';
-  const line = (txt, y, size, fill) => { c.font = `${size}px BHS`; c.lineWidth = size * 0.16; c.strokeStyle = '#0a0406'; c.strokeText(txt, 540, y); c.fillStyle = fill; c.fillText(txt, 540, y); };
-  line('ㅆㅃ', 900, 150, '#ff3b3b');
-  line('감히 여자가', 1060, 150, '#ffffff');
-  line('인권을?', 1225, 170, '#ffe14d');
+  const slap = (txt, x, y, size, rot) => {
+    c.save(); c.translate(x, y); c.rotate(rot); c.font = `${size}px BHS`;
+    c.lineWidth = size * 0.3; c.strokeStyle = '#000'; c.strokeText(txt, 0, 0);
+    c.lineWidth = size * 0.14; c.strokeStyle = '#fff'; c.strokeText(txt, 0, 0);
+    c.fillStyle = '#ff1414'; c.fillText(txt, 0, 0); c.restore();
+  };
+  slap('씨 ㅃㅏㄹ', 548, 900, 230, -0.06);
+  slap('여자가', 528, 1150, 290, 0.035);
+  slap('인권을?', 552, 1410, 270, -0.03);
   c.restore();
 }
 window.renderFrame = renderFrame;
