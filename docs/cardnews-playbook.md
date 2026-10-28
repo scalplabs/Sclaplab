@@ -19,6 +19,7 @@
   - **애드맨 #003 카드 명세서 새는 돈 (VOL.003)**: https://claude.ai/artifact/MSCT5XJ3en9Xnf87UHxHU5
   - **애드맨 #004 냉장고 백종원 (VOL.004)**: https://claude.ai/artifact/3cm5eUfmCYjjTvoQjCj9KT
   - **애드맨 #005 장원영 피부 루틴 (VOL.005)**: https://claude.ai/artifact/GTU4rKwFZhyQptYqYz89Vc
+  - **애드맨 #006 복지 공무원 지원금 (VOL.006)**: https://claude.ai/artifact/VsBpp1TU9vSnRr9ph588te
     - 스펙: 1080×1350, 사방 120px 여백, Pretendard(제목 76~84px/800, 부제 32px), 영문 라벨 IBM Plex Mono
     - 색: 배경 #0A0A0A, 카드 #141414, 회색 #8C8C8C/#6A6A6A, 강조 주황 #FF5A00(레부엘토 느낌) 하나만
     - 모서리 전부 각지게(radius 0), 카드 모서리 주황 꺾쇠·FIG 번호·VOL 머리말 같은 디테일
