@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Pretendard"; font-weight: 600; src: url(assets/fonts/Pretendard-SemiBold.woff2) format("woff2"); }
+      @font-face { font-family: "Pretendard"; font-weight: 800; src: url(assets/fonts/Pretendard-ExtraBold.woff2) format("woff2"); }
+      @font-face { font-family: "Pretendard"; font-weight: 900; src: url(assets/fonts/Pretendard-Black.woff2) format("woff2"); }
+      @font-face { font-family: "BlackHan"; src: url(assets/fonts/BlackHanSans.ttf) format("truetype"); }
+      :root {
+        --ground: #07090d;
+        --ink: #ffffff;
+        --muted: #aab3c2;
+        --up: #ff3b4f;
+        --hl: #ffd23f;
+        --blue: #3d8bff;
+        --card: rgba(14, 18, 26, 0.88);
+        --font-display: "BlackHan", "Pretendard", sans-serif;
+        --font-ui: "Pretendard", sans-serif;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--ground); }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; font-family: var(--font-ui); color: var(--ink); }
+      .clip { position: absolute; inset: 0; }
+      .vwrap { position: absolute; inset: 0; }
+      .broll { width: 100%; height: 100%; object-fit: cover; }
+      .shade { background: linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.25) 40%, rgba(0,0,0,.75) 100%); }
+      .shade-heavy { background: rgba(5, 7, 11, 0.78); }
+      .center { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; }
+      .big { font-family: var(--font-display); font-size: 150px; line-height: 1; letter-spacing: -0.02em; text-shadow: 0 8px 0 rgba(0,0,0,.55), 0 0 40px rgba(0,0,0,.6); }
+      .mid { font-family: var(--font-display); font-size: 96px; line-height: 1.05; text-shadow: 0 6px 0 rgba(0,0,0,.55); }
+      .tag { font-weight: 800; font-size: 40px; padding: 10px 26px; border-radius: 999px; background: var(--hl); color: #111; }
+      .red { color: var(--up); }
+      .yel { color: var(--hl); }
+
+      /* S1 */
+      #s1-a, #s1-b { position: absolute; inset: 0; }
+      .lock { font-size: 120px; }
+
+      /* S3 formula */
+      .formula { display: flex; align-items: center; gap: 36px; }
+      .box { width: 430px; height: 300px; border-radius: 28px; background: var(--card); border: 4px solid rgba(255,255,255,.12);
+             display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; }
+      .box .t { font-family: var(--font-display); font-size: 76px; }
+      .box .d { font-weight: 600; font-size: 32px; color: var(--muted); }
+      .box.result { border-color: var(--up); box-shadow: 0 0 60px rgba(255,59,79,.35); }
+      .op { font-family: var(--font-display); font-size: 110px; color: var(--muted); }
+
+      /* S4 bars */
+      #s4-panel { position: absolute; right: 110px; top: 150px; width: 820px; height: 700px; border-radius: 32px; background: var(--card);
+                  border: 3px solid rgba(255,255,255,.1); padding: 48px 56px; }
+      #s4-panel h3 { font-weight: 800; font-size: 44px; margin-bottom: 40px; }
+      .bars { display: flex; align-items: flex-end; gap: 70px; height: 440px; padding-left: 20px; }
+      .bcol { display: flex; flex-direction: column; align-items: center; gap: 18px; width: 170px; }
+      .stack { width: 150px; height: 360px; display: flex; flex-direction: column-reverse; }
+      .seg { width: 100%; border-radius: 10px 10px 0 0; transform-origin: bottom; }
+      .lab { font-weight: 800; font-size: 34px; }
+      .badge { position: absolute; font-weight: 900; font-size: 34px; padding: 6px 18px; border-radius: 12px; }
+      #s4-left { position: absolute; left: 110px; top: 300px; width: 820px; }
+
+      /* S5 news */
+      #news { width: 1300px; background: #f4f5f7; color: #111; border-radius: 22px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.6); }
+      #news .bar { background: #c8102e; color: #fff; font-weight: 900; font-size: 40px; padding: 16px 36px; letter-spacing: .04em; }
+      #news .hd { font-weight: 900; font-size: 92px; padding: 44px 48px 20px; letter-spacing: -0.03em; }
+      #news .sub { font-weight: 600; font-size: 36px; color: #555; padding: 0 48px 44px; }
+      #stamp { position: absolute; left: 50%; top: 68%; font-family: var(--font-display); font-size: 120px; color: var(--up);
+               border: 14px solid var(--up); border-radius: 24px; padding: 18px 46px; background: rgba(255,255,255,.04); white-space: nowrap; }
+
+      /* S6 CTA */
+      .check { font-weight: 800; font-size: 52px; display: flex; align-items: center; gap: 22px; background: var(--card); padding: 22px 40px; border-radius: 20px; }
+      .check b { color: var(--hl); font-size: 56px; }
+
+      /* global overlays */
+      #cap { position: absolute; left: 0; right: 0; bottom: 70px; display: flex; justify-content: center; z-index: 50; }
+      .chunk { position: absolute; bottom: 0; font-weight: 900; font-size: 64px; padding: 14px 34px; border-radius: 16px;
+               background: rgba(0,0,0,.72); white-space: nowrap; opacity: 0; }
+      .wd { color: #fff; }
+      #prog { position: absolute; left: 0; top: 0; height: 10px; width: 1920px; background: var(--up); transform-origin: left; z-index: 60; }
+      #flash { position: absolute; inset: 0; background: #fff; opacity: 0; z-index: 70; pointer-events: none; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="33.2" data-width="1920" data-height="1080">
+
+      <!-- ===== B-roll ===== -->
+      <div id="v1w" class="vwrap">
+        <video id="vid107264" class="broll" src="assets/b107264.mp4" muted data-start="0" data-duration="4.45" data-media-start="0.5"></video>
+      </div>
+      <div id="v2w" class="vwrap">
+        <video id="vid110923" class="broll" src="assets/b110923.mp4" muted data-start="4.45" data-duration="3.95" data-media-start="0"></video>
+      </div>
+      <div id="v3w" class="vwrap">
+        <video id="vid219832" class="broll" src="assets/b219832.mp4" muted data-start="8.4" data-duration="7.75" data-media-start="1"></video>
+      </div>
+      <div id="v4w" class="vwrap">
+        <video id="vid59139" class="broll" src="assets/b59139.mp4" muted data-start="16.15" data-duration="8.05" data-media-start="2"></video>
+      </div>
+      <div id="v5w" class="vwrap">
+        <video id="vid21118" class="broll" src="assets/b21118.mp4" muted data-start="24.2" data-duration="4.2" data-media-start="0"></video>
+      </div>
+      <div id="v6w" class="vwrap">
+        <video id="vid271717" class="broll" src="assets/b271717.mp4" muted data-start="28.4" data-duration="4.8" data-media-start="0.5"></video>
+      </div>
+
+      <!-- ===== S1 hook ===== -->
+      <div id="s1" class="clip shade" data-start="0" data-duration="4.45" data-track-index="1">
+        <div id="s1-a" class="center">
+          <div class="tag">한국은행 발표</div>
+          <div class="big">기준금리 <span class="yel">동결</span></div>
+        </div>
+        <div id="s1-b" class="center">
+          <div class="mid">그런데 내 대출이자는</div>
+          <div class="big red" style="font-size:190px">또 올랐다 ▲</div>
+        </div>
+      </div>
+
+      <!-- ===== S2 ===== -->
+      <div id="s2" class="clip shade" data-start="4.45" data-duration="3.95" data-track-index="1">
+        <div class="center" style="position:absolute;inset:0">
+          <div class="mid" id="s2-q">은행이 받는 이자는</div>
+          <div class="big" id="s2-eq">기준금리 <span class="red" id="s2-ne">≠</span> 내 이자</div>
+        </div>
+      </div>
+
+      <!-- ===== S3 formula ===== -->
+      <div id="s3" class="clip shade-heavy" data-start="8.4" data-duration="7.75" data-track-index="1">
+        <div class="center" style="position:absolute;inset:0">
+          <div class="tag" id="s3-tag">대출금리 공식</div>
+          <div class="formula">
+            <div class="box" id="b-mkt"><div class="t yel">시장금리</div><div class="d">은행이 돈 빌려오는 비용</div></div>
+            <div class="op" id="op1">+</div>
+            <div class="box" id="b-add"><div class="t" style="color:var(--blue)">가산금리</div><div class="d">은행 몫 (마진)</div></div>
+            <div class="op" id="op2">=</div>
+            <div class="box result" id="b-res"><div class="t red">내 대출금리</div><div class="d">매달 내는 이자</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== S4 bars ===== -->
+      <div id="s4" class="clip shade-heavy" data-start="16.15" data-duration="8.05" data-track-index="1">
+        <div id="s4-left">
+          <div class="mid" id="s4-t1">기준금리가<br/><span class="yel">멈춰 있어도</span></div>
+          <div class="mid red" id="s4-t2" style="margin-top:40px">내 이자는<br/>오른다 ▲</div>
+        </div>
+        <div id="s4-panel">
+          <h3>내 대출금리는 이렇게 쌓여요</h3>
+          <div class="bars">
+            <div class="bcol">
+              <div class="stack"><div class="seg" id="g-base" style="height:160px;background:#5b6577"></div></div>
+              <div class="lab">기준금리</div>
+            </div>
+            <div class="bcol">
+              <div class="stack">
+                <div class="seg" id="g-mkt" style="height:200px;background:var(--hl);border-radius:0"></div>
+                <div class="seg" id="g-add" style="height:130px;background:var(--blue)"></div>
+              </div>
+              <div class="lab">내 대출금리</div>
+            </div>
+          </div>
+          <div class="badge" id="bd-freeze" style="left:110px;top:250px;background:#5b6577">멈춤 ⏸</div>
+          <div class="badge" id="bd-mkt" style="left:560px;top:470px;background:var(--hl);color:#111">시장금리 ▲</div>
+          <div class="badge" id="bd-add" style="left:560px;top:300px;background:var(--blue)">가산금리 +</div>
+          <div class="badge" id="bd-up" style="left:430px;top:150px;background:var(--up);font-size:44px">내 이자 ▲</div>
+        </div>
+      </div>
+
+      <!-- ===== S5 news ===== -->
+      <div id="s5" class="clip shade" data-start="24.2" data-duration="4.2" data-track-index="1">
+        <div class="center" style="position:absolute;inset:0">
+          <div id="news">
+            <div class="bar">속보</div>
+            <div class="hd">"기준금리 동결"</div>
+            <div class="sub">뉴스만 보고 안심하면?</div>
+          </div>
+        </div>
+        <div id="stamp">이것만 믿으면 손해</div>
+      </div>
+
+      <!-- ===== S6 CTA ===== -->
+      <div id="s6" class="clip shade-heavy" data-start="28.4" data-duration="4.8" data-track-index="1">
+        <div class="center" style="position:absolute;inset:0;gap:30px">
+          <div class="big" id="s6-t">내 대출이자, <span class="yel">지금 확인</span></div>
+          <div class="check" id="c1"><b>✓</b> 변동금리라면 기준 지표 확인</div>
+          <div class="check" id="c2"><b>✓</b> 가산금리 얼마 붙었는지 확인</div>
+        </div>
+      </div>
+
+      <!-- ===== Global overlays ===== -->
+      <div id="capw" class="clip" data-start="0" data-duration="33.2" data-track-index="2" style="z-index:50">
+        <div id="cap"></div>
+      </div>
+      <div id="ovl" class="clip" data-start="0" data-duration="33.2" data-track-index="3" style="z-index:60;pointer-events:none">
+        <div id="prog"></div>
+        <div id="flash"></div>
+      </div>
+
+      <!-- ===== Audio ===== -->
+      <audio id="vo" src="assets/vo.mp3" data-start="0" data-duration="31.43" data-track-index="10" data-volume="1"></audio>
+      <audio id="bgm" src="assets/bgm.wav" data-start="0" data-duration="33.2" data-track-index="11" data-volume="0.35"></audio>
+      <audio id="w1" src="assets/whoosh.wav" data-start="4.2" data-duration="0.5" data-track-index="12" data-volume="0.8"></audio>
+      <audio id="w2" src="assets/whoosh.wav" data-start="8.15" data-duration="0.5" data-track-index="12" data-volume="0.8"></audio>
+      <audio id="w3" src="assets/whoosh.wav" data-start="15.9" data-duration="0.5" data-track-index="12" data-volume="0.8"></audio>
+      <audio id="w4" src="assets/whoosh.wav" data-start="23.95" data-duration="0.5" data-track-index="12" data-volume="0.8"></audio>
+      <audio id="w5" src="assets/whoosh.wav" data-start="28.15" data-duration="0.5" data-track-index="12" data-volume="0.8"></audio>
+      <audio id="h1" src="assets/hit.wav" data-start="1.94" data-duration="0.9" data-track-index="13" data-volume="1"></audio>
+      <audio id="h2" src="assets/hit.wav" data-start="23.02" data-duration="0.9" data-track-index="13" data-volume="1"></audio>
+      <audio id="h3" src="assets/hit.wav" data-start="26.4" data-duration="0.9" data-track-index="13" data-volume="1"></audio>
+      <audio id="p1" src="assets/pop.wav" data-start="6.26" data-duration="0.1" data-track-index="14" data-volume="0.8"></audio>
+      <audio id="p2" src="assets/pop.wav" data-start="10.65" data-duration="0.1" data-track-index="14" data-volume="0.8"></audio>
+      <audio id="p3" src="assets/pop.wav" data-start="14.08" data-duration="0.1" data-track-index="14" data-volume="0.8"></audio>
+      <audio id="p4" src="assets/pop.wav" data-start="15.09" data-duration="0.1" data-track-index="14" data-volume="0.8"></audio>
+      <audio id="p5" src="assets/pop.wav" data-start="18.55" data-duration="0.1" data-track-index="14" data-volume="0.8"></audio>
+      <audio id="p6" src="assets/pop.wav" data-start="19.88" data-duration="0.1" data-track-index="14" data-volume="0.8"></audio>
+      <audio id="p7" src="assets/pop.wav" data-start="20.97" data-duration="0.1" data-track-index="14" data-volume="0.8"></audio>
+      <audio id="p8" src="assets/pop.wav" data-start="24.38" data-duration="0.1" data-track-index="14" data-volume="0.8"></audio>
+      <audio id="p9" src="assets/pop.wav" data-start="29.96" data-duration="0.1" data-track-index="14" data-volume="0.8"></audio>
+      <audio id="p10" src="assets/pop.wav" data-start="30.46" data-duration="0.1" data-track-index="14" data-volume="0.8"></audio>
+    </div>
+
+    <script>
+      // Word timings from the ElevenLabs alignment (assets/words.json), grouped into caption chunks.
+      const WORDS = [["기준금리는",0.00],["그대로라는데,",0.61],["왜",1.94],["내",2.12],["대출이자는",2.29],["또",2.96],["올랐을까요?",3.10],
+        ["은행이",4.55],["받는",4.93],["이자는",5.49],["기준금리로",6.26],["정해지지",6.80],["않습니다.",7.31],
+        ["은행이",8.59],["돈을",9.01],["빌려오는",9.37],["비용인",9.86],["시장금리에,",10.65],["은행",12.86],["몫인",13.63],["가산금리가",14.08],["붙어서",14.58],["정해지죠.",15.09],
+        ["그래서",16.31],["기준금리가",17.84],["멈춰",18.55],["있어도,",18.90],["시장금리가",19.88],["오르거나",20.41],["가산금리가",20.97],["붙으면",21.49],["내",22.31],["이자는",22.56],["오릅니다.",23.02],
+        ["뉴스에서",24.38],["동결이라는",24.87],["말만",25.95],["믿으면",26.40],["안",26.76],["되는",26.89],["이유죠.",27.16],
+        ["내",28.59],["대출이자,",28.77],["지금",29.96],["바로",30.24],["확인해",30.46],["보세요.",30.78]];
+      const KEY = new Set(["동결이라는","대출이자는","대출이자,","시장금리에,","시장금리가","가산금리가","오릅니다.","올랐을까요?","멈춰","확인해"]);
+      const CHUNKS = [[0,2],[2,7],[7,10],[10,13],[13,17],[17,18],[18,23],[23,24],[24,27],[27,30],[30,34],[34,37],[37,41],[41,43],[43,47]];
+      const END = 31.6;
+
+      const cap = document.getElementById("cap");
+      const tl = gsap.timeline({ paused: true });
+
+      CHUNKS.forEach(([a, b], ci) => {
+        const el = document.createElement("div");
+        el.className = "chunk";
+        const spans = [];
+        for (let i = a; i < b; i++) {
+          const s = document.createElement("span");
+          s.className = "wd";
+          s.textContent = WORDS[i][0].replace(/[,.]$/, "") + (i < b - 1 ? " " : "");
+          el.appendChild(s);
+          spans.push([s, WORDS[i]]);
+        }
+        cap.appendChild(el);
+        const t0 = WORDS[a][1];
+        const t1 = ci < CHUNKS.length - 1 ? WORDS[CHUNKS[ci + 1][0]][1] : END;
+        tl.fromTo(el, { opacity: 0, y: 18, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.12, ease: "back.out(3)" }, t0);
+        tl.set(el, { opacity: 0 }, t1 - 0.01);
+        spans.forEach(([s, w]) => {
+          tl.set(s, { color: KEY.has(w[0]) ? "#ff3b4f" : "#ffd23f" }, w[1]);
+        });
+      });
+
+      // progress bar + cut flashes
+      tl.fromTo("#prog", { scaleX: 0 }, { scaleX: 1, duration: 33.2, ease: "none" }, 0);
+      [4.45, 8.4, 16.15, 24.2, 28.4].forEach(t => {
+        tl.fromTo("#flash", { opacity: 0.55 }, { opacity: 0, duration: 0.18, ease: "power2.out", immediateRender: false }, t);
+      });
+
+      // b-roll: slow push-in on every shot, punch-in on hits
+      [["#v1w",4.45,0],["#v2w",3.95,4.45],["#v3w",7.75,8.4],["#v4w",8.05,16.15],["#v5w",4.2,24.2],["#v6w",4.8,28.4]].forEach(([id,d,t]) => {
+        tl.fromTo(id, { scale: 1.04 }, { scale: 1.14, duration: d, ease: "none" }, t);
+      });
+
+      // S1
+      tl.fromTo("#s1-a", { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 0.25, ease: "power3.out" }, 0.05);
+      tl.to("#s1-a", { opacity: 0, scale: 0.85, duration: 0.12 }, 1.86);
+      tl.fromTo("#s1-b", { opacity: 0, scale: 1.6 }, { opacity: 1, scale: 1, duration: 0.18, ease: "power4.out" }, 1.94);
+      tl.fromTo("#s1-b", { x: -14 }, { x: 0, duration: 0.3, ease: "elastic.out(1.2,0.3)" }, 2.12);
+      tl.to("#v1w", { scale: 1.3, duration: 0.15, ease: "power3.out" }, 1.94);
+
+      // S2
+      tl.fromTo("#s2-q", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.25, ease: "power3.out" }, 4.5);
+      tl.fromTo("#s2-eq", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(2)" }, 6.2);
+      tl.fromTo("#s2-ne", { scale: 3, rotation: -20 }, { scale: 1, rotation: 0, duration: 0.3, ease: "back.out(3)" }, 6.26);
+
+      // S3
+      tl.fromTo("#s3-tag", { opacity: 0, y: -30 }, { opacity: 1, y: 0, duration: 0.25 }, 8.5);
+      tl.fromTo("#b-mkt", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2.5)" }, 10.65);
+      tl.fromTo("#op1", { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.2 }, 13.6);
+      tl.fromTo("#b-add", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2.5)" }, 14.08);
+      tl.fromTo("#op2", { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.2 }, 14.9);
+      tl.fromTo("#b-res", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2.5)" }, 15.09);
+      tl.set(["#b-mkt","#b-add","#b-res","#op1","#op2"], { opacity: 0 }, 8.4);
+
+      // S4
+      tl.fromTo("#s4-panel", { opacity: 0, x: 120 }, { opacity: 1, x: 0, duration: 0.35, ease: "power3.out" }, 16.3);
+      tl.fromTo("#s4-t1", { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.3, ease: "power3.out" }, 17.84);
+      tl.fromTo("#g-base", { scaleY: 0 }, { scaleY: 1, duration: 0.4, ease: "power2.out" }, 16.5);
+      tl.fromTo("#bd-freeze", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(3)" }, 18.55);
+      tl.fromTo("#g-mkt", { scaleY: 0.45 }, { scaleY: 1, duration: 0.6, ease: "power2.out" }, 19.88);
+      tl.fromTo("#bd-mkt", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(3)" }, 19.88);
+      tl.fromTo("#g-add", { scaleY: 0 }, { scaleY: 1, duration: 0.5, ease: "power2.out" }, 20.97);
+      tl.fromTo("#bd-add", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(3)" }, 20.97);
+      tl.fromTo("#s4-t2", { opacity: 0, scale: 1.5 }, { opacity: 1, scale: 1, duration: 0.2, ease: "power4.out" }, 23.02);
+      tl.fromTo("#bd-up", { opacity: 0, scale: 2 }, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(3)" }, 23.02);
+      tl.fromTo("#s4-panel", { y: 10 }, { y: 0, duration: 0.3, ease: "elastic.out(1.2,0.3)" }, 23.05);
+      tl.set(["#bd-freeze","#bd-mkt","#bd-add","#bd-up","#s4-t1","#s4-t2"], { opacity: 0 }, 16.15);
+
+      // S5
+      tl.fromTo("#news", { opacity: 0, y: 80, rotation: -2 }, { opacity: 1, y: 0, rotation: 0, duration: 0.3, ease: "power3.out" }, 24.38);
+      tl.fromTo("#stamp", { opacity: 0, scale: 2.6, rotation: -14, xPercent: -50, yPercent: -50 },
+                          { opacity: 1, scale: 1, rotation: -10, xPercent: -50, yPercent: -50, duration: 0.18, ease: "power4.in" }, 26.22);
+      tl.fromTo("#news", { x: -12 }, { x: 0, duration: 0.3, ease: "elastic.out(1.2,0.3)" }, 26.4);
+      tl.set("#stamp", { opacity: 0, xPercent: -50, yPercent: -50 }, 24.2);
+
+      // S6
+      tl.fromTo("#s6-t", { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 0.25, ease: "power3.out" }, 28.55);
+      tl.fromTo("#c1", { opacity: 0, x: -80 }, { opacity: 1, x: 0, duration: 0.25, ease: "power3.out" }, 29.96);
+      tl.fromTo("#c2", { opacity: 0, x: -80 }, { opacity: 1, x: 0, duration: 0.25, ease: "power3.out" }, 30.46);
+      tl.set(["#c1","#c2"], { opacity: 0 }, 28.4);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
