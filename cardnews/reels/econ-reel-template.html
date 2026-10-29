@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+@font-face{font-family:'Pretendard';font-weight:500;src:url('FONTDIR/Pretendard-Medium.woff2') format('woff2')}
+@font-face{font-family:'Pretendard';font-weight:700;src:url('FONTDIR/Pretendard-Bold.woff2') format('woff2')}
+@font-face{font-family:'Pretendard';font-weight:800;src:url('FONTDIR/Pretendard-ExtraBold.woff2') format('woff2')}
+:root{--bg:#0A0A0A;--fg:#F2F2F2;--g1:#C8C8C8;--g2:#8C8C8C;--g3:#5A5A5A;--line:#2A2A2A;--acc:#FF5A00}
+html,body{margin:0;background:var(--bg)}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:var(--bg);color:var(--fg);font-family:'Pretendard',sans-serif}
+.mono{font-family:'IBM Plex Mono',monospace}
+.abs{position:absolute}
+#grid{position:absolute;inset:-120px;background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:120px 120px}
+#glow{position:absolute;width:1400px;height:1400px;border-radius:50%;background:radial-gradient(circle,rgba(255,90,0,.20) 0%,rgba(255,90,0,.06) 35%,rgba(255,90,0,0) 65%)}
+#vign{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,rgba(10,10,10,0) 40%,rgba(10,10,10,.85) 100%)}
+#bar{position:absolute;left:0;top:0;height:8px;background:var(--acc)}
+#head{left:80px;right:80px;top:150px;display:flex;justify-content:space-between;align-items:center;font-size:22px;font-weight:600;letter-spacing:.16em;color:var(--g2)}
+#head i{display:inline-block;width:12px;height:12px;background:var(--acc);margin-right:14px}
+#tick{left:0;right:0;top:206px;height:56px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;white-space:nowrap;font-size:22px;font-weight:500;letter-spacing:.08em;color:var(--g2);display:flex;align-items:center}
+#tickin{flex:none;display:block;white-space:nowrap;padding-left:20px}
+#tickin b{color:var(--acc);font-weight:600}
+.scene{position:absolute;left:80px;right:80px;top:330px;height:1000px;display:flex;flex-direction:column;justify-content:center;opacity:0}
+.lab{font-size:34px;font-weight:600;letter-spacing:.14em;color:var(--g2)}
+.lab.hot{color:var(--acc)}
+.big{font-weight:800;letter-spacing:-.045em;line-height:1.02}
+.em{color:var(--acc)}
+.rule{width:90px;height:10px;background:var(--acc)}
+.chip{padding:22px 30px;border:2px solid var(--line);font-size:44px;font-weight:800;background:rgba(20,20,20,.8)}
+.chip.hot{border-color:var(--acc);color:var(--acc)}
+#sub{left:80px;right:80px;top:1395px;font-size:40px;font-weight:700;line-height:1.35;text-align:left}
+#sub span{transition:none}
+#foot{left:80px;right:80px;top:1530px;display:flex;align-items:center;gap:18px;font-size:26px;font-weight:500;letter-spacing:.06em;color:var(--g2)}
+#foot img{width:56px;height:56px;image-rendering:pixelated;border:1px solid var(--line)}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+.box{border:2px solid var(--line);background:rgba(20,20,20,.75);padding:34px 38px}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="grid"></div>
+  <div id="glow"></div>
+  <div id="vign"></div>
+  <div id="bar"></div>
+  <div id="head" class="abs mono"><span><i></i>ADMAN — ECON BRIEF</span><span>2026.10.26 종가</span></div>
+  <div id="tick" class="abs mono"><div id="tickin"></div></div>
+
+  <!-- 1 HOOK -->
+  <div class="scene" id="s1">
+    <div class="lab mono hot" data-a="0" style="margin-bottom:34px">해외여행 갈 사람만</div>
+    <div class="big" data-a="0" style="font-size:190px">이거 모르면</div>
+    <div class="big em" data-a="0" id="s1hit" style="font-size:300px;margin-top:6px">손해</div>
+    <div class="rule" data-a="0" style="margin-top:46px"></div>
+  </div>
+
+  <!-- 2 RATE -->
+  <div class="scene" id="s2">
+    <div class="lab mono" data-a="0">원·달러 환율</div>
+    <div style="display:flex;align-items:baseline;gap:20px;margin-top:20px" data-a="0">
+      <span class="big" id="rate" style="font-size:270px">1,555</span><span class="big" style="font-size:110px">원</span>
+    </div>
+    <div data-a="1.05" style="margin-top:40px;display:flex;align-items:center;gap:22px">
+      <span class="big" style="font-size:96px;background:var(--acc);color:#0A0A0A;padding:10px 26px">2년 만에 최저</span>
+    </div>
+  </div>
+
+  <!-- 3 JUNE CHART -->
+  <div class="scene" id="s3">
+    <div class="lab mono" data-a="0">올해 환율 흐름</div>
+    <div data-a="0" style="margin-top:150px;position:relative;height:620px">
+      <svg width="920" height="620" viewBox="0 0 920 620" style="position:absolute;left:0;top:0;overflow:visible">
+        <line x1="0" y1="600" x2="920" y2="600" stroke="#2A2A2A" stroke-width="2"/>
+        <path id="chart" d="M 30 290 C 200 270, 330 120, 430 70 C 540 20, 640 260, 760 420 C 800 470, 840 500, 880 520" fill="none" stroke="#FF5A00" stroke-width="10" stroke-linecap="round"/>
+        <circle id="peak" cx="430" cy="70" r="16" fill="#F2F2F2"/>
+        <circle id="end" cx="880" cy="520" r="18" fill="#FF5A00"/>
+        <circle id="endring" cx="880" cy="520" r="18" fill="none" stroke="#FF5A00" stroke-width="4"/>
+      </svg>
+      <div class="abs mono" id="lab0" style="left:0;top:320px;font-size:28px;color:#8C8C8C">연초 1,440원대</div>
+      <div class="abs" id="labpk" style="left:300px;top:-90px;font-size:64px;font-weight:800">6월 1,555원</div>
+      <div class="abs" id="labend" style="right:-10px;top:625px;font-size:64px;font-weight:800;color:#FF5A00;text-align:right">지금 1,323원</div>
+    </div>
+  </div>
+
+  <!-- 4 SAVE -->
+  <div class="scene" id="s4">
+    <div class="big" data-a="0" style="font-size:110px">1,000달러<br>바꾸면</div>
+    <div class="big em" data-a="0.55" id="s4hit" style="font-size:220px;margin-top:20px">−23만 원</div>
+    <div class="mono" data-a="0.9" style="margin-top:40px;font-size:30px;line-height:1.7;color:#8C8C8C">6월&nbsp;&nbsp;1,555,800원<br>지금&nbsp;1,323,100원</div>
+  </div>
+
+  <!-- 5 WHY -->
+  <div class="scene" id="s5">
+    <div class="lab mono" data-a="0">왜 이렇게 됐냐면</div>
+    <div style="display:flex;flex-direction:column;gap:26px;margin-top:40px;align-items:flex-start">
+      <div class="chip" data-a="0" style="font-size:72px">반도체 수출</div>
+      <div class="big em" data-a="0.45" style="font-size:80px;padding-left:20px">↓</div>
+      <div class="chip" data-a="0.55" style="font-size:72px">달러 쏟아져 들어옴</div>
+      <div class="big em" data-a="1.0" style="font-size:80px;padding-left:20px">↓</div>
+      <div class="chip hot" data-a="1.1" style="font-size:72px">원화 강세</div>
+    </div>
+  </div>
+
+  <!-- 6 USE -->
+  <div class="scene" id="s6">
+    <div class="big" data-a="0" style="font-size:170px">환전</div>
+    <div class="big" data-a="0.35" style="font-size:170px">직구</div>
+    <div class="big" data-a="0.7" style="font-size:170px">해외결제</div>
+    <div data-a="1.15" style="margin-top:36px"><span class="big" style="font-size:84px;background:var(--acc);color:#0A0A0A;padding:10px 26px">지금이 유리한 구간</span></div>
+  </div>
+
+  <!-- 7 SPLIT -->
+  <div class="scene" id="s7">
+    <div class="big em" data-a="0" style="font-size:150px">단,</div>
+    <div class="big" data-a="0.25" style="font-size:96px;margin-top:10px">더 내려갈 수도 있음</div>
+    <div class="box" data-a="0.8" style="margin-top:46px;display:flex;flex-direction:column;gap:26px">
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:48px;font-weight:800;color:#5A5A5A"><span style="text-decoration:line-through">한 번에 몰빵</span><span>✕</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:48px;font-weight:800"><span>나눠서 바꾸기</span><span class="em">○</span></div>
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px">
+        <div style="height:28px;background:#262626"><div class="fill" data-f="1.1" style="height:28px;width:0;background:var(--acc)"></div></div>
+        <div style="height:28px;background:#262626"><div class="fill" data-f="1.4" style="height:28px;width:0;background:var(--acc)"></div></div>
+        <div style="height:28px;background:#262626"><div class="fill" data-f="1.7" style="height:28px;width:0;background:var(--acc)"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8 SAVE POST -->
+  <div class="scene" id="s8">
+    <svg data-a="0" id="bm" width="230" height="290" viewBox="0 0 24 30" style="overflow:visible"><path d="M3 2h18v26l-9-7-9 7z" fill="#FF5A00"/></svg>
+    <div class="big" data-a="0.2" style="font-size:150px;margin-top:40px">저장해두고</div>
+    <div class="big" data-a="0.45" style="font-size:110px;color:#C8C8C8">여행 전에 다시</div>
+  </div>
+
+  <!-- 9 COMMENT -->
+  <div class="scene" id="s9">
+    <div class="big" data-a="0" style="font-size:150px">댓글에</div>
+    <div class="big em" data-a="0.25" id="s9hit" style="font-size:250px">'환율'</div>
+    <div class="box" data-a="0.6" style="margin-top:40px;display:flex;align-items:center;gap:22px">
+      <img src="AVATAR" style="width:84px;height:84px;image-rendering:pixelated" alt="">
+      <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:30px;font-weight:700;color:#8C8C8C">@adman_park · DM</span><span style="font-size:44px;font-weight:800">환율 알림 거는 법 보내드림</span></div>
+    </div>
+  </div>
+
+  <div id="sub" class="abs"></div>
+  <div id="foot" class="abs mono"><img src="AVATAR" alt="">@adman_park</div>
+  <div id="flash"></div>
+</div>
+<script>
+const SEGS = SEGS_JSON;
+const LINES = LINES_JSON;
+const T = 20;
+const SCENES = SEGS.map((s,i)=>({el:document.getElementById('s'+(i+1)),start:s.start,end:(i<SEGS.length-1?SEGS[i+1].start:T+1)}));
+SCENES[0].start = -0.25; // cover frame already shows the hook
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const eo=x=>1-Math.pow(1-x,3);
+const back=x=>{const c1=1.9,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)};
+document.getElementById('tickin').innerHTML=('USD/KRW <b>1,323.1 ▼</b> &nbsp;·&nbsp; 2년 만에 최저 &nbsp;·&nbsp; 연중 고점 1,555.8 &nbsp;·&nbsp; 한은 기준금리 3.00% &nbsp;·&nbsp; ').repeat(6);
+// subtitles: split lines into words
+const SUBS = ['해외여행 갈 사람, 이거 모르면 손해입니다.','원·달러 환율 1,323원. 2년 만에 최저입니다.','6월엔 1,555원이었죠.','1,000달러 바꾸면, 23만 원이 덜 듭니다.','반도체 수출로 달러가 쏟아져 들어온 덕분입니다.','환전, 직구, 해외 결제. 지금이 유리한 구간입니다.','단, 더 내려갈 수도 있으니까 한 번에 말고 나눠서 바꾸세요.','저장해두고, 여행 가기 전에 다시 보세요.','환율 알림 거는 법, 댓글에 \'환율\' 남기면 보내드립니다.'];
+const subWords = SUBS.map(l=>l.split(' '));
+function render(t){
+  // ambient
+  document.getElementById('grid').style.transform=`translate(${-(t*22)%120}px,${-(t*40)%120}px)`;
+  const g=document.getElementById('glow');
+  g.style.left=(-160+Math.sin(t*0.6)*140)+'px'; g.style.top=(260+Math.cos(t*0.45)*180)+'px';
+  document.getElementById('bar').style.width=(t/T*1080)+'px';
+  document.getElementById('tickin').style.transform=`translateX(${-t*90}px)`;
+  // scenes
+  let flash=0, shake=0;
+  SCENES.forEach((sc,i)=>{
+    const lt=t-sc.start, out=sc.end-t;
+    if(t<sc.start || t>=sc.end){sc.el.style.opacity=0;return;}
+    sc.el.style.opacity=1;
+    const exitP = clamp(1-out/0.12);
+    sc.el.style.transform=`translateY(${-60*eo(exitP)}px)`;
+    sc.el.style.filter=exitP>0?`blur(${8*exitP}px)`:'none';
+    if(exitP>0) sc.el.style.opacity=1-exitP;
+    if(i>0 && lt<0.07) flash=Math.max(flash,0.16*(1-lt/0.07));
+    if(lt<0.14) shake=Math.max(shake,(1-lt/0.14));
+    sc.el.querySelectorAll('[data-a]').forEach(el=>{
+      const a=parseFloat(el.dataset.a), p=clamp((lt-a)/0.22);
+      if(lt<a){el.style.opacity=0;el.style.transform='scale(1.4)';return;}
+      el.style.opacity=clamp((lt-a)/0.06);
+      el.style.transform=`scale(${1.4-0.4*back(p)})`;
+      el.style.transformOrigin='left center';
+    });
+  });
+  // per-scene specials
+  const s1=document.getElementById('s1hit');
+  {const p=t-0.95; if(p>0&&p<0.35){const k=Math.sin(clamp(p/0.35)*Math.PI); s1.style.transform=`scale(${1+0.12*k})`; if(p<0.06) flash=Math.max(flash,0.12);} }
+  {const sc=SCENES[1],lt=t-sc.start; const p=eo(clamp((lt-0.15)/0.85)); document.getElementById('rate').textContent=Math.round(1555-(1555-1323)*p).toLocaleString('en-US');
+   if(lt>1.05&&lt<1.12) flash=Math.max(flash,0.12);}
+  {const sc=SCENES[2],lt=t-sc.start; const path=document.getElementById('chart'); const L=path.getTotalLength(); const p=eo(clamp(lt/1.1));
+   path.style.strokeDasharray=L; path.style.strokeDashoffset=L*(1-p);
+   const pk=clamp((lt-0.45)/0.2), en=clamp((lt-1.0)/0.2);
+   document.getElementById('peak').style.opacity=pk; document.getElementById('labpk').style.opacity=pk;
+   document.getElementById('lab0').style.opacity=clamp(lt/0.2);
+   document.getElementById('end').style.opacity=en; document.getElementById('labend').style.opacity=en;
+   const ring=document.getElementById('endring'); const rp=((lt-1.0)%0.8)/0.8; ring.setAttribute('r',18+40*Math.max(0,rp)); ring.style.opacity=lt>1?(1-rp):0;}
+  {const sc=SCENES[3],lt=t-sc.start; if(lt>0.55&&lt<0.62) flash=Math.max(flash,0.14);}
+  {const sc=SCENES[6],lt=t-sc.start; document.querySelectorAll('#s7 .fill').forEach(f=>{f.style.width=(eo(clamp((lt-parseFloat(f.dataset.f))/0.3))*100)+'%'});}
+  {const sc=SCENES[7],lt=t-sc.start; const bm=document.getElementById('bm'); if(lt>0.22){bm.style.transform=`translateY(${-Math.abs(Math.sin((lt-0.22)*5))*26}px)`;}}
+  {const sc=SCENES[8],lt=t-sc.start; const h=document.getElementById('s9hit'); if(lt>0.5){h.style.transform=`scale(${1+0.04*Math.sin((lt-0.5)*6)})`;} if(lt>0.25&&lt<0.32) flash=Math.max(flash,0.12);}
+  document.getElementById('flash').style.opacity=flash;
+  const sx=shake?Math.sin(t*90)*7*shake:0, sy=shake?Math.cos(t*70)*5*shake:0;
+  SCENES.forEach(sc=>{ if(sc.el.style.opacity>0) sc.el.style.translate=`${sx}px ${sy}px`; });
+  // subtitles: word-by-word highlight
+  let html='';
+  SEGS.forEach((s,i)=>{
+    if(t>=s.start && t<s.start+s.dur+0.06){
+      const ws=subWords[i], p=clamp((t-s.start)/s.dur);
+      const k=Math.floor(p*ws.length+0.0001);
+      html=ws.map((w,j)=>`<span style="color:${j<k?'#F2F2F2':(j===k?'#FF5A00':'#4A4A4A')}">${w}</span>`).join(' ');
+    }
+  });
+  if(t>=SEGS[SEGS.length-1].start+SEGS[SEGS.length-1].dur) html='<span style="color:#F2F2F2">댓글에 </span><span style="color:#FF5A00">환율</span>';
+  document.getElementById('sub').innerHTML=html;
+}
+window.render=render;
+render(0);
+</script>
+</body>
+</html>
