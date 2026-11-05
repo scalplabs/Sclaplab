@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@500;600&display=swap">
+<style>
+@font-face{font-family:'Pretendard';font-weight:500;src:url('FONTDIR/Pretendard-Medium.woff2') format('woff2')}
+@font-face{font-family:'Pretendard';font-weight:700;src:url('FONTDIR/Pretendard-Bold.woff2') format('woff2')}
+@font-face{font-family:'Pretendard';font-weight:800;src:url('FONTDIR/Pretendard-ExtraBold.woff2') format('woff2')}
+html,body{margin:0;background:#E7E4DE}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:#E7E4DE;font-family:'Geist','Pretendard',sans-serif;color:#0B0B0A}
+.k{font-family:'Pretendard','Geist',sans-serif}
+.mono{font-family:'Geist Mono',monospace}
+#dots{position:absolute;inset:0;background-image:radial-gradient(rgba(11,11,10,.10) 1.5px,transparent 1.6px);background-size:40px 40px}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:540px 1180px}
+#shape{position:absolute;overflow:hidden}
+.c{position:absolute;left:0;top:0;opacity:0}
+#hud{position:absolute;left:80px;right:80px;top:150px;display:flex;justify-content:space-between;align-items:center;font-size:22px;letter-spacing:.14em;color:#8A877F}
+#beats{display:flex;gap:10px}#beats i{display:block;width:12px;height:12px;border-radius:6px;background:#CFCBC3}
+#cap{position:absolute;left:80px;right:80px;top:250px;font-weight:800;font-size:100px;line-height:1.1;letter-spacing:-.045em;white-space:pre-wrap}
+#caret{display:inline-block;width:9px;height:90px;background:#FF5A00;vertical-align:-10px;margin-left:6px}
+#foot{position:absolute;left:80px;right:80px;bottom:140px;display:flex;justify-content:space-between;font-size:22px;letter-spacing:.1em;color:#8A877F}
+#cursor{position:absolute;left:0;top:0}
+#ctag{position:absolute;left:34px;top:36px;padding:6px 12px;border-radius:10px;background:#FF5A00;color:#0B0B0A;font:700 20px 'Geist Mono',monospace;white-space:nowrap}
+.lbl{font:600 20px 'Geist Mono',monospace;letter-spacing:.12em;color:#8A877F}
+.card{position:absolute;width:400px;height:300px;border-radius:24px;background:#F4F2EE;overflow:hidden}
+.card .im{height:130px;background:#E3E0D9}
+.card .tt{margin:16px 20px 0;font-size:28px;font-weight:800}
+.chip{position:absolute;left:18px;top:18px;padding:6px 12px;border-radius:999px;font:600 18px 'Geist Mono',monospace}
+.btn{position:absolute;left:18px;right:18px;bottom:18px;height:62px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800}
+.row{position:absolute;left:40px;right:40px;height:150px;border-radius:24px;background:#F4F2EE;display:flex;align-items:center;gap:22px;padding:0 24px;box-sizing:border-box}
+.row .im{width:96px;height:96px;border-radius:18px;background:#E3E0D9}
+.row .btn{position:static;width:190px;margin-left:auto}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="dots"></div>
+  <div id="world"><div id="shape">
+    <!-- S0 pill -->
+    <div class="c" id="c_pill" style="width:520px;height:120px;display:flex;align-items:center;justify-content:center;gap:16px">
+      <svg width="30" height="30" viewBox="0 0 24 24"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z" fill="#FF5A00"/></svg>
+      <span class="k" style="font-size:38px;font-weight:800;color:#F2F1EE;letter-spacing:-.02em">체험단 자동 신청</span>
+    </div>
+    <!-- S1 command bar -->
+    <div class="c" id="c_cmd" style="width:920px;height:260px">
+      <div style="position:absolute;left:36px;top:0;height:130px;right:36px;display:flex;align-items:center;gap:18px">
+        <svg width="36" height="36" viewBox="0 0 24 24"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z" fill="#FF5A00"/></svg>
+        <span id="cmdtext" class="k" style="font-size:36px;font-weight:700;white-space:nowrap"></span><span id="cmdcaret" style="width:4px;height:44px;background:#0B0B0A;display:inline-block"></span>
+      </div>
+      <div style="position:absolute;left:36px;right:36px;top:130px;height:2px;background:#E3E0D9"></div>
+      <div style="position:absolute;left:36px;top:160px;display:flex;align-items:center;gap:20px">
+        <div id="tg" style="position:relative;width:120px;height:66px;border-radius:33px;background:#CFCBC3"><div id="tgk" style="position:absolute;top:7px;height:52px;border-radius:26px;background:#fff"></div></div>
+        <span class="k" style="font-size:32px;font-weight:800">모집 중인 것만</span>
+      </div>
+      <div id="run" style="position:absolute;right:36px;top:156px;height:74px;padding:0 30px;border-radius:37px;background:#0B0B0A;color:#F2F1EE;display:flex;align-items:center;gap:12px;font-size:30px;font-weight:800" class="k">실행 <span class="mono">↵</span></div>
+    </div>
+    <!-- S2 loader -->
+    <div class="c" id="c_load" style="width:150px;height:150px">
+      <svg width="150" height="150" viewBox="0 0 150 150"><circle cx="75" cy="75" r="36" fill="none" stroke="#3A3936" stroke-width="9"/><circle id="arc" cx="75" cy="75" r="36" fill="none" stroke="#FF5A00" stroke-width="9" stroke-linecap="round" stroke-dasharray="70 240"/></svg>
+    </div>
+    <!-- S3 browser -->
+    <div class="c" id="c_web" style="width:940px;height:1060px">
+      <div style="position:absolute;left:40px;top:36px;right:40px;display:flex;align-items:center;justify-content:space-between">
+        <span style="font:800 34px 'Geist',sans-serif;letter-spacing:-.02em">Aside</span>
+        <span id="url" class="mono" style="font-size:20px;color:#8A877F">musinsa.com/review</span>
+      </div>
+      <div style="position:absolute;left:40px;right:40px;top:100px;height:96px;border-radius:48px;background:#F4F2EE">
+        <div id="tind" style="position:absolute;top:8px;height:80px;border-radius:40px;background:#0B0B0A"></div>
+        <div class="k" style="position:absolute;inset:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:center;text-align:center;font-size:32px;font-weight:800"><span class="tl">무신사 체험단</span><span class="tl">카카오 선물하기</span></div>
+      </div>
+      <div id="viewport" style="position:absolute;left:0;right:0;top:220px;bottom:0;overflow:hidden">
+        <div id="listA" style="position:absolute;left:0;right:0;top:0"></div>
+        <div id="listB" style="position:absolute;left:0;right:0;top:0"></div>
+      </div>
+    </div>
+    <!-- S4 result -->
+    <div class="c" id="c_res" style="width:760px;height:760px;color:#F2F1EE">
+      <div style="position:absolute;left:56px;top:56px" class="lbl">TASK COMPLETE</div>
+      <div style="position:absolute;left:56px;top:120px;display:flex;align-items:baseline;gap:18px"><span id="resn" style="font:800 300px 'Geist',sans-serif;letter-spacing:-.06em;line-height:1">0</span><span class="k" style="font-size:80px;font-weight:800">건</span></div>
+      <div class="k" style="position:absolute;left:56px;top:470px;font-size:44px;font-weight:800">자동 신청 완료</div>
+      <div id="resrows" class="k" style="position:absolute;left:56px;right:56px;top:560px;display:flex;flex-direction:column;gap:14px;font-size:28px;font-weight:700"></div>
+    </div>
+    <!-- S5 toast -->
+    <div class="c" id="c_toast" style="width:880px;height:180px">
+      <div style="position:absolute;left:36px;top:36px;width:108px;height:108px;border-radius:54px;background:#FF5A00;display:flex;align-items:center;justify-content:center"><svg width="48" height="48" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="#0B0B0A" stroke-width="2.2" stroke-linejoin="round"/></svg></div>
+      <div class="k" style="position:absolute;left:172px;top:38px;font-size:42px;font-weight:800;letter-spacing:-.02em">댓글에 <span style="color:#FF5A00">'체험단'</span> 남기면</div>
+      <div class="k" style="position:absolute;left:172px;top:98px;font-size:30px;font-weight:700;color:#8A877F">지시문 그대로 DM 드려요</div>
+      <div id="tprog" style="position:absolute;left:0;bottom:0;height:6px;background:#0B0B0A"></div>
+    </div>
+  </div></div>
+  <div id="hud" class="mono"><span>ADMAN · AI REPORT</span><span id="beats"><i></i><i></i><i></i><i></i></span></div>
+  <div id="cap" class="k"></div>
+  <div id="foot" class="mono"><span>@adman_park</span><span id="ftxt">ASIDE BROWSER</span></div>
+  <div id="cursor"><svg width="46" height="46" viewBox="0 0 44 44"><path id="cpath" d="M5 3 L5 33 L13 25 L19 39 L25 36 L19 23 L30 23 Z" fill="#0B0B0A" stroke="#F2F1EE" stroke-width="2.4" stroke-linejoin="round"/></svg><span id="ctag">AI</span></div>
+</div>
+<script>
+const T=15, BEAT=0.5;
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const sm=x=>{x=clamp(x);return x*x*(3-2*x)};
+function S(t,f=2.4,z=0.86){ if(t<=0) return 0; const w=2*Math.PI*f, wd=w*Math.sqrt(1-z*z); return 1-Math.exp(-z*w*t)*(Math.cos(wd*t)+(z*w/wd)*Math.sin(wd*t)); }
+function track(t,k,f,z){ let v=k[0][1]; for(let i=1;i<k.length;i++) v+=(k[i][1]-k[i-1][1])*S(t-k[i][0],f,z); return v; }
+const hex=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+function ctrack(t,k,f,z){ const c=[0,1,2].map(j=>track(t,k.map(e=>[e[0],hex(e[1])[j]]),f,z)); return `rgb(${c.map(v=>clamp(v,0,255)|0).join(',')})`; }
+const $=id=>document.getElementById(id);
+const B='#0B0B0A', W='#FFFFFF', OR='#FF5A00';
+// ---------- states: time, w, h, r, color, zoom, content ----------
+const ST=[
+ [0.0, 520,120,60,  B,1.75,'c_pill'],
+ [0.5, 920,130,65,  W,1.05,'c_cmd'],
+ [4.0, 150,150,75,  B,2.10,'c_load'],
+ [5.0, 940,1060,44, W,1.00,'c_web'],
+ [10.5,760,760,64,  B,1.15,'c_res'],
+ [12.0,880,180,90,  W,1.05,'c_toast'],
+ [14.0,520,120,60,  B,1.75,'c_pill2'],
+];
+const extraH=[[2.5,260]]; // command bar grows to show toggle row
+const KW=ST.map(s=>[s[0],s[1]]), KH=[...ST.map(s=>[s[0],s[2]]),...extraH].sort((a,b)=>a[0]-b[0]), KR=ST.map(s=>[s[0],s[3]]), KZ=ST.map(s=>[s[0],s[5]]), KC=ST.map(s=>[s[0],s[4]]);
+const CW=ST.map((s,i)=>({id:s[6]==='c_pill2'?'c_pill':s[6],tin:s[0],tout:i<ST.length-1?ST[i+1][0]:T+1,first:i===0}));
+function vis(t,w){ if(w.first){ const ex=clamp((t-(w.tout-0.1))/0.1); return t<w.tout?{o:1-ex,b:8*ex}:{o:0,b:8}; }
+  if(t<w.tin||t>=w.tout) return {o:0,b:8}; const a=sm((t-w.tin-0.08)/0.16), ex=clamp((t-(w.tout-0.1))/0.1); return {o:a*(1-ex),b:8*(1-a)+8*ex}; }
+// ---------- lists ----------
+const LA=[['오버핏 니트','OPEN'],['와이드 데님','마감'],['레더 스니커즈','OPEN'],['울 코트','신청함'],['캔버스 백','마감'],['볼캡','마감']];
+const LB=[['디퓨저 세트','OPEN'],['핸드크림 3종','마감'],['캔들 기프트','OPEN']];
+$('listA').innerHTML=LA.map((c,i)=>`<div class="card" id="cA${i}" style="left:${40+(i%2)*460}px;top:${(i>>1)*330}px"><div class="im"></div><span class="chip" style="background:${c[1]==='OPEN'?B:'#D6D3CC'};color:${c[1]==='OPEN'?'#F2F1EE':'#77756F'}">${c[1]}</span><div class="tt k">${c[0]}</div><div class="btn k" id="bA${i}"></div></div>`).join('');
+$('listB').innerHTML=LB.map((c,i)=>`<div class="row" id="rB${i}" style="top:${i*175}px"><div class="im"></div><div><div class="k" style="font-size:30px;font-weight:800">${c[0]}</div><div class="mono" style="margin-top:6px;font-size:18px;color:${c[1]==='OPEN'?B:'#9A978F'}">${c[1]}</div></div><div class="btn k" id="bB${i}"></div></div>`).join('');
+// agent actions (time, list, idx, apply?)
+const ACT=[[5.5,'A',0,1],[6.0,'A',1,0],[6.5,'A',2,1],[7.0,'A',3,0],[9.0,'B',0,1],[9.5,'B',1,0],[10.0,'B',2,1]];
+const scrollK=[[0,0],[7.5,0],[8.0,-260],[8.0,-260]]; // drag handled below
+// ---------- cursor keys (world coords) ----------
+const CX0=780, CY0=1300;
+const wx0=540-470, wy0=1180-530; // browser card origin in world
+const btnW=(l,i)=> l==='A'? [wx0+40+(i%2)*460+200, wy0+220+(i>>1)*330+300-49] : [wx0+940-40-24-95, wy0+220+i*175+75];
+const CUR=[[0,CX0,CY0],[0.12,560,1185],[0.75,760,1300],[2.6,560,1300],[2.82,160+60,1180+0-130+193],[3.3,860,1180-130+193],[3.75,700,1420],[4.6,560,1180+590-40]];
+ACT.forEach(a=>{ const [x,y]=btnW(a[1],a[2]); CUR.push([a[0]-0.22,x,y]); });
+CUR.splice(CUR.findIndex(k=>k[0]>7.5),0,[7.2,540,1560],[8.0,540,1300]); // drag up
+CUR.push([8.3,wx0+40+660,wy0+148]); // tab click
+CUR.sort((a,b)=>a[0]-b[0]);
+CUR.push([10.6,820,1500],[12.5,760,1250],[14.0,CX0,CY0]);
+function cur(t){ return [track(t,CUR.map(k=>[k[0],k[1]]),2.2,0.9),track(t,CUR.map(k=>[k[0],k[2]]),2.2,0.9)]; }
+const CLICKS=[0.5,3.0,3.5,8.5,...ACT.map(a=>a[0]-0.02)];
+const DRAG=[7.5,8.0];
+// ---------- captions ----------
+const CAPS=[[0.5,'한 줄로\n**지시**하고'],[4.0,'AI가 **직접**\n사이트 클릭'],[10.5,'나는 **결과만**\n확인'],[12.0,"댓글에 **'체험단'**\n지시문 DM"],[13.5,'체험단 신청,\n**AI가 대신 함**']];
+const CPS=0.045;
+const parse=s=>{const o=[];let h=0;for(let i=0;i<s.length;i++){if(s[i]==='*'&&s[i+1]==='*'){h=!h;i++;continue;}o.push([s[i],h]);}return o;};
+const PC=CAPS.map(c=>[c[0],parse(c[1])]);
+const MSG='무신사·카카오 체험단, 모집 중인 것만 신청해줘';
+
+function seek(t){
+  t=((t%T)+T)%T;
+  const w=track(t,KW), h=track(t,KH), r=track(t,KR), z=track(t,KZ,1.7,0.92);
+  const sh=$('shape'); sh.style.width=w+'px'; sh.style.height=h+'px'; sh.style.left=(540-w/2)+'px'; sh.style.top=(1180-h/2)+'px'; sh.style.borderRadius=Math.min(r,w/2,h/2)+'px'; sh.style.background=ctrack(t,KC);
+  $('world').style.transform=`scale(${z})`;
+  const seen={}; CW.forEach(cw=>{ const v=vis(t,cw); if(!seen[cw.id]||v.o>seen[cw.id].o) seen[cw.id]=v; });
+  Object.entries(seen).forEach(([id,v])=>{ const el=$(id); el.style.opacity=v.o; el.style.filter=v.b>0.05?`blur(${v.b}px)`:'none'; el.style.left=((w-parseFloat(el.style.width))/2)+'px'; el.style.top=(id==='c_cmd'?0:(h-parseFloat(el.style.height))/2)+'px'; });
+  // command typing
+  { const t0=0.75, n=Math.max(0,Math.min(MSG.length,Math.floor((t-t0)/0.07)+(t>=t0?1:0)));
+    $('cmdtext').textContent=n?MSG.slice(Math.max(0,n-22),n):'AI에게 일 맡기기…'; $('cmdtext').style.color=n?B:'#9A978F';
+    $('cmdcaret').style.opacity=(t<3.5&&(Math.floor(t*4)%2===0||(n>0&&n<MSG.length)))?1:0; }
+  // toggle (two edges)
+  { const L=track(t,[[0,7],[3.06,61]],3.0,0.8), R=track(t,[[0,59],[3.0,113]],3.0,0.8); $('tgk').style.left=L+'px'; $('tgk').style.width=(R-L)+'px'; $('tg').style.background=ctrack(t,[[0,'#CFCBC3'],[3.0,OR]],3,0.9);
+    $('run').style.background=(t>=3.5&&t<3.62)?OR:B; }
+  $('arc').setAttribute('transform',`rotate(${(t*720)%360} 75 75)`);
+  // browser: tabs (liquid), lists, scroll by drag
+  { const tl=track(t,[[0,8],[8.57,422]],2.8,0.8), tr=track(t,[[0,422],[8.5,852]],2.8,0.8); $('tind').style.left=tl+'px'; $('tind').style.width=(tr-tl)+'px';
+    const onB=t>=8.55; document.querySelectorAll('.tl').forEach((e,i)=>e.style.color=(i===(onB?1:0))?'#F2F1EE':B);
+    $('url').textContent=onB?'gift.kakao.com/event':'musinsa.com/review';
+    // drag: list follows cursor while held, springs to rest on release
+    const [,cy]=cur(t), [,cy0]=cur(DRAG[0]); let sc=0;
+    if(t>=DRAG[0]&&t<=DRAG[1]) sc=clamp(cy-cy0,-300,0);
+    else if(t>DRAG[1]){ const rel=clamp(cur(DRAG[1])[1]-cy0,-300,0); sc=rel+(-260-rel)*S(t-DRAG[1],2.6,0.8); }
+    const sw=sm((t-8.5)/0.2);
+    $('listA').style.transform=`translateY(${sc}px)`; $('listA').style.opacity=1-sw; $('listA').style.filter=sw>0.02&&sw<0.98?`blur(${6*sw}px)`:'none';
+    $('listB').style.opacity=sw; $('listB').style.filter=sw>0.02&&sw<0.98?`blur(${6*(1-sw)}px)`:'none';
+    LA.forEach((c,i)=>{ const e=$('cA'+i); const k=sm((t-5.1-i*0.05)/0.2); e.style.opacity=k; e.style.transform=`translateY(${(1-S(t-5.1-i*0.05))*40}px)`; });
+    LB.forEach((c,i)=>{ const e=$('rB'+i); e.style.transform=`translateY(${(1-S(t-8.55-i*0.05))*40}px)`; });
+    const setBtn=(id,state)=>{ const b=$(id); if(state==='apply'){b.textContent='신청 완료 ✓';b.style.background=OR;b.style.color=B;} else if(state==='skip'){b.textContent='건너뜀';b.style.background='#E3E0D9';b.style.color='#8A877F';} else {b.textContent='신청하기';b.style.background=B;b.style.color='#F2F1EE';} };
+    const idle=(id,st)=>{ if(st==='OPEN') setBtn(id,'idle'); else { const b=$(id); b.textContent=st==='신청함'?'신청함':'모집 마감'; b.style.background='#E3E0D9'; b.style.color='#8A877F'; } };
+    LA.forEach((c,i)=>idle('bA'+i,c[1])); LB.forEach((c,i)=>idle('bB'+i,c[1]));
+    ACT.forEach(a=>{ if(t>=a[0]) setBtn((a[1]==='A'?'bA':'bB')+a[2],a[3]?'apply':'skip'); });
+  }
+  // result
+  { const applied=ACT.filter(a=>a[3]).length; const k=Math.min(applied,Math.floor(clamp((t-10.75)/1.0)*applied+0.0001)+(t>=10.75?1:0)-0); $('resn').textContent=Math.min(applied,Math.max(0,k));
+    const rows=[['무신사','2건'],['카카오 선물하기','2건'],['건너뜀 (마감·중복)','5건']];
+    $('resrows').innerHTML=rows.map((x,i)=>`<div style="display:flex;justify-content:space-between;opacity:${sm((t-11.0-i*0.15)/0.15)}"><span style="color:#B5B2AA">${x[0]}</span><span style="color:${i<2?OR:'#F2F1EE'}">${x[1]}</span></div>`).join(''); }
+  $('tprog').style.width=(880*clamp((t-12.2)/1.6))+'px';
+  // captions
+  { let idx=-1; PC.forEach((c,i)=>{ if(t>=c[0]) idx=i; });
+    let chars,n,op=1,bl=0,typing=false;
+    if(idx===-1){ chars=PC[PC.length-1][1]; n=999; const ex=clamp((t-(PC[0][0]-0.1))/0.1); op=1-ex; bl=10*ex; }
+    else { const [c0,ch]=PC[idx]; chars=ch; n=Math.floor((t-c0)/CPS)+1; typing=n<ch.length; const nx=idx<PC.length-1?PC[idx+1][0]:T+9; const ex=clamp((t-(nx-0.1))/0.1); op=1-ex; bl=10*ex; }
+    $('cap').innerHTML=chars.slice(0,Math.min(n,chars.length)).map(([c,hh])=>c==='\n'?'<br>':`<span style="color:${hh?OR:B}">${c}</span>`).join('')+'<span id="caret"></span>';
+    $('cap').style.opacity=op; $('cap').style.filter=bl>0.05?`blur(${bl}px)`:'none'; $('caret').style.opacity=(typing||Math.floor(t*2.5)%2===0)?1:0; }
+  // beats
+  { const bi=Math.floor(t/BEAT)%4, bp=(t%BEAT)/BEAT; document.querySelectorAll('#beats i').forEach((e,i)=>e.style.background=i===bi?(bp<0.5?OR:'#E7A27A'):'#CFCBC3'); }
+  // cursor: one cursor, turns into the AI cursor while the agent works
+  { const [x,y]=cur(t); const sx=540+(x-540)*z, sy=1180+(y-1180)*z; let s=1;
+    CLICKS.forEach(c=>{ const d=t-c; if(d>-0.05&&d<0.13) s=Math.min(s,0.82+0.18*Math.abs(d-0.02)/0.11); });
+    if(t>=DRAG[0]&&t<=DRAG[1]) s=0.86;
+    $('cursor').style.transform=`translate(${sx-4}px,${sy-4}px) scale(${clamp(s,0.8,1)})`;
+    const ai=sm((t-4.1)/0.2)*(1-sm((t-10.5)/0.2)); $('cpath').setAttribute('fill',ai>0.5?OR:B);
+    $('ctag').style.opacity=ai; $('ctag').style.transform=`scale(${0.6+0.4*ai})`; $('ctag').style.transformOrigin='left top'; }
+}
+window.seek=seek; seek(0);
+</script>
+</body>
+</html>
