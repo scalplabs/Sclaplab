@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@500;600&display=swap">
+<style>
+@font-face{font-family:'Pretendard';font-weight:500;src:url('FONTDIR/Pretendard-Medium.woff2') format('woff2')}
+@font-face{font-family:'Pretendard';font-weight:700;src:url('FONTDIR/Pretendard-Bold.woff2') format('woff2')}
+@font-face{font-family:'Pretendard';font-weight:800;src:url('FONTDIR/Pretendard-ExtraBold.woff2') format('woff2')}
+html,body{margin:0;background:#0B0B0A}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:#0B0B0A;font-family:'Geist','Pretendard',sans-serif;color:#F2F1EE}
+.mono{font-family:'Geist Mono',monospace}
+#dots{position:absolute;inset:0;background-image:radial-gradient(rgba(242,241,238,.07) 1.5px,transparent 1.6px);background-size:40px 40px}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:540px 1150px}
+#shape{position:absolute;overflow:hidden}
+.c{position:absolute;left:0;top:0;opacity:0}
+#hud-top{position:absolute;left:80px;right:80px;top:150px;display:flex;justify-content:space-between;align-items:center;font-size:22px;letter-spacing:.14em;color:#77756F}
+#beats{display:flex;gap:10px}
+#beats i{display:block;width:12px;height:12px;border-radius:6px;background:#2A2927}
+#cap{position:absolute;left:80px;right:80px;top:260px;font-family:'Pretendard','Geist',sans-serif;font-weight:800;font-size:104px;line-height:1.12;letter-spacing:-.04em;white-space:pre-wrap;min-height:240px}
+#caret{display:inline-block;width:10px;height:96px;background:#FF5A00;vertical-align:-10px;margin-left:6px}
+#foot{position:absolute;left:80px;right:80px;bottom:150px;display:flex;justify-content:space-between;font-size:22px;letter-spacing:.1em;color:#77756F}
+#cursor{position:absolute;left:0;top:0;width:44px;height:44px;transform-origin:4px 4px}
+.lbl{font-family:'Geist Mono',monospace;font-size:20px;font-weight:600;letter-spacing:.12em;color:#8A877F}
+.k{font-family:'Pretendard','Geist',sans-serif}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="dots"></div>
+  <div id="world">
+    <div id="shape">
+      <!-- 0 button -->
+      <div class="c" id="c_btn" style="width:360px;height:112px;display:flex;align-items:center;justify-content:center;gap:14px">
+        <span class="k" style="font-size:38px;font-weight:800;color:#0B0B0A;letter-spacing:-.02em">결론 보기</span>
+        <svg width="30" height="30" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="#0B0B0A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <!-- 1 loader -->
+      <div class="c" id="c_load" style="width:120px;height:120px">
+        <svg width="120" height="120" viewBox="0 0 120 120"><circle cx="60" cy="60" r="30" fill="none" stroke="#D6D3CC" stroke-width="8"/><circle id="arc" cx="60" cy="60" r="30" fill="none" stroke="#0B0B0A" stroke-width="8" stroke-linecap="round" stroke-dasharray="60 200"/></svg>
+      </div>
+      <!-- 2 check -->
+      <div class="c" id="c_check" style="width:120px;height:120px">
+        <svg width="120" height="120" viewBox="0 0 120 120"><path id="ck" d="M38 61 L54 76 L84 44" fill="none" stroke="#0B0B0A" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="80" stroke-dashoffset="80"/></svg>
+      </div>
+      <!-- 3 number -->
+      <div class="c" id="c_num" style="width:820px;height:460px;padding:56px 60px;box-sizing:border-box;color:#0B0B0A">
+        <div style="display:flex;justify-content:space-between"><span class="lbl">USD / KRW</span><span class="lbl">11.04 기준</span></div>
+        <div style="display:flex;align-items:baseline;gap:14px;margin-top:34px"><span id="num" style="font-size:190px;font-weight:700;letter-spacing:-.05em;line-height:1">1,555</span><span class="k" style="font-size:56px;font-weight:800">원</span></div>
+        <div id="numtag" style="display:inline-flex;margin-top:34px;padding:14px 22px;border-radius:999px;background:#0B0B0A;color:#F2F1EE;font-size:34px;font-weight:600"><span class="k" style="font-weight:800">6월보다&nbsp;</span><span style="color:#FF5A00">−215원</span></div>
+      </div>
+      <!-- 4 chart -->
+      <div class="c" id="c_chart" style="width:900px;height:600px;color:#0B0B0A">
+        <div style="position:absolute;left:56px;top:48px" class="lbl">2026 원·달러</div>
+        <svg width="900" height="600" viewBox="0 0 900 600" style="position:absolute;left:0;top:0">
+          <line x1="56" y1="520" x2="844" y2="520" stroke="#D6D3CC" stroke-width="2"/>
+          <path id="cline" d="M 70 330 C 170 300, 250 150, 330 140 C 420 130, 520 330, 640 450 C 690 495, 740 470, 830 440" fill="none" stroke="#0B0B0A" stroke-width="7" stroke-linecap="round"/>
+          <circle id="cp1" cx="330" cy="140" r="12" fill="#0B0B0A"/>
+          <circle id="cp2" cx="830" cy="440" r="14" fill="#FF5A00"/>
+        </svg>
+        <div style="position:absolute;left:62px;top:356px;font-size:22px;color:#8A877F" class="k">연초 1,440원대</div>
+        <div id="tip1" style="position:absolute;left:250px;top:44px;padding:12px 18px;border-radius:14px;background:#0B0B0A;color:#F2F1EE;font-size:30px;font-weight:600;opacity:0"><span class="k">6월</span> 1,555</div>
+        <div id="tip2" style="position:absolute;left:600px;top:340px;padding:12px 18px;border-radius:14px;background:#FF5A00;color:#0B0B0A;font-size:30px;font-weight:700;opacity:0"><span class="k">지금</span> 1,340</div>
+        <div style="position:absolute;left:56px;right:56px;top:540px;display:flex;justify-content:space-between;font-size:20px;color:#8A877F" class="mono"><span>JAN</span><span>JUN</span><span>OCT</span><span>NOV</span></div>
+      </div>
+      <!-- 5 slider -->
+      <div class="c" id="c_slider" style="width:900px;height:320px;color:#0B0B0A">
+        <div style="position:absolute;left:60px;top:48px" class="lbl k">환전 금액</div>
+        <div id="sval" style="position:absolute;right:60px;top:30px;font-size:64px;font-weight:700;letter-spacing:-.03em">$0</div>
+        <div id="strack" style="position:absolute;left:60px;top:182px;height:16px;border-radius:8px;background:#D6D3CC"></div>
+        <div id="sfill" style="position:absolute;left:60px;top:182px;height:16px;border-radius:8px;background:#0B0B0A"></div>
+        <div id="sknob" style="position:absolute;top:160px;width:60px;height:60px;border-radius:30px;background:#0B0B0A"></div>
+        <div id="ssave" class="k" style="position:absolute;left:60px;top:246px;font-size:32px;font-weight:800">6월보다 <span style="color:#FF5A00" id="ssavev">0만 원</span> 아낌</div>
+      </div>
+      <!-- 6 toggle -->
+      <div class="c" id="c_toggle" style="width:340px;height:170px">
+        <div id="tknob" style="position:absolute;top:15px;height:140px;border-radius:70px;background:#F2F1EE;box-shadow:0 4px 14px rgba(0,0,0,.18)"></div>
+      </div>
+      <!-- 7 tabs -->
+      <div class="c" id="c_tabs" style="width:900px;height:150px">
+        <div id="tind" style="position:absolute;top:15px;height:120px;border-radius:60px;background:#0B0B0A"></div>
+        <div style="position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;text-align:center;font-size:40px;font-weight:800" class="k">
+          <span class="tlab">환전</span><span class="tlab">직구</span><span class="tlab">해외결제</span>
+        </div>
+      </div>
+      <!-- 8 warn -->
+      <div class="c" id="c_warn" style="width:900px;height:560px;padding:60px;box-sizing:border-box;color:#0B0B0A">
+        <div class="lbl">NOTE</div>
+        <div class="k" style="margin-top:22px;font-size:80px;font-weight:800;letter-spacing:-.04em;line-height:1.1"><span style="color:#FF5A00">단,</span> 더 내려갈<br>수도 있어요</div>
+        <div style="margin-top:46px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px">
+          <div><div style="height:20px;border-radius:10px;background:#D6D3CC;overflow:hidden"><div class="seg" style="height:20px;width:0;background:#0B0B0A"></div></div><div class="k" style="margin-top:14px;font-size:26px;font-weight:700">1차</div></div>
+          <div><div style="height:20px;border-radius:10px;background:#D6D3CC;overflow:hidden"><div class="seg" style="height:20px;width:0;background:#0B0B0A"></div></div><div class="k" style="margin-top:14px;font-size:26px;font-weight:700">2차</div></div>
+          <div><div style="height:20px;border-radius:10px;background:#D6D3CC;overflow:hidden"><div class="seg" style="height:20px;width:0;background:#FF5A00"></div></div><div class="k" style="margin-top:14px;font-size:26px;font-weight:700">3차</div></div>
+        </div>
+      </div>
+      <!-- 9 cmdk -->
+      <div class="c" id="c_cmdk" style="width:900px;height:590px;color:#0B0B0A">
+        <div style="position:absolute;left:44px;right:44px;top:0;height:150px;display:flex;align-items:center;gap:22px">
+          <svg width="40" height="40" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="#0B0B0A" stroke-width="2.2"/><path d="M16.5 16.5L21 21" stroke="#0B0B0A" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <span id="qtext" class="k" style="font-size:46px;font-weight:700"></span><span id="qcaret" style="width:4px;height:52px;background:#0B0B0A"></span>
+          <span class="mono" style="margin-left:auto;font-size:24px;color:#8A877F;border:2px solid #D6D3CC;border-radius:10px;padding:6px 12px">⌘K</span>
+        </div>
+        <div id="qline" style="position:absolute;left:0;right:0;top:150px;height:2px;background:#E3E0D9"></div>
+        <div id="qres" style="position:absolute;left:24px;right:24px;top:166px"></div>
+      </div>
+      <!-- 10 toast -->
+      <div class="c" id="c_toast" style="width:860px;height:170px">
+        <div style="position:absolute;left:34px;top:35px;width:100px;height:100px;border-radius:50px;background:#FF5A00;display:flex;align-items:center;justify-content:center">
+          <svg width="46" height="46" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="#0B0B0A" stroke-width="2.2" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="k" style="position:absolute;left:162px;top:34px;font-size:40px;font-weight:800;color:#0B0B0A;letter-spacing:-.02em">댓글에 <span style="color:#FF5A00">'환율'</span> 남기면</div>
+        <div class="k" style="position:absolute;left:162px;top:92px;font-size:30px;font-weight:700;color:#8A877F">알림 거는 법 DM으로 드려요</div>
+        <div id="tprog" style="position:absolute;left:0;bottom:0;height:6px;background:#0B0B0A"></div>
+      </div>
+    </div>
+  </div>
+  <div id="hud-top" class="mono"><span>ADMAN · ECON BRIEF</span><span id="beats"><i></i><i></i><i></i><i></i></span></div>
+  <div id="cap"></div>
+  <div id="foot" class="mono"><span>@adman_park</span><span>USD/KRW · 11.04</span></div>
+  <svg id="cursor" viewBox="0 0 44 44"><path d="M5 3 L5 33 L13 25 L19 39 L25 36 L19 23 L30 23 Z" fill="#F2F1EE" stroke="#0B0B0A" stroke-width="2.4" stroke-linejoin="round"/></svg>
+</div>
+<script>
+// ---------- time + springs (pure functions of t) ----------
+const BPM=120, BEAT=60/BPM, BAR=4*BEAT, T=20;
+const tb=(bar,beat=0)=>bar*BAR+beat*BEAT;
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const sm=x=>{x=clamp(x);return x*x*(3-2*x)};
+function S(t,f=2.4,z=0.86){ if(t<=0) return 0; const w=2*Math.PI*f, wd=w*Math.sqrt(1-z*z); return 1-Math.exp(-z*w*t)*(Math.cos(wd*t)+(z*w/wd)*Math.sin(wd*t)); }
+// keys: [[time,value],...] ; value = v0 + sum (vi - vi-1)*S(t-ti)
+function track(t,keys,f,z){ let v=keys[0][1]; for(let i=1;i<keys.length;i++) v+=(keys[i][1]-keys[i-1][1])*S(t-keys[i][0],f,z); return v; }
+function hex(h){return [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]}
+function ctrack(t,keys,f,z){ const r=track(t,keys.map(k=>[k[0],hex(k[1])[0]]),f,z),g=track(t,keys.map(k=>[k[0],hex(k[1])[1]]),f,z),b=track(t,keys.map(k=>[k[0],hex(k[1])[2]]),f,z); return `rgb(${clamp(r,0,255)|0},${clamp(g,0,255)|0},${clamp(b,0,255)|0})`; }
+
+// ---------- shape states (world center 540,1150) ----------
+const W='#F2F1EE', OR='#FF5A00', TG='#3A3936';
+const ST=[ // time, w, h, r, color, zoom, content id
+ [0,      360,112,56, W, 1.70,'c_btn'],
+ [tb(0,1),120,120,60, W, 2.20,'c_load'],
+ [tb(0,3),120,120,60, OR,2.20,'c_check'],
+ [tb(1),  820,460,44, W, 1.05,'c_num'],
+ [tb(2),  900,600,40, W, 1.00,'c_chart'],
+ [tb(3),  900,320,40, W, 1.00,'c_slider'],
+ [tb(4),  340,170,85, TG,2.10,'c_toggle'],
+ [tb(5),  900,150,75, W, 1.00,'c_tabs'],
+ [tb(6),  900,560,44, W, 1.00,'c_warn'],
+ [tb(7),  900,150,30, W, 1.00,'c_cmdk'],
+ [tb(8),  860,170,85, W, 1.00,'c_toast'],
+ [tb(9),  360,112,56, W, 1.70,'c_btn2'],
+];
+// extra keys inside states
+const toggleFlips=[tb(4,1),tb(4,2),tb(4,3)]; // on, off, on
+const cmdkH=[[tb(7),150],[tb(7,1),490],[tb(7,1)+0.11,390],[tb(7,1)+0.33,290],[tb(8),170]];
+function shapeKeys(i){ return ST.map(s=>[s[0],s[i]]); }
+const KW=shapeKeys(1), KH=(()=>{const k=shapeKeys(2);const out=[];k.forEach(e=>{out.push(e); if(e[0]===tb(7)){cmdkH.slice(1,4).forEach(x=>out.push(x));}});return out.sort((a,b)=>a[0]-b[0]);})();
+const KR=shapeKeys(3), KZ=shapeKeys(5);
+const KC=(()=>{const k=ST.map(s=>[s[0],s[4]]); toggleFlips.forEach((ft,j)=>k.push([ft, j%2===0?OR:TG])); return k.sort((a,b)=>a[0]-b[0]);})();
+
+// content windows
+const CW=[]; ST.forEach((s,i)=>{ const id=s[6]==='c_btn2'?'c_btn':s[6]; const end=i<ST.length-1?ST[i+1][0]:T+1; CW.push({id,tin:s[0],tout:end,first:i===0}); });
+
+// ---------- cursor path (world coords) ----------
+const CX0=760, CY0=1330;
+const knobX0=60+30, trackLen=780; // relative to slider card
+const sliderLeft=540-450, sliderTop=1150-160;
+const CUR=[ // time, x, y
+ [0,CX0,CY0],[0.10,560,1160],[0.70,720,1320],
+ [tb(1,1),640,1330],[tb(1,3)-0.15,330,1290],
+ [tb(2,2)-0.15,420,995],[tb(2,3)-0.15,920,1295],[tb(2,3)+0.12,sliderLeft+knobX0,sliderTop+190],
+ 
+ [tb(3,2)-0.1,sliderLeft+60+trackLen,sliderTop+195],[tb(3,2)+0.35,sliderLeft+60+trackLen+170,sliderTop+200],
+ [tb(3,3)+0.15,860,1340],
+ [tb(4,1)-0.22,600,1180],
+ [tb(5,1)-0.22,540,1160],[tb(5,2)-0.22,840,1160],[tb(5,3)-0.22,240,1160],
+ [tb(6,1),760,1360],
+ [tb(7),900,1500],
+ [tb(8,1),700,1220],
+ [tb(9),CX0,CY0]
+];
+const clicks=[tb(0,1),tb(4,1),tb(4,2),tb(4,3),tb(5,1),tb(5,2),tb(5,3)];
+const holdStart=tb(3,0)+0.05, holdEnd=tb(3,3);
+function cursorAt(t){ return [track(t,CUR.map(k=>[k[0],k[1]]),2.0,0.9), track(t,CUR.map(k=>[k[0],k[2]]),2.0,0.9)]; }
+
+// ---------- captions (typewriter) ----------
+const CAPS=[
+ [tb(1),'원·달러 **1,340원대**'],
+ [tb(2),'6월보다\n**200원** 넘게 ↓'],
+ [tb(3),'$1,000 바꾸면\n**약 21만 원** 아낌'],
+ [tb(4),'6월 vs 지금\n**차이** 확인'],
+ [tb(5),'환전·직구·해외결제\n**지금이 유리**'],
+ [tb(6),'단, 더 내려갈 수도\n→ **나눠서** 바꾸기'],
+ [tb(7),'환율 **알림**\n걸어두면 끝'],
+ [tb(8),"댓글에 **'환율'**\n남기면 DM"],
+ [tb(9),'결론: **해외 결제,**\n지금이 싸다'],
+];
+const CPS=0.042; // seconds per char
+function parseCap(s){ const out=[]; let hot=false; for(let i=0;i<s.length;i++){ if(s[i]==='*'&&s[i+1]==='*'){hot=!hot;i++;continue;} out.push([s[i],hot]); } return out; }
+const PC=CAPS.map(c=>[c[0],parseCap(c[1])]);
+function capAt(t){
+  // returns html
+  let idx=-1; for(let i=0;i<PC.length;i++) if(t>=PC[i][0]) idx=i;
+  if(idx===-1){ const ex=clamp((t-(PC[0][0]-0.1))/0.1); return {chars:PC[PC.length-1][1],n:999,blur:ex*10,op:1-ex,typing:false}; } // t<2 : conclusion from loop end
+  const [t0,chars]=PC[idx]; const n=Math.floor((t-t0)/CPS)+1;
+  // exit of this caption just before next
+  const next=idx<PC.length-1?PC[idx+1][0]:T+10; const ex=clamp((t-(next-0.1))/0.1);
+  return {chars,n,blur:ex*10,op:1-ex,typing:n<chars.length};
+}
+function capHTML(c){ const k=Math.min(c.n,c.chars.length); return c.chars.slice(0,k).map(([ch,h])=>ch==='\n'?'<br>':`<span style="color:${h?'#FF5A00':'#F2F1EE'}">${ch==='<'?'&lt;':ch}</span>`).join(''); }
+
+// ---------- content enter/exit ----------
+function contentVis(t,w){
+  if(w.first && t<w.tout){ // first state visible at t=0
+    const ex=clamp((t-w.tout)/0.1+1); return t>=w.tout-0.1?{o:1-ex,b:ex*8}:{o:1,b:0};
+  }
+  const a=clamp((t-w.tin-0.08)/0.16), ex=clamp((t-(w.tout-0.1))/0.1);
+  if(t<w.tin||t>=w.tout) return {o:0,b:8};
+  return {o:sm(a)*(1-ex), b:8*(1-sm(a))+8*ex};
+}
+
+const $=id=>document.getElementById(id);
+const qItems=['환율 알림 받기','환전 수수료 비교','해외결제 카드 고르기','환율 그래프 보기'];
+const qStr='환율 알림';
+function seek(t){
+  t=((t%T)+T)%T;
+  // shape geometry
+  const w=track(t,KW), h=track(t,KH), r=track(t,KR), z=track(t,KZ,1.6,0.92);
+  const sh=$('shape'); sh.style.width=w+'px'; sh.style.height=h+'px'; sh.style.left=(540-w/2)+'px'; sh.style.top=(1150-h/2)+'px';
+  sh.style.borderRadius=Math.min(r,h/2,w/2)+'px'; sh.style.background=ctrack(t,KC);
+  $('world').style.transform=`scale(${z})`;
+  // contents
+  const seen={};
+  CW.forEach(cw=>{ const v=contentVis(t,cw); const el=$(cw.id); if(!seen[cw.id]) seen[cw.id]={o:0,b:8}; if(v.o>seen[cw.id].o) seen[cw.id]=v; });
+  Object.entries(seen).forEach(([id,v])=>{ const el=$(id); el.style.opacity=v.o; el.style.filter=v.b>0.05?`blur(${v.b}px)`:'none';
+    el.style.left=((w-parseFloat(el.style.width))/2)+'px'; el.style.top=(id==='c_cmdk'?0:(h-parseFloat(el.style.height))/2)+'px'; });
+  // loader arc
+  $('arc').setAttribute('transform',`rotate(${(t*720)%360} 60 60)`);
+  // check draw
+  $('ck').style.strokeDashoffset=80*(1-sm((t-tb(0,3)-0.1)/0.25));
+  // number count
+  { const p=sm((t-tb(1)-0.1)/1.0); $('num').textContent=Math.round(1555-(1555-1340)*p).toLocaleString('en-US');
+    const tg=$('numtag'); const a=sm((t-tb(1,2))/0.2); tg.style.opacity=a; tg.style.transform=`translateY(${(1-S(t-tb(1,2)))*30}px)`;
+    const hov=sm((t-tb(1,3))/0.15); tg.style.background=hov>0.5?'#FF5A00':'#0B0B0A'; tg.style.color=hov>0.5?'#0B0B0A':'#F2F1EE'; tg.querySelector('span:last-child').style.color=hov>0.5?'#0B0B0A':'#FF5A00'; }
+  // chart
+  { const L=$('cline').getTotalLength(); const p=sm((t-tb(2)-0.05)/(BEAT*2)); $('cline').style.strokeDasharray=L; $('cline').style.strokeDashoffset=L*(1-p);
+    $('cp1').style.opacity=p>0.35?1:0; $('cp2').style.opacity=p>0.98?1:0;
+    const t1=sm((t-tb(2,2))/0.15)*(1-sm((t-tb(2,3))/0.12)), t2=sm((t-tb(2,3))/0.15);
+    $('tip1').style.opacity=t1; $('tip1').style.transform=`translateY(${(1-S(t-tb(2,2)))*16}px)`;
+    $('tip2').style.opacity=t2; $('tip2').style.transform=`translateY(${(1-S(t-tb(2,3)))*16}px)`; }
+  // slider: direct manipulation
+  { const [cx]=cursorAt(t); const rel=cx-sliderLeft; let kx, stretch=0;
+    const end=60+trackLen-30; // knob center max
+    if(t<holdStart){ kx=knobX0; }
+    else if(t<=holdEnd){ kx=knobX0+(rel-(cursorAt(holdStart)[0]-sliderLeft)); if(kx>end){ stretch=(kx-end)*0.35; kx=end+stretch; } kx=Math.max(knobX0,kx); }
+    else { const [rx]=cursorAt(holdEnd); let k0=knobX0+(rx-cursorAt(holdStart)[0]); let s0=0; if(k0>end){s0=(k0-end)*0.35;} kx=end+s0*(1-S(t-holdEnd,2.6,0.75)); stretch=s0*(1-S(t-holdEnd,2.6,0.75)); }
+    const val=t>holdEnd?1000:Math.round(clamp((Math.min(kx,end)-knobX0)/(end-knobX0))*1000);
+    $('sknob').style.left=(kx-30)+'px'; $('strack').style.width=(trackLen+stretch)+'px'; $('sfill').style.width=(kx-60)+'px';
+    $('sval').textContent='$'+val.toLocaleString('en-US'); $('ssavev').textContent=Math.floor(val*215.8/10000)+'만 원';
+    const held=t>=holdStart&&t<=holdEnd; $('sknob').style.transform=`scale(${held?1.12:1})`; }
+  // toggle knob: two edges on different springs
+  { let onL=[[0,15]], onR=[[0,155]]; toggleFlips.forEach((ft,j)=>{ const on=j%2===0; onL.push([ft+(on?0.06:0), on?185:15]); onR.push([ft+(on?0:0.06), on?325:155]); });
+    const L=track(t,onL,3.0,0.8), R=track(t,onR,3.0,0.8); $('tknob').style.left=L+'px'; $('tknob').style.width=(R-L)+'px'; }
+  // tabs liquid indicator
+  { const cols=[[15,295],[305,595],[605,885]]; const seq=[[tb(5),0],[tb(5,1),1],[tb(5,2),2],[tb(5,3),0]];
+    const lk=[[0,cols[0][0]]], rk=[[0,cols[0][1]]]; for(let i=1;i<seq.length;i++){ const fwd=seq[i][1]>seq[i-1][1]; const c=cols[seq[i][1]]; lk.push([seq[i][0]+(fwd?0.07:0),c[0]]); rk.push([seq[i][0]+(fwd?0:0.07),c[1]]); }
+    const L=track(t,lk,2.8,0.8), R=track(t,rk,2.8,0.8); $('tind').style.left=L+'px'; $('tind').style.width=(R-L)+'px';
+    let active=0; seq.forEach(s=>{ if(t>=s[0]+0.05) active=s[1]; });
+    document.querySelectorAll('.tlab').forEach((e,i)=>{ e.style.color=i===active?'#F2F1EE':'#0B0B0A'; }); }
+  // warn segments
+  document.querySelectorAll('.seg').forEach((e,i)=>{ e.style.width=(100*sm((t-tb(6,i+1))/0.22))+'%'; });
+  // cmdk typing + filter
+  { const t0=tb(7,1); const typed=Math.max(0,Math.min(qStr.length,Math.floor((t-t0)/0.11)+ (t>=t0?1:0)));
+    const q=qStr.slice(0,typed); $('qtext').textContent=q||''; $('qcaret').style.opacity=(Math.floor(t*4)%2===0)?1:0;
+    const ph=!q; if(ph){$('qtext').textContent='무엇을 찾을까요?'; $('qtext').style.color='#B5B2AA';} else $('qtext').style.color='#0B0B0A';
+    const words=q.replace(/\s+/g,' ').trim(); const list=qItems.filter(it=>!words||it.startsWith(words)||it.includes(words));
+    const enter=t>=tb(7,3);
+    $('qres').innerHTML=list.map((it,i)=>`<div class="k" style="height:100px;display:flex;align-items:center;padding:0 24px;border-radius:20px;font-size:38px;font-weight:700;background:${i===0?(enter?'#FF5A00':'#ECE9E3'):'transparent'};color:#0B0B0A">${it}<span class="mono" style="margin-left:auto;font-size:22px;color:#8A877F">${i===0?'↵':''}</span></div>`).join(''); }
+  // toast progress
+  $('tprog').style.width=(860*clamp((t-tb(8)-0.2)/(BAR-0.4)))+'px';
+  // captions
+  { const c=capAt(t); const cap=$('cap'); cap.innerHTML=capHTML(c)+'<span id="caret"></span>'; cap.style.opacity=c.op; cap.style.filter=c.blur>0.05?`blur(${c.blur}px)`:'none';
+    $('caret').style.opacity=(c.typing||Math.floor(t*2.5)%2===0)?1:0; }
+  // beat dots
+  { const bi=Math.floor(t/BEAT)%4, bp=(t%BEAT)/BEAT; document.querySelectorAll('#beats i').forEach((e,i)=>{ e.style.background=i===bi?(bp<0.5?'#FF5A00':'#7A3A16'):'#2A2927'; }); }
+  // cursor (screen space)
+  { const [x,y]=cursorAt(t); const sx=540+(x-540)*z, sy=1150+(y-1150)*z; let sc=1;
+    clicks.forEach(ct=>{ const d=t-ct; if(d>-0.06&&d<0.14) sc=Math.min(sc,0.82+0.18*Math.abs(d-0.02)/0.12); });
+    if(t>=holdStart&&t<=holdEnd) sc=0.86;
+    const cu=$('cursor'); cu.style.transform=`translate(${sx-4}px,${sy-4}px) scale(${clamp(sc,0.8,1)})`;
+  }
+}
+window.seek=seek;
+seek(0);
+</script>
+</body>
+</html>
