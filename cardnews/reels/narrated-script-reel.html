@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700;800&family=Geist+Mono:wght@500;600&display=swap">
+<style>
+@font-face{font-family:'Pretendard';font-weight:500;src:url('FONTDIR/Pretendard-Medium.woff2') format('woff2')}
+@font-face{font-family:'Pretendard';font-weight:700;src:url('FONTDIR/Pretendard-Bold.woff2') format('woff2')}
+@font-face{font-family:'Pretendard';font-weight:800;src:url('FONTDIR/Pretendard-ExtraBold.woff2') format('woff2')}
+html,body{margin:0;background:#0B0B0A}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:#0B0B0A;color:#F2F1EE;font-family:'Pretendard','Geist',sans-serif}
+.mono{font-family:'Geist Mono',monospace}.g{font-family:'Geist','Pretendard',sans-serif}
+#grid{position:absolute;inset:-120px;background-image:linear-gradient(rgba(242,241,238,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(242,241,238,.04) 1px,transparent 1px);background-size:120px 120px}
+#hud{position:absolute;left:80px;right:80px;top:150px;display:flex;justify-content:space-between;font:600 22px 'Geist Mono',monospace;letter-spacing:.14em;color:#77756F}
+#panel{position:absolute;overflow:hidden;background:#161615;border:2px solid #2A2927}
+#scene{position:absolute;left:0;top:0;width:920px;height:960px}
+#sub{position:absolute;left:60px;right:60px;top:1340px;height:90px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;letter-spacing:-.03em;white-space:nowrap}
+#foot{position:absolute;left:80px;right:80px;bottom:140px;display:flex;justify-content:space-between;font:500 22px 'Geist Mono',monospace;letter-spacing:.1em;color:#5A5854}
+.lbl{font:600 22px 'Geist Mono',monospace;letter-spacing:.12em;color:#77756F}
+.ab{position:absolute}
+.card{position:absolute;border-radius:24px;background:#1F1E1C;border:2px solid #2A2927;box-sizing:border-box}
+.ln{height:16px;border-radius:8px;background:#3A3936;margin-top:16px}
+</style></head><body>
+<div id="stage">
+  <div id="grid"></div>
+  <div id="hud"><span>ADMAN · AI REPORT</span><span id="hudr">SCRIPT LAB</span></div>
+  <div id="panel"><div id="scene"></div></div>
+  <div id="sub"></div>
+  <div id="foot"><span>@adman_park</span><span>159 REELS ANALYZED</span></div>
+</div>
+<script>
+const SEGS=SEGS_JSON, T=TOTAL, AV='AVATAR';
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)), sm=x=>{x=clamp(x);return x*x*(3-2*x)};
+function S(t,f=2.4,z=0.84){ if(t<=0) return 0; const w=2*Math.PI*f, wd=w*Math.sqrt(1-z*z); return 1-Math.exp(-z*w*t)*(Math.cos(wd*t)+(z*w/wd)*Math.sin(wd*t)); }
+function track(t,k,f,z){ let v=k[0][1]; for(let i=1;i<k.length;i++) v+=(k[i][1]-k[i-1][1])*S(t-k[i][0],f,z); return v; }
+const $=id=>document.getElementById(id);
+const OR='#FF5A00';
+const ORDER=[]; SEGS.forEach(s=>{ if(!ORDER.length||ORDER[ORDER.length-1].id!==s.scene) ORDER.push({id:s.scene,t:s.start}); });
+const segsOf=id=>SEGS.filter(s=>s.scene===id);
+const SIZE={docs:[920,960,40],same:[920,960,40],steps:[920,820,40],copy:[920,820,40],dissect:[620,960,60],r0:[920,620,40],r1:[920,620,40],r2:[920,620,40],r3:[920,620,40],grid:[920,960,40],hooks:[920,960,40],fake:[760,700,40],fact:[920,700,40],guide:[860,820,40],cta:[860,760,40]};
+const PK=ORDER.map(o=>[o.t-0.12,...SIZE[o.id]]);
+const pop=(lt,a,d=0.18)=>({o:sm((lt-a)/0.08),s:0.86+0.14*S(lt-a,3,0.7)});
+const box=(x,y,w,h,inner,st='')=>`<div class="card" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;${st}">${inner}</div>`;
+const lines=(n,w=[90,70,80,60])=>Array.from({length:n},(_,i)=>`<div class="ln" style="width:${w[i%w.length]}%"></div>`).join('');
+function R(id,lt,t){
+  const sg=segsOf(id), at=k=>sg[k]?sg[k].start-sg[0].start:99;
+  if(id==='docs'){ // claude window + docs flying in
+    let h=`<div class="lbl ab" style="left:60px;top:56px">CLAUDE · NEW CHAT</div>`;
+    h+=box(60,560,800,330,`<div class="ab g" style="left:34px;top:30px;font-size:34px;font-weight:800">Claude</div><div class="ab" style="left:34px;right:34px;bottom:30px;height:84px;border-radius:20px;background:#2A2927;display:flex;align-items:center;padding:0 26px;font-size:28px;color:#8A877F">이 대본들 참고해서 써줘</div>`,'border-color:#3A3936');
+    for(let i=0;i<8;i++){ const a=0.1+i*0.16, p=S(lt-a,1.8,0.9); const x=80+(i%4)*200, y0=110+Math.floor(i/4)*190; const y=y0+p*(640-y0); const sc=1-0.6*p; const o=lt<a?0:(1-sm((p-0.85)/0.15));
+      h+=`<div class="card" style="left:${x}px;top:${y}px;width:170px;height:150px;padding:18px;opacity:${o};transform:scale(${sc});transform-origin:center"><div class="mono" style="font-size:18px;color:${OR}">HIT #${i+1}</div>${lines(3)}</div>`; }
+    h+=`<div class="ab g" style="right:60px;top:56px;font-size:28px;font-weight:800;color:${OR}">+${Math.min(48,Math.floor(lt*16))}</div>`;
+    return h; }
+  if(id==='same'){ let h=`<div class="lbl ab" style="left:60px;top:56px">OUTPUT × 3</div>`;
+    for(let i=0;i<3;i++){ const q=pop(lt,0.1+i*0.15); h+=`<div class="card" style="left:${60+i*275}px;top:160px;width:250px;height:560px;padding:26px;opacity:${q.o};transform:scale(${q.s})"><div class="mono" style="font-size:20px;color:#77756F">대본 ${i+1}</div><div style="margin-top:20px;font-size:28px;font-weight:800">"이거 모르면 손해"</div>${lines(6)}<div style="margin-top:26px;font-size:24px;color:#8A877F">댓글 남기면…</div></div>`; }
+    const st=pop(lt,0.9); h+=`<div class="ab" style="left:50%;top:470px;transform:translate(-50%,0) rotate(-8deg) scale(${st.s});opacity:${st.o};border:6px solid ${OR};color:${OR};padding:14px 40px;border-radius:16px;font-size:92px;font-weight:800;background:rgba(11,11,10,.7)">다 똑같음</div>`;
+    return h; }
+  if(id==='steps'){ const lab=[['1단계','훅 넣기'],['2단계','번호 매기기'],['3단계','댓글 달라고 하기']]; let h=`<div class="lbl ab" style="left:60px;top:56px">우리가 준 것 = 순서</div>`;
+    const chk=[at(2),at(2)+0.45,at(3)];
+    lab.forEach((l,i)=>{ const q=pop(lt,0.1+i*0.12); const on=lt>=chk[i]; h+=box(60,150+i*210,800,180,`<div class="ab mono" style="left:34px;top:34px;font-size:24px;color:${OR}">${l[0]}</div><div class="ab" style="left:34px;top:74px;font-size:52px;font-weight:800">${l[1]}</div><div class="ab" style="right:34px;top:50px;width:80px;height:80px;border-radius:20px;background:${on?OR:'#2A2927'};color:#0B0B0A;font-size:52px;font-weight:800;display:flex;align-items:center;justify-content:center">${on?'✓':''}</div>`,`opacity:${q.o};transform:scale(${q.s})`); });
+    return h; }
+  if(id==='copy'){ const topics=['환율','체험단','다이어트','피부','엑셀']; const k=Math.floor(lt/0.35)%topics.length; let h=`<div class="lbl ab" style="left:60px;top:56px">SAME TEMPLATE</div>`;
+    h+=box(60,140,800,420,`<div class="ab" style="left:40px;top:40px;font-size:30px;color:#8A877F">[훅]</div><div class="ab" style="left:40px;top:86px;font-size:58px;font-weight:800">"<span style="color:${OR}">${topics[k]}</span> 모르면 손해"</div><div class="ab" style="left:40px;top:190px;right:40px">${lines(3)}</div><div class="ab" style="left:40px;bottom:40px;font-size:30px;color:#8A877F">[번호] → [CTA]</div>`);
+    const q=pop(lt,at(2)); h+=`<div class="ab g" style="left:120px;top:600px;font-size:150px;font-weight:800;color:${OR};opacity:${q.o};transform:scale(${q.s})">왜?</div>`;
+    const e=pop(lt,at(3)); h+=`<div class="ab" style="right:100px;top:600px;width:200px;height:170px;border:5px dashed #5A5854;border-radius:20px;opacity:${e.o};transform:scale(${e.s});display:flex;align-items:center;justify-content:center;font-size:30px;color:#8A877F;font-weight:700">껍데기</div>`;
+    return h; }
+  if(id==='dissect'){ let h=''; const sp=sm((lt-0.3)/0.5); const parts=[['HOOK',0],['BODY',1],['CTA',2]];
+    parts.forEach((p,i)=>{ const glow=i===0&&lt>at(1); const dx=(i-1)*0*sp, dy=(i-1)*60*sp; h+=`<div class="card" style="left:110px;top:${100+i*260+dy}px;width:400px;height:250px;padding:28px;transform:translateX(${(i%2?1:-1)*40*sp}px);border-color:${glow?OR:'#2A2927'}"><div class="mono" style="font-size:22px;color:${glow?OR:'#77756F'}">${p[0]}</div>${lines(3)}</div>`; });
+    const q=pop(lt,at(1)+0.1); h+=`<div class="ab" style="left:110px;right:110px;bottom:40px;text-align:center;font-size:40px;font-weight:800;color:${OR};opacity:${q.o}">순서 말고 '기준'</div>`; return h; }
+  if(id==='r0'){ let h=`<div class="lbl ab" style="left:60px;top:56px">기준 1</div>`; const b=sm((lt-at(1))/0.3);
+    h+=box(60,140,800,150,`<div class="ab" style="left:34px;top:46px;font-size:48px;font-weight:800">첫 줄</div>`,`border-color:${OR}`);
+    h+=`<svg class="ab" style="left:420px;top:300px" width="80" height="110" viewBox="0 0 60 90"><path d="M30 4v70M10 56l20 22 20-22" fill="none" stroke="${OR}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="120" stroke-dashoffset="${120*(1-b)}"/></svg>`;
+    h+=box(60,420,800,150,`<div class="ab" style="left:34px;top:46px;font-size:48px;font-weight:800;opacity:${0.3+0.7*b}">둘째 줄도 보게 됨</div>`); return h; }
+  if(id==='r1'){ let h=`<div class="lbl ab" style="left:60px;top:56px">기준 2 · 예시</div>`; const k=sm((lt-0.5)/0.25);
+    h+=`<div class="ab" style="left:60px;top:200px;font-size:150px;font-weight:800;color:#5A5854;opacity:${1-k}">"많이"</div>`;
+    h+=`<div class="ab g" style="left:60px;top:200px;font-size:200px;font-weight:800;color:${OR};opacity:${k};transform:scale(${0.8+0.2*S(lt-0.5,3,0.6)});transform-origin:left">37%</div>`;
+    h+=`<div class="ab" style="left:60px;bottom:70px;font-size:40px;font-weight:700;color:#8A877F">막연한 말 → 숫자</div>`; return h; }
+  if(id==='r2'){ let h=`<div class="lbl ab" style="left:60px;top:56px">기준 3</div>`; const n=Math.min(6,Math.floor(lt/0.08));
+    h+=box(60,160,800,140,`<div class="ab" style="left:34px;top:42px;font-size:50px;font-weight:800">"${'다시 해 줘'.slice(0,n)}<span style="color:${OR}">|</span>"</div>`);
+    const q=pop(lt,at(1)); h+=`<div class="ab" style="left:460px;top:330px;font-size:120px;opacity:${q.o};transform:scale(${q.s}) rotate(-20deg);color:${OR}">☝</div>`;
+    h+=`<div class="ab" style="left:60px;bottom:70px;font-size:40px;font-weight:700;color:#8A877F;opacity:${q.o}">보는 사람이 지금 치는 문장 그대로</div>`; return h; }
+  if(id==='r3'){ const a=pop(lt,0.1), b=pop(lt,at(1)); let h='';
+    h+=box(60,120,380,380,`<div style="padding:40px;font-size:64px;font-weight:800;color:#5A5854">순서</div><div class="ab" style="left:40px;bottom:30px;font-size:140px;color:#5A5854">✕</div>`,`opacity:${a.o};transform:scale(${a.s})`);
+    h+=box(480,120,380,380,`<div style="padding:40px;font-size:64px;font-weight:800;color:${OR}">기준</div><div class="ab" style="left:40px;bottom:30px;font-size:140px;color:${OR}">✓</div>`,`opacity:${b.o};transform:scale(${b.s});border-color:${OR}`);
+    return h; }
+  if(id==='grid'){ let h=`<div class="lbl ab" style="left:60px;top:56px">REELS ANALYZED</div>`; const n=Math.min(159,Math.floor(clamp((lt-at(1))/1.2)*159));
+    const comp=sm((lt-at(3))/0.4);
+    for(let i=0;i<159;i++){ const c=i%14, r=Math.floor(i/14); const x=60+c*57, y=120+r*60; const tx=360+ (x-360)*(1-comp), ty=360+(y-360)*(1-comp);
+      h+=`<div class="ab" style="left:${tx}px;top:${ty}px;width:48px;height:52px;border-radius:8px;background:${i<n?(i%11===0?OR:'#3A3936'):'#1F1E1C'};opacity:${1-comp*0.9}"></div>`; }
+    h+=`<div class="ab g" style="left:60px;bottom:60px;font-size:96px;font-weight:800">${n}<span style="font-size:40px;color:#8A877F"> 개</span></div>`;
+    const d=pop(lt,at(3)+0.2); h+=box(250,250,420,420,`<div class="mono" style="padding:34px;font-size:22px;color:${OR}">PROMPT.md</div><div style="padding:0 34px;font-size:46px;font-weight:800">대본 원칙<br>프롬프트 1장</div><div style="padding:0 34px">${lines(4)}</div>`,`opacity:${d.o};transform:scale(${d.s});border-color:${OR};background:#161615`);
+    return h; }
+  if(id==='hooks'){ let h=''; const n=Math.min(9,Math.floor((lt-0.05)/0.09)); h+=box(60,60,800,110,`<div class="ab" style="left:30px;top:30px;font-size:40px;font-weight:800">${'주제: 내 소재'.slice(0,Math.max(0,Math.floor((lt-at(1))/0.08)))}</div>`);
+    const sc=[9.4,9.1,8.8,8.6,8.3,8.1,7.9,7.6,7.2,6.8];
+    for(let i=0;i<10;i++){ const q=pop(lt,at(2)+i*0.08); const x=60+(i%2)*410, y=200+Math.floor(i/2)*140; const scoreOn=lt>=at(3)+i*0.06;
+      h+=box(x,y,390,120,`<div class="ab mono" style="left:24px;top:22px;font-size:20px;color:#77756F">HOOK ${String(i+1).padStart(2,'0')}</div><div class="ab" style="left:24px;top:58px;right:120px">${lines(1,[90])}</div><div class="ab g" style="right:24px;top:34px;font-size:44px;font-weight:800;color:${i<3?OR:'#F2F1EE'};opacity:${scoreOn?1:0}">${sc[i].toFixed(1)}</div>`,`opacity:${q.o};transform:scale(${q.s});${i<3&&scoreOn?'border-color:'+OR:''}`); }
+    h+=`<div class="ab mono" style="right:60px;bottom:30px;font-size:20px;color:#5A5854">점수는 예시</div>`; return h; }
+  if(id==='fake'){ let h=`<div class="lbl ab" style="left:60px;top:56px">CLAUDE OUTPUT</div>`; const roll=lt<0.9?Math.floor(lt*40)%90+10:73;
+    h+=`<div class="ab g" style="left:60px;top:150px;font-size:230px;font-weight:800">${roll}%</div>`;
+    const q=pop(lt,at(2)); h+=`<div class="ab g" style="right:70px;top:150px;font-size:230px;font-weight:800;color:${OR};opacity:${q.o};transform:scale(${q.s})">?</div>`;
+    h+=`<div class="ab" style="left:60px;bottom:70px;font-size:44px;font-weight:800;color:${OR};opacity:${q.o}">출처 없는 숫자</div>`; return h; }
+  if(id==='fact'){ const st=['훅','대본','사실 확인','완성']; let h=`<div class="lbl ab" style="left:60px;top:56px">PIPELINE</div>`;
+    st.forEach((s,i)=>{ const ins=i===2; const q=ins?pop(lt,0.4):{o:1,s:1}; const x=60+i*205;
+      h+=box(x,250,185,185,`<div style="height:100%;display:flex;align-items:center;justify-content:center;text-align:center;font-size:${ins?34:40}px;font-weight:800;color:${ins?'#0B0B0A':'#F2F1EE'}">${ins?'🔍<br>':''}${s}</div>`,`opacity:${q.o};transform:scale(${q.s});${ins?'background:'+OR+';border-color:'+OR:''}`); });
+    const ok=pop(lt,at(1)); h+=`<div class="ab" style="left:60px;bottom:90px;font-size:44px;font-weight:800;opacity:${ok.o}">출처 확인 안 된 숫자 → <span style="color:${OR}">빼기</span></div>`; return h; }
+  if(id==='guide'){ const items=['프롬프트 전문','훅 고르는 기준','사실 확인 넣는 법']; let h=`<div class="lbl ab" style="left:60px;top:60px;color:#8A877F">ADMAN GUIDE</div><div class="ab" style="left:60px;top:116px;font-size:64px;font-weight:800;letter-spacing:-.04em;line-height:1.1;color:#0B0B0A">릴스 대본<br>원칙 프롬프트</div>`;
+    items.forEach((it,i)=>{ const on=lt>=at(i)+0.1; h+=`<div class="ab" style="left:60px;top:${360+i*96}px;display:flex;align-items:center;gap:22px;font-size:44px;font-weight:800;color:#0B0B0A"><span style="width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:${on?OR:'#E3E0D9'};font-size:34px">${on?'✓':''}</span>${it}</div>`; });
+    return h; }
+  if(id==='cta'){ const pressed=lt>=0.45; const n=Math.max(0,Math.min(2,Math.floor((lt-at(1)-0.2)/0.18)+1)); const dm=pop(lt,at(2)+0.1);
+    return `<div class="ab" style="left:60px;top:70px;display:flex;align-items:center;gap:30px"><img src="${AV}" style="width:150px;height:150px;border-radius:75px;image-rendering:pixelated;border:3px solid ${OR}"><div><div style="font-size:52px;font-weight:800">애드맨</div><div class="mono" style="font-size:28px;color:#8A877F;margin-top:6px">@adman_park</div></div></div>
+    <div class="ab" style="left:60px;right:60px;top:270px;height:110px;border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:800;background:${pressed?'#2A2927':OR};color:${pressed?'#F2F1EE':'#0B0B0A'}">${pressed?'팔로잉 ✓':'팔로우'}</div>
+    <div class="ab" style="left:60px;right:60px;top:420px;height:110px;border-radius:24px;background:#1F1E1C;display:flex;align-items:center;padding:0 34px;gap:18px;font-size:40px;font-weight:700"><span style="color:#77756F">댓글</span><span style="color:${OR}">${lt>=at(1)+0.2?'대본'.slice(0,n):''}</span></div>
+    <div class="ab" style="left:60px;right:60px;top:570px;height:120px;border-radius:24px;background:${OR};color:#0B0B0A;display:flex;align-items:center;gap:22px;padding:0 34px;font-size:40px;font-weight:800;opacity:${dm.o};transform:translateY(${(1-dm.s)*200}px)">📩 가이드 DM 도착</div>`; }
+  return '';
+}
+function subHTML(s){ return s.replace(/(159개|10개|'대본')/g,`<span style="color:${OR}">$1</span>`); }
+function seek(t){
+  $('grid').style.transform=`translate(${-(t*14)%120}px,${-(t*24)%120}px)`;
+  const w=track(t,[[0,PK[0][1]],...PK.map(k=>[k[0],k[1]])]), h=track(t,[[0,PK[0][2]],...PK.map(k=>[k[0],k[2]])]), r=track(t,[[0,PK[0][3]],...PK.map(k=>[k[0],k[3]])]);
+  const p=$('panel'); p.style.width=w+'px'; p.style.height=h+'px'; p.style.left=(540-w/2)+'px'; p.style.top=(800-h/2)+'px'; p.style.borderRadius=r+'px';
+  let cur=ORDER[0]; ORDER.forEach(o=>{ if(t>=o.t-0.12) cur=o; });
+  const g=cur.id==='guide'; p.style.background=g?'#F2F1EE':'#161615'; p.style.borderColor=g?'#F2F1EE':'#2A2927';
+  const sc=$('scene'); const since=t-(cur.t-0.12), a=sm((since-0.06)/0.18);
+  sc.innerHTML=R(cur.id,t-cur.t,t); sc.style.opacity=a; sc.style.filter=a<0.98?`blur(${8*(1-a)}px)`:'none';
+  const sz=SIZE[cur.id]; sc.style.width=sz[0]+'px'; sc.style.height=sz[1]+'px'; sc.style.left=((w-sz[0])/2)+'px'; sc.style.top=((h-sz[1])/2)+'px';
+  let s=null; SEGS.forEach((q,i)=>{ const end=i<SEGS.length-1?SEGS[i+1].start:T+5; if(t>=q.start&&t<end) s=q; });
+  const el=$('sub'); if(!s){el.innerHTML='';} else { let est=0; for(const ch of s.sub){ est+=/[가-힣]/.test(ch)?0.95:(ch===' '?0.28:0.58);} el.style.fontSize=Math.min(74,Math.floor(960/est))+'px'; el.innerHTML='<span>'+subHTML(s.sub)+'</span>'; el.style.opacity=clamp((t-s.start)/0.08); el.style.transform=`scale(${1.06-0.06*S(t-s.start,3,0.8)})`; }
+  $('hudr').textContent={docs:'INPUT',same:'OUTPUT',steps:'STEPS',copy:'TEMPLATE',dissect:'DISSECT',r0:'RULE 1/3',r1:'RULE 2/3',r2:'RULE 3/3',r3:'RULE ≠ STEP',grid:'159 REELS',hooks:'10 HOOKS',fake:'CHECK',fact:'FACT CHECK',guide:'GUIDE',cta:'FOLLOW'}[cur.id];
+}
+window.seek=seek; seek(0);
+</script></body></html>

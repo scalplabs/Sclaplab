@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700;800&family=Geist+Mono:wght@500;600&display=swap">
+<style>
+@font-face{font-family:'Pretendard';font-weight:500;src:url('FONTDIR/Pretendard-Medium.woff2') format('woff2')}
+@font-face{font-family:'Pretendard';font-weight:700;src:url('FONTDIR/Pretendard-Bold.woff2') format('woff2')}
+@font-face{font-family:'Pretendard';font-weight:800;src:url('FONTDIR/Pretendard-ExtraBold.woff2') format('woff2')}
+html,body{margin:0;background:#0B0B0A}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:#0B0B0A;color:#F2F1EE;font-family:'Pretendard','Geist',sans-serif}
+.mono{font-family:'Geist Mono',monospace}
+.g{font-family:'Geist','Pretendard',sans-serif}
+#grid{position:absolute;inset:-120px;background-image:linear-gradient(rgba(242,241,238,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(242,241,238,.04) 1px,transparent 1px);background-size:120px 120px}
+#hud{position:absolute;left:80px;right:80px;top:150px;display:flex;justify-content:space-between;font:600 22px 'Geist Mono',monospace;letter-spacing:.14em;color:#77756F}
+#panel{position:absolute;overflow:hidden;background:#161615;border:2px solid #2A2927}
+.sc{position:absolute;left:0;top:0;opacity:0}
+#sub{position:absolute;left:60px;right:60px;top:1340px;height:90px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;letter-spacing:-.03em;white-space:nowrap}
+#foot{position:absolute;left:80px;right:80px;bottom:140px;display:flex;justify-content:space-between;font:500 22px 'Geist Mono',monospace;letter-spacing:.1em;color:#5A5854}
+.app{position:absolute;width:400px;height:176px;border-radius:26px;background:#1F1E1C;border:2px solid #2A2927;box-sizing:border-box;padding:26px 28px}
+.app .n{font-size:40px;font-weight:800;letter-spacing:-.02em}
+.chip{display:inline-block;padding:8px 16px;border-radius:999px;font:600 22px 'Geist Mono',monospace}
+.lbl{font:600 22px 'Geist Mono',monospace;letter-spacing:.12em;color:#77756F}
+</style></head><body>
+<div id="stage">
+  <div id="grid"></div>
+  <div id="hud"><span>ADMAN · AI REPORT</span><span id="hudr">PAID → FREE</span></div>
+  <div id="panel">
+    <!-- hook grid -->
+    <div class="sc" id="s_hook" style="width:920px;height:960px"></div>
+    <!-- stars -->
+    <div class="sc" id="s_stars" style="width:920px;height:960px">
+      <div class="lbl" style="position:absolute;left:60px;top:60px">GITHUB · OPEN SOURCE</div>
+      <div id="starfield" style="position:absolute;left:60px;right:60px;top:140px;height:520px"></div>
+      <div class="g" style="position:absolute;left:60px;bottom:70px;font-size:120px;font-weight:800;letter-spacing:-.05em">★ <span id="starn">0</span></div>
+      <div style="position:absolute;right:60px;bottom:96px;font-size:40px;font-weight:800;color:#FF5A00">무료 · 오픈소스</div>
+    </div>
+    <!-- app compare -->
+    <div class="sc" id="s_app" style="width:920px;height:820px">
+      <div style="position:absolute;left:60px;top:56px;display:flex;justify-content:space-between;right:60px"><span class="lbl" id="anum">01 / 07</span><span class="lbl">PAID → FREE</span></div>
+      <div style="position:absolute;left:60px;top:130px;display:flex;align-items:center;gap:22px">
+        <span class="chip" style="background:#2A2927;color:#8A877F">유료</span>
+        <span id="apaid" style="font-size:54px;font-weight:800;color:#77756F;position:relative">일레븐랩스<i id="strike" style="position:absolute;left:0;top:52%;height:6px;background:#FF5A00;display:block"></i></span>
+      </div>
+      <svg id="arrow" width="60" height="90" viewBox="0 0 60 90" style="position:absolute;left:70px;top:226px"><path d="M30 4v70M10 56l20 22 20-22" fill="none" stroke="#FF5A00" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div style="position:absolute;left:60px;top:330px;display:flex;align-items:center;gap:22px"><span class="chip" style="background:#FF5A00;color:#0B0B0A">무료</span><span class="mono" id="alic" style="font-size:24px;color:#8A877F">AGPL-3.0</span></div>
+      <div id="afree" class="g" style="position:absolute;left:56px;top:390px;font-size:120px;font-weight:800;letter-spacing:-.05em;white-space:nowrap">VoiceStudio</div>
+      <div id="afeat" style="position:absolute;left:60px;right:60px;top:560px;padding:30px 34px;border-radius:24px;background:#1F1E1C;font-size:40px;font-weight:700;display:flex;align-items:center;gap:20px"></div>
+      <div id="abadge" class="g" style="position:absolute;right:60px;top:318px;padding:12px 22px;border-radius:999px;background:#F2F1EE;color:#0B0B0A;font-size:34px;font-weight:800;opacity:0">★ 100K+</div>
+    </div>
+    <!-- warn -->
+    <div class="sc" id="s_warn" style="width:620px;height:620px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px">
+      <svg width="220" height="200" viewBox="0 0 24 22"><path d="M12 2 L22.5 20 H1.5 Z" fill="none" stroke="#FF5A00" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 8v6" stroke="#FF5A00" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="17" r="1.1" fill="#FF5A00"/></svg>
+      <div style="font-size:84px;font-weight:800;letter-spacing:-.04em">잠깐만요</div>
+    </div>
+    <!-- warn items -->
+    <div class="sc" id="s_w" style="width:920px;height:680px">
+      <div class="lbl" style="position:absolute;left:60px;top:56px" id="wnum">주의 1 / 3</div>
+      <div id="wicon" style="position:absolute;left:60px;top:130px;width:200px;height:200px"></div>
+      <div id="wtitle" style="position:absolute;left:300px;top:150px;right:60px;font-size:64px;font-weight:800;letter-spacing:-.04em;line-height:1.1"></div>
+      <div id="wbody" style="position:absolute;left:60px;right:60px;top:400px"></div>
+    </div>
+    <!-- guide -->
+    <div class="sc" id="s_guide" style="width:860px;height:820px;background:#F2F1EE;color:#0B0B0A">
+      <div class="lbl" style="position:absolute;left:60px;top:60px;color:#8A877F">ADMAN GUIDE · PDF</div>
+      <div style="position:absolute;left:60px;top:116px;font-size:66px;font-weight:800;letter-spacing:-.04em;line-height:1.1">유료 앱 대신<br>무료 7개 정리</div>
+      <div id="glist" style="position:absolute;left:60px;right:60px;top:340px;display:flex;flex-direction:column;gap:26px"></div>
+    </div>
+    <!-- cta -->
+    <div class="sc" id="s_cta" style="width:860px;height:760px">
+      <div style="position:absolute;left:60px;top:70px;display:flex;align-items:center;gap:30px">
+        <img src="AVATAR" style="width:150px;height:150px;border-radius:75px;image-rendering:pixelated;border:3px solid #FF5A00" alt="">
+        <div><div style="font-size:52px;font-weight:800">애드맨</div><div class="mono" style="font-size:28px;color:#8A877F;margin-top:6px">@adman_park</div></div>
+      </div>
+      <div id="fbtn" style="position:absolute;left:60px;right:60px;top:270px;height:110px;border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:800"></div>
+      <div style="position:absolute;left:60px;right:60px;top:420px;height:110px;border-radius:24px;background:#1F1E1C;display:flex;align-items:center;padding:0 34px;gap:18px;font-size:40px;font-weight:700"><span style="color:#77756F">댓글</span><span id="ctext" style="color:#FF5A00"></span><span id="ccaret" style="width:4px;height:46px;background:#F2F1EE;display:inline-block"></span></div>
+      <div id="dm" style="position:absolute;left:60px;right:60px;top:570px;height:120px;border-radius:24px;background:#FF5A00;color:#0B0B0A;display:flex;align-items:center;gap:22px;padding:0 34px;font-size:40px;font-weight:800;opacity:0">
+        <svg width="50" height="50" viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-8z" fill="none" stroke="#0B0B0A" stroke-width="2.2" stroke-linejoin="round"/></svg>가이드 DM 도착</div>
+    </div>
+  </div>
+  <div id="sub"></div>
+  <div id="foot"><span>@adman_park</span><span>FREE · OPEN SOURCE</span></div>
+  <svg id="cur" width="46" height="46" viewBox="0 0 44 44" style="position:absolute;left:0;top:0;opacity:0"><path d="M5 3 L5 33 L13 25 L19 39 L25 36 L19 23 L30 23 Z" fill="#F2F1EE" stroke="#0B0B0A" stroke-width="2.4" stroke-linejoin="round"/></svg>
+</div>
+<script>
+const SEGS=SEGS_JSON;
+const T=TOTAL;
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const sm=x=>{x=clamp(x);return x*x*(3-2*x)};
+function S(t,f=2.4,z=0.84){ if(t<=0) return 0; const w=2*Math.PI*f, wd=w*Math.sqrt(1-z*z); return 1-Math.exp(-z*w*t)*(Math.cos(wd*t)+(z*w/wd)*Math.sin(wd*t)); }
+function track(t,k,f,z){ let v=k[0][1]; for(let i=1;i<k.length;i++) v+=(k[i][1]-k[i-1][1])*S(t-k[i][0],f,z); return v; }
+const $=id=>document.getElementById(id);
+const PAID=['일레븐랩스','노션','캘린들리','인터콤','룸','위스퍼 플로우','아사나'];
+const APPS=[
+ ['일레븐랩스','VoiceStudio','AGPL-3.0','목소리 복제·더빙, 내 컴퓨터 안에서','mic',1],
+ ['노션','AppFlowy','AGPL-3.0','문서·할 일·위키를 내 컴퓨터·서버에','doc',0],
+ ['캘린들리','Cal.diy','MIT','미팅 예약 링크, 무료로','cal',0],
+ ['인터콤','Chatwoot','MIT*','채팅·메일 문의를 한 화면에','chat',0],
+ ['룸','Cap','AGPL-3.0*','녹화하고 바로 링크로 공유','rec',0],
+ ['위스퍼 플로우','OpenWhispr','MIT','말하면 바로 글자로','wave',0],
+ ['아사나','OpenProject','GPL-3.0','일정·업무 관리, 내 서버에서','gantt',0]];
+const ICON={
+ mic:'<path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3zM5 11a7 7 0 0 0 14 0M12 18v3" fill="none" stroke="#FF5A00" stroke-width="2" stroke-linecap="round"/>',
+ doc:'<path d="M6 3h9l4 4v14H6z M15 3v4h4 M9 12h7 M9 16h7" fill="none" stroke="#FF5A00" stroke-width="2" stroke-linejoin="round"/>',
+ cal:'<path d="M4 6h16v14H4z M4 10h16 M8 3v5 M16 3v5" fill="none" stroke="#FF5A00" stroke-width="2" stroke-linejoin="round"/>',
+ chat:'<path d="M4 5h16v11H9l-5 4z" fill="none" stroke="#FF5A00" stroke-width="2" stroke-linejoin="round"/>',
+ rec:'<circle cx="12" cy="12" r="8" fill="none" stroke="#FF5A00" stroke-width="2"/><circle cx="12" cy="12" r="3.5" fill="#FF5A00"/>',
+ wave:'<path d="M3 12h2M7 8v8M11 5v14M15 9v6M19 11v2" stroke="#FF5A00" stroke-width="2" stroke-linecap="round"/>',
+ gantt:'<path d="M4 6h9M8 11h10M6 16h8" stroke="#FF5A00" stroke-width="2.6" stroke-linecap="round"/>'};
+// hook grid
+$('s_hook').innerHTML='<div class="lbl" style="position:absolute;left:60px;top:56px">MONTHLY · 구독 중</div>'+PAID.map((p,i)=>`<div class="app" id="hk${i}" style="left:${50+(i%2)*420}px;top:${120+Math.floor(i/2)*196}px"><div class="n">${p}</div><div style="margin-top:16px"><span class="chip hkchip" style="background:#2A2927;color:#8A877F">유료 · 매달 결제</span></div></div>`).join('');
+// stars
+$('starfield').innerHTML=Array.from({length:42},(_,i)=>`<span class="st" style="position:absolute;left:${(i%7)*112}px;top:${Math.floor(i/7)*86}px;font-size:56px;color:#FF5A00;opacity:0">★</span>`).join('');
+// scene windows
+const sceneStart={}; SEGS.forEach(s=>{ const k=s.scene.startsWith('a')?'app':(s.scene.startsWith('w')&&s.scene!=='warn'?'w':s.scene); if(!(s.scene in sceneStart)) sceneStart[s.scene]=s.start; });
+const ORDER=[]; SEGS.forEach(s=>{ if(!ORDER.length||ORDER[ORDER.length-1].id!==s.scene) ORDER.push({id:s.scene,t:s.start}); });
+const cont=id=> id==='hook'||id==='flip'?'s_hook': id==='stars'?'s_stars': id.match(/^a\d/)?'s_app': id==='warn'?'s_warn': id.match(/^w\d/)?'s_w': id==='guide'?'s_guide':'s_cta';
+const SIZE={s_hook:[920,960],s_stars:[920,960],s_app:[920,820],s_warn:[620,620],s_w:[920,680],s_guide:[860,820],s_cta:[860,760]};
+const PANEL_CY=800;
+const PK=ORDER.map(o=>[o.t-0.12,...SIZE[cont(o.id)],cont(o.id)==='s_warn'?310:(cont(o.id)==='s_guide'?40:44)]);
+const WARN=[
+ ['사양이 낮으면<br>느릴 수 있어요','<svg viewBox="0 0 24 24" width="200" height="200"><path d="M3 6h18v11H3z M1 20h22" fill="none" stroke="#FF5A00" stroke-width="1.6" stroke-linejoin="round"/></svg>','cpu'],
+ ['내 목소리, 허락받은<br>목소리만','<svg viewBox="0 0 24 24" width="200" height="200">'+ICON.mic.replace(/stroke-width="2"/,'stroke-width="1.6"')+'</svg>','voice'],
+ ['수정해서 팔면<br>소스 공개 의무','<svg viewBox="0 0 24 24" width="200" height="200">'+ICON.doc.replace(/stroke-width="2"/,'stroke-width="1.6"')+'</svg>','lic']];
+function subHTML(s){ return s.replace(/([A-Za-z][A-Za-z.\-]+)/g,'<span style="color:#FF5A00">$1</span>').replace(/('무료')/,'<span style="color:#FF5A00">$1</span>'); }
+function seek(t){
+  $('grid').style.transform=`translate(${-(t*14)%120}px,${-(t*24)%120}px)`;
+  // panel morph
+  const w=track(t,[[0,PK[0][1]],...PK.map(k=>[k[0],k[1]])]), h=track(t,[[0,PK[0][2]],...PK.map(k=>[k[0],k[2]])]), r=track(t,[[0,PK[0][3]],...PK.map(k=>[k[0],k[3]])]);
+  const p=$('panel'); p.style.width=w+'px'; p.style.height=h+'px'; p.style.left=(540-w/2)+'px'; p.style.top=(PANEL_CY-h/2)+'px'; p.style.borderRadius=Math.min(r,w/2)+'px';
+  let cur=ORDER[0]; let ci=0; ORDER.forEach((o,i)=>{ if(t>=o.t-0.12){cur=o;ci=i;} });
+  const isGuide=cont(cur.id)==='s_guide'; p.style.background=isGuide?'#F2F1EE':'#161615'; p.style.borderColor=isGuide?'#F2F1EE':'#2A2927';
+  // contents visibility
+  const shown=cont(cur.id); const since=t-(cur.t-0.12);
+  ['s_hook','s_stars','s_app','s_warn','s_w','s_guide','s_cta'].forEach(id=>{ const el=$(id); if(id!==shown){el.style.opacity=0;return;}
+    const a=sm((since-0.06)/0.18); el.style.opacity=a; el.style.filter=a<0.98?`blur(${8*(1-a)}px)`:'none';
+    el.style.left=((w-SIZE[id][0])/2)+'px'; el.style.top=((h-SIZE[id][1])/2)+'px'; });
+  // hook / flip
+  { const fs=ORDER.find(o=>o.id==='flip').t; PAID.forEach((x,i)=>{ const e=$('hk'+i); const a=sm((t-0.15-i*0.07)/0.2); e.style.opacity=a; e.style.transform=`translateY(${(1-S(t-0.15-i*0.07))*50}px) rotate(${t>1.2&&t<fs?Math.sin(t*40+i)*0.6:0}deg)`;
+      const fl=clamp((t-fs-i*0.08)/0.25); const chip=e.querySelector('.hkchip'); const ang=fl*180;
+      chip.style.transform=`rotateX(${ang>90?180-ang:ang}deg)`; if(ang>90){chip.textContent='무료 버전 있음';chip.style.background='#FF5A00';chip.style.color='#0B0B0A';e.style.borderColor='#FF5A00';} else {chip.textContent='유료 · 매달 결제';chip.style.background='#2A2927';chip.style.color='#8A877F';e.style.borderColor='#2A2927';} }); }
+  // stars
+  { const st=ORDER.find(o=>o.id==='stars').t; document.querySelectorAll('.st').forEach((e,i)=>{ const a=sm((t-st-i*0.03)/0.12); e.style.opacity=a; e.style.transform=`scale(${0.4+0.6*S(t-st-i*0.03,3,0.7)})`; });
+    $('starn').textContent='수만 개'; $('starn').parentNode.style.opacity=sm((t-st-0.5)/0.2); }
+  // app compare
+  { const am=cur.id.match(/^a(\d)/); if(am){ const k=+am[1], A=APPS[k], lt=t-cur.t;
+      $('anum').textContent=`0${k+1} / 07`; $('apaid').childNodes[0].nodeValue=A[0]; $('afree').textContent=A[1]; $('alic').textContent=A[2]+(A[2].includes('*')?'  일부 별도':'');
+      $('afeat').innerHTML=`<svg width="56" height="56" viewBox="0 0 24 24">${ICON[A[4]]}</svg><span>${A[3]}</span>`;
+      const pw=$('apaid').getBoundingClientRect().width/((parseFloat($('world')?.style?.transform)||1)); $('strike').style.width=(sm((lt-0.15)/0.3)*100)+'%';
+      $('afree').style.transform=`translateY(${(1-S(lt-0.35))*60}px) scale(${0.9+0.1*S(lt-0.35)})`; $('afree').style.opacity=sm((lt-0.35)/0.15); $('afree').style.transformOrigin='left center';
+      $('afeat').style.opacity=sm((lt-0.8)/0.2); $('afeat').style.transform=`translateY(${(1-S(lt-0.8))*30}px)`;
+      $('arrow').style.opacity=sm((lt-0.25)/0.15); $('arrow').style.transform=`translateY(${(1-S(lt-0.25))*-20}px)`;
+      const b9=SEGS.find(s=>s.sub.startsWith('별이 10만')); $('abadge').style.opacity=k===0&&b9?sm((t-b9.start)/0.15):0; $('abadge').style.transform=`scale(${k===0&&b9?0.6+0.4*S(t-b9.start,3,0.6):1})`; } }
+  // warn items
+  { const wm=cur.id.match(/^w(\d)/); if(wm){ const k=+wm[1], lt=t-cur.t; $('wnum').textContent=`주의 ${k+1} / 3`; $('wtitle').innerHTML=WARN[k][0]; $('wicon').innerHTML=WARN[k][1];
+      let body='';
+      if(k===0){ const f=sm((lt-0.3)/1.2); body=`<div class="lbl" style="margin-bottom:16px">CPU · RAM</div><div style="height:34px;border-radius:17px;background:#2A2927;overflow:hidden"><div style="height:34px;width:${f*92}%;background:${f>0.7?'#FF5A00':'#F2F1EE'}"></div></div><div style="margin-top:20px;font-size:34px;font-weight:700;color:#8A877F">로컬 실행 = 내 컴퓨터 사양만큼</div>`; }
+      if(k===1){ const a=sm((lt-0.3)/0.2), b=sm((lt-0.7)/0.2); body=`<div style="display:flex;gap:20px"><div style="flex:1;padding:28px;border-radius:22px;background:#1F1E1C;font-size:36px;font-weight:800;opacity:${a}"><span style="color:#FF5A00">○</span> 내 목소리 · 동의받은 목소리</div></div><div style="margin-top:18px;padding:28px;border-radius:22px;background:#1F1E1C;font-size:36px;font-weight:800;color:#77756F;opacity:${b}">✕ 연예인 · 남의 목소리</div>`; }
+      if(k===2){ const a=sm((lt-0.3)/0.2); body=`<div style="padding:30px;border-radius:22px;background:#1F1E1C;opacity:${a}"><div class="mono" style="font-size:30px;color:#FF5A00">AGPL · GPL</div><div style="margin-top:14px;font-size:36px;font-weight:800">고쳐서 서비스로 배포하면 → 소스 공개</div><div class="mono" style="margin-top:14px;font-size:24px;color:#77756F">MIT는 비교적 자유 · 앱마다 확인</div></div>`; }
+      $('wbody').innerHTML=body; } }
+  // guide
+  { const g=SEGS.filter(s=>s.scene==='guide'); const items=['앱별 설치법','필요한 사양','상업적 사용 가능 여부'];
+    $('glist').innerHTML=items.map((it,i)=>{ const on=g[i]?t>=g[i].start+0.1:false; return `<div style="display:flex;align-items:center;gap:22px;font-size:44px;font-weight:800;opacity:${g[0]&&t>=g[0].start?1:0.3}"><span style="width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:${on?'#FF5A00':'#E3E0D9'};color:#0B0B0A;font-size:34px">${on?'✓':''}</span>${it}</div>`; }).join(''); }
+  // cta
+  { const c=SEGS.filter(s=>s.scene==='cta'); if(c.length){ const pressed=t>=c[0].start+0.45; const fb=$('fbtn'); fb.textContent=pressed?'팔로잉 ✓':'팔로우'; fb.style.background=pressed?'#2A2927':'#FF5A00'; fb.style.color=pressed?'#F2F1EE':'#0B0B0A';
+      const word='무료'; const n=Math.max(0,Math.min(2,Math.floor((t-c[1].start-0.2)/0.18)+1)); $('ctext').textContent=t>=c[1].start+0.2?word.slice(0,n):''; $('ccaret').style.opacity=Math.floor(t*4)%2?1:0;
+      $('dm').style.opacity=sm((t-c[2].start-0.1)/0.2); $('dm').style.transform=`translateY(${(1-S(t-c[2].start-0.1))*40}px)`;
+      // cursor
+      const cu=$('cur'); const vis=t>=c[0].start-0.2; cu.style.opacity=vis?1:0;
+      const px=540-430+430, py=PANEL_CY-380+325; const x=track(t,[[0,900],[c[0].start-0.2,900],[c[0].start,px+120],[c[1].start,800]]), y=track(t,[[0,1250],[c[0].start-0.2,1250],[c[0].start,py],[c[1].start,1180]]);
+      const pr=Math.abs(t-(c[0].start+0.45))<0.06; cu.style.transform=`translate(${x}px,${y}px) scale(${pr?0.84:1})`; } }
+  // subtitle
+  { let s=null; SEGS.forEach((g,i)=>{ const end=i<SEGS.length-1?SEGS[i+1].start:T+5; if(t>=g.start&&t<end) s=g; });
+    const el=$('sub'); if(!s){el.innerHTML='';} else { let est=0; for(const ch of s.sub){ est+= /[가-힣]/.test(ch)?0.95:(ch===' '?0.28:0.58); } const fsz=Math.min(74,Math.floor(960/est)); el.style.fontSize=fsz+'px'; el.innerHTML='<span>'+subHTML(s.sub)+'</span>';
+      const a=clamp((t-s.start)/0.08); el.style.opacity=a; el.style.transform=`scale(${1.06-0.06*S(t-s.start,3,0.8)})`; } }
+  $('hudr').textContent=cur.id.match(/^a\d/)?`APP ${+cur.id[1]+1} / 7`:(cur.id.match(/^w/)?'CHECK':'PAID → FREE');
+}
+window.seek=seek; seek(0);
+</script></body></html>
