@@ -1,0 +1,360 @@
+순위,유형,링크,계정,팔로워,계정 평소 조회,조회,평소 대비(배),공유,공유율%,댓글,댓글율%,리포스트,길이(초),게시일,캡션 첫줄,캡션 전체
+1,밈/콩트,https://www.instagram.com/reel/DcYNO8hgzUS/,@themarketinginterns,133000,393000,15232278,38.8,286561,1.88,4166,0.03,32640,10,2026-08-23,"Fable maxing ","Fable maxing 
+
+#tech #startup #building #motivation #sf"
+2,무료 도구 소개,https://www.instagram.com/reel/DdEoYyrPTbF/,@bilawal.ai,294000,205000,3654398,17.8,60486,1.66,13246,0.36,4957,66,2026-09-09,"Comment ‘OSINT’ to get the tool & full walkthrough. God’s Eye View blew up and hit #1 on GitHub Trending. Two big questions keep coming up: how do I run it if I’m not a coder, and can you give me a proper walkthrough?","Comment ‘OSINT’ to get the tool & full walkthrough. God’s Eye View blew up and hit #1 on GitHub Trending. Two big questions keep coming up: how do I run it if I’m not a coder, and can you give me a proper walkthrough?
+
+We go from getting it running on your computer to tracking aircraft and ships, riding along in a cockpit, exploring public cameras, and controlling the globe with your voice. I also show you how to record camera tours, explore fires, earthquakes and the physical internet, and start building your own tools on top of it. Along the way, we get into where the data comes from, what’s live, and where the coverage breaks down.
+
+I’m honestly overwhelmed by the support. Chris Messina, the creator of the Twitter hashtag, put it on Product Hunt. Brendan Eich, the creator of JavaScript, shared the repo and called it “pretty cool.” And so many of you have been installing it, making videos, and building on top of it. Thank you.
+
+Would you use a hosted version you could open without installing anything? Let me know in the comments."
+3,밈/콩트,https://www.instagram.com/reel/DerbBtfzj8p/,@canwebuildthis,76000,116000,2252701,19.4,37648,1.67,1742,0.08,2045,42,2026-10-19,"he can look. he can't like. it's been an hour.","he can look. he can't like. it's been an hour.
+
+not sponsored. Agent Reach is free and open source, by Panniantong. it lets an AI read public links from Instagram, YouTube, Reddit and more.
+
+#claude #aitools #opensource #claudecode #techhumor"
+4,검증형(Fact or Hype),https://www.instagram.com/reel/Dd6izTYiln1/,@itstundeanthony,324000,145000,1639365,11.3,19144,1.17,9789,0.60,832,50,2026-09-30,"Comment “agent” for the setup guide 👇","Comment “agent” for the setup guide 👇
+
+#ai"
+5,밈/콩트,https://www.instagram.com/reel/DciQ6wdgOVl/,@themarketinginterns,133000,393000,1550997,3.9,36273,2.34,679,0.04,3368,12,2026-08-27,"Limits won’t hit themselves ","Limits won’t hit themselves 
+
+#tech #startup #building #motivation #claude"
+6,사용 팁,https://www.instagram.com/reel/Db1P-TOSkZl/,@catlabs,29000,48000,1314409,27.4,12610,0.96,399,0.03,621,27,2026-08-09,"Copy this ➡️ “Build yourself a CLI tool to interact with [x program].” ","Copy this ➡️ “Build yourself a CLI tool to interact with [x program].” 
+
+You can use this trick when the tool you want your agent to use doesn’t have an MCP or the MCP doesn’t support the controls you want. 
+
+Some caveats:
+
+1. MCP is still the most robust option. It solves for authentication, discovery, and distribution. It creates a consistent experience for agents interacting with a platform. 
+
+2. CLI is great for specific, custom, more complex workflows. It uses fewer tokens as well. 
+
+Featuring @parthintelligence 
+
+📍 @catlabs"
+7,결과물 쇼케이스,https://www.instagram.com/reel/DdC68gFiaM3/,@the.rexcodes,77000,37000,1253862,33.9,26067,2.08,3466,0.28,865,27,2026-09-09,"Comment “ASTRA” and I’ll send it to you!","Comment “ASTRA” and I’ll send it to you!
+
+is this even real?🤯…. @higgsfield.ai plugin inside the ChatGPT-6 Astra
+
+#chatgpt #higgsfieldcreator #gpt6astra #aitools #tech"
+8,무료 도구 소개,https://www.instagram.com/reel/DesH3mKRmC4/,@david_knowsai,117000,250000,995096,4.0,14648,1.47,13932,1.40,615,54,2026-10-19,"If you use Claude, here are 5 connecters you definitely need ⬇️","If you use Claude, here are 5 connecters you definitely need ⬇️
+
+Comment “Post” and I’ll send the setup📩"
+9,결과물 쇼케이스,https://www.instagram.com/reel/DeezVQit345/,@riki.bosso,40000,21000,957927,45.6,15472,1.62,26325,2.75,515,21,2026-10-14,"Comment “Amazon” for the prompt! 🙌🏻","Comment “Amazon” for the prompt! 🙌🏻
+@higgsfield.ai 
+
+#claude #amazon #higgsfield #higgsfieldcreator #ai"
+10,무료 도구 소개,https://www.instagram.com/reel/DYfHXdPvBzQ/,@nick_saraev,735000,139000,931048,6.7,20750,2.23,22814,2.45,840,39,2026-05-18,"Comment ""CLAUDE"" to get the Guide and GitHub repo for running Claude Code for Free. ","Comment ""CLAUDE"" to get the Guide and GitHub repo for running Claude Code for Free. 
+
+You can now run Claude Code completely free, forever.
+
+Someone on GitHub just dropped a tool called Free Claude Code Repo. 
+
+It reroutes Claude Code to free AI models that hit around 90 percent of Claude's quality, at zero cost.
+
+Think of it like swapping the engine in a sports car. Same dashboard, same controls, way cheaper fuel.
+
+Over 20,000 devs are already running it. The setup takes 5 minutes, maybe less if you type fast.
+
+First, head to the GitHub repo. Run the two install commands and your free Claude Code terminal is ready to go.
+
+Then pick your provider. You can grab a free API key from NVIDIA NIM or OpenRouter. 
+
+That gets you instant access to top models like DeepSeek, Kimi, and GLM.
+
+The free tiers are generous. You can code for hours without hitting limits on most days.
+
+Or if you have a decent GPU sitting around, run everything locally through Ollama. 
+
+Full privacy, no API calls, no data leaving your machine.
+
+The best part? You keep the exact same Claude Code workflow you already know. 
+
+Same commands, same agent behavior, same terminal experience.
+
+No new tool to learn. No new shortcuts to memorize.
+
+This works for solo devs, indie hackers, and anyone tired of paying premium prices for AI coding. 
+
+Students on tight budgets love it too.
+
+#claudecode #claudeai #Openrouter #nvidianim #ollama"
+11,무료 도구 소개,https://www.instagram.com/reel/Dc_cSU9TbCD/,@alassafi.ai,166000,15000,791805,52.8,20868,2.64,6697,0.85,714,54,2026-09-07,"Comment “REPO” and I’ll send you the full setup guide 👇","Comment “REPO” and I’ll send you the full setup guide 👇
+
+This GitHub repo makes any screen recording look like you hired a motion designer, and it’s completely free AND open source.
+
+You know those demo videos where the screen zooms in on every click, the cursor glides, and it all sits in a clean gradient frame?
+
+Normally that takes a paid Mac app and hours of editing.
+
+This repo is called Recordly. 24,000 stars. Works on Mac, Windows, and Linux.
+
+You hit record, and the polish happens automatically.
+
+It watches your cursor and suggests zooms where the action is. Smooths the mouse movement. Adds a bounce on every click.
+
+Then it drops the whole recording into a styled frame with a wallpaper, rounded corners, and a shadow.
+
+Full timeline editor too: trims, speed-ups, text annotations, and a floating webcam bubble that scales with the zoom.
+
+Export to MP4 or straight to GIF.
+
+Plus a marketplace of community extensions, so it keeps getting better without anyone charging you.
+
+Download, record, done.
+
+Comment “REPO” and I’ll send you the full guide to get it set up in minutes 👇
+
+#screenrecording #contentcreator #saas #github #aitools"
+12,결과물 쇼케이스,https://www.instagram.com/reel/Def9pj5TWtA/,@tenfoldmarc,125000,8432,757918,89.9,22958,3.03,30406,4.01,849,27,2026-10-15,"Number 14 is my favorite. 😂 What’s yours?","Number 14 is my favorite. 😂 What’s yours?
+
+Comment STUDIO and I’ll send you the waitlist 👇
+Follow for more AI tips.
+
+#claude #claudeai #videoediting #motiongraphics #contentcreator"
+13,밈/콩트,https://www.instagram.com/reel/DekL6ryTOiW/,@viralspymedia,5517,11000,576779,52.4,15899,2.76,276,0.05,403,54,2026-10-16,"Claude tried. Claude really tried. 😭","Claude tried. Claude really tried. 😭
+
+Rate this caption 1 to 5 👇 (kidding)
+
+#reelstips #contentcreator #claudeai"
+14,무료 도구 소개,https://www.instagram.com/reel/DfFr4vdzV4f/,@auraguy.ai,16000,113000,544185,4.8,10011,1.84,4620,0.85,359,71,2026-10-29,"Claude Code Just Destroyed Day Trading With 11 Free Skills","Claude Code Just Destroyed Day Trading With 11 Free Skills
+
+Want to plan and test your trades before risking real money? The Trader skill is a free pack of 11 Claude skills that works like a little trading desk inside Claude.
+
+One skill scans thousands of charts for setups.
+
+Another tracks breaking news that could move those stocks.
+
+One watches for the exact moment a setup triggers, and another sets your stop and target before you get in.
+
+The Time Machine skill simulates the rest of the trading day 10,000 times using historical price data, then shows how often you'd hit your target, hit your stop, or end somewhere in between.
+
+Nothing goes through without your approval, and it starts in paper trading so you can try it risk-free.
+
+It's a simulation, not a guarantee, and this isn't financial advice.
+
+If you're into Claude AI, trading tools, stock market analysis, or AI automation, save this post!
+
+Comment ""TRADE"" below, and I'll DM you the link.
+
+
+
+#claudeai #claudecode #github #coding #aiagents"
+15,결과물 쇼케이스,https://www.instagram.com/reel/DdwCXaQIHNU/,@grafigator,6215,4186,476304,113.8,6660,1.40,343,0.07,326,15,2026-09-26,"Claude Opus 5.5 just cooked motion designers.","Claude Opus 5.5 just cooked motion designers."
+16,결과물 쇼케이스,https://www.instagram.com/reel/Dc3jgy8Olgz/,@srii_tech_,74000,85000,466880,5.5,6785,1.45,8241,1.77,330,14,2026-09-04,"Stop building basic websites. Start studying websites that push your skills.","Stop building basic websites. Start studying websites that push your skills.
+
+3D • Animations • Smooth scroll • Interactions • Creative development
+
+Save this for your next build. 🔖
+
+Comment “DOC” for the full breakdown + build guide.
+
+#WebDevelopment #FrontendDevelopment #WebDesign #CreativeCoding #ThreeJS GSAP ReactJS JavaScript UIDesign FrontendDev Coding WebDev"
+17,결과물 쇼케이스,https://www.instagram.com/reel/Dd5zI2cyBKC/,@nikkbadlani,6473,10000,417055,41.7,8644,2.07,5942,1.42,222,78,2026-09-30,"Comment “motion” i’ll send you the process ","Comment “motion” i’ll send you the process 
+⁠#motiondesign⁠ ⁠#motiongraphics⁠ ⁠#motiondesigner⁠ ⁠#mgcollective⁠ ⁠#motionmate⁠ ⁠
+
+[motiongraphicsdesign⁠ ⁠aftereffects⁠ ⁠motionlovers⁠ ⁠2danimation⁠ ⁠3danimation⁠ ⁠motionprocess⁠ ⁠loopanimation⁠ ⁠kinetictypography⁠ ⁠visualeffects⁠ ⁠mograph aiart⁠ ⁠aimotion⁠ ⁠claudecode⁠ ⁠creativecoding⁠ ⁠generativedesign⁠ ⁠aianimation⁠ ⁠promptengineering⁠ ⁠designwithai⁠ ⁠aidesign⁠ ⁠techdesign⁠ ⁠anthropicclaude⁠ ⁠futureofdesign ⁠graphicdesign⁠ ⁠visualdesign⁠ ⁠brandidentity⁠ ⁠typography⁠ ⁠designinspiration⁠ ⁠digitalart⁠ ⁠abstractart⁠ ⁠render⁠ ⁠blender3d⁠ ⁠octanerender⁠ ⁠cinema4d⁠ ⁠vectoranimation⁠ ⁠creativecommunity⁠ ⁠motionreels⁠ ⁠reelsdesign⁠ ⁠motionart⁠ ⁠designtok⁠ ⁠motionclub⁠ ⁠animationdaily⁠ ⁠dailyrender⁠ ⁠creativeprocess⁠ ⁠motionoftheday⁠ ⁠behance⁠]"
+18,밈/콩트,https://www.instagram.com/reel/Dc9ZUWxPNoU/,@theandriimaltsev,1467,1358,324427,238.9,2075,0.64,10133,3.12,346,11,2026-09-12,"DM me if you need AI implemented into your business","DM me if you need AI implemented into your business"
+19,결과물 쇼케이스,https://www.instagram.com/reel/DerrAaVIxjl/,@ai.withphil,135000,7586,311473,41.1,3174,1.02,563,0.18,332,30,2026-10-19,"I didn’t open a Single Editing APP. 🎬","I didn’t open a Single Editing APP. 🎬
+
+30 seconds. Every word lands on the beat. The camera never stops moving. There’s a fisheye grid, a spinning 3D cylinder, a pen that writes live, and a title that explodes into bouncing shapes.
+
+@claudeai built all of it. A team of AI agents wrote the 3D engine, built each scene in parallel, and an “art director” agent critiqued every scene until it was good enough to post.
+
+🎵 Training Season, Dua Lipa
+
+Want the breakdown of how it’s made?
+
+Follow @ai.withphil
+
+#claude #aivideo #motiondesign #kinetictypography #lyricvideo"
+20,무료 도구 소개,https://www.instagram.com/reel/DfBQ1AgOC1S/,@heysansser,4633,7066,306631,43.4,8747,2.85,4455,1.45,394,58,2026-10-28,"The 30 best Claude plugins on GitHub right now, sorted by the job they do, so you only have to look at your row:","The 30 best Claude plugins on GitHub right now, sorted by the job they do, so you only have to look at your row:
+
+Code like a senior dev
+Superpowers → makes Claude plan and test first
+Matt Pocock Skills → a real engineer's daily skills
+ECC → a huge pack of skills and agents
+Karpathy Skills → stops Claude's worst coding habits
+Ponytail → makes Claude write way less code
+Agent Skills → how senior engineers ship code
+
+Research and understanding
+Graphify → turns your code into a map
+Agent Reach → lets Claude read Reddit, X and YouTube
+Understand Anything → a guided tour of any codebase
+Last 30 Days → what people said this past month
+Career Ops → finds jobs and tailors your CV
+REA → lets Claude take apart any app
+
+Big projects, fewer tokens
+gstack → gives Claude a full startup team
+Caveman → Claude talks short and saves tokens
+Claude-Mem → Claude remembers past sessions
+Headroom → shrinks what Claude has to read
+GSD → plans and builds step by step
+BMAD Method → turns Claude into an agile team
+
+Design and visuals
+UI UX Pro Max → real UI design knowledge
+Taste → stops generic-looking websites
+Archify → any idea as a live diagram
+Impeccable → makes your AI better at design
+PPT Master → real PowerPoint decks from docs
+Diagram Design → clean, magazine-style diagrams
+
+Writing and video
+Skills by Anthropic → official skills from Anthropic
+OpenMontage → turns your AI into a video studio
+HyperFrames → turns web code into videos
+Humanizer → removes the AI feel from writing
+I Have ADHD → makes Claude answer first
+Marketing Skills → copy, SEO and growth skills
+
+Don't install all 30, pick the one row that matches your week and add one plugin from it. Before you install it, open the repo and read what it's allowed to do, because some of these can run commands on your computer.
+
+Comment PLUGINS and I'll DM you all 30 links, free.
+
+Save this for the next time Claude gives you something generic.
+
+claude code plugins · claude skills · github repos for ai · open source ai tools · claude code
+#claudecode #claudeskills #githubrepos"
+21,무료 도구 소개,https://www.instagram.com/reel/DeY3eWhElMO/,@weblabai,3422,1533,303263,197.8,8542,2.82,3537,1.17,294,59,2026-10-12,"Everyone's making videos with Claude now. How do you make yours look different?","Everyone's making videos with Claude now. How do you make yours look different?
+
+Comment Editor and I will send you the link
+
+Five skills, five completely different styles:
+1. HyperFrames by HeyGen: HTML in, motion graphics out. Every Web Lab video is built with it.
+2. onetake: one continuous camera that never cuts. Free for non-commercial use.
+3. Collage B-roll: halftone paper cut-outs that assemble themselves, animated by Google's Gemini.
+4. Claude Animation Base: hand-painted cartoons starring Clawd, the Claude Code mascot.
+5. Lemo-Opuscar: 43 film styles, every film made in code. No video model.
+
+All five are on GitHub. Pick one and make it yours.
+
+#ai #claude #videoediting #weblab"
+22,결과물 쇼케이스,https://www.instagram.com/reel/Deq3PylStBF/,@avi_vashishta29,40000,25000,267537,10.7,3968,1.48,3265,1.22,126,14,2026-10-19,"Which loading animation is better. Comment “code” and I’ll share both! ","Which loading animation is better. Comment “code” and I’ll share both! 
+
+Which hero would you keep: 1 or 2? 👇
+
+1️⃣ The deal: a deck flies up from below, every card flips face up into a fan, then it lifts into a turning wheel of playing Reels rising out of the clouds.
+
+2️⃣ The ring: Reels get dealt into a tiny tilted ring while the page loads, then the camera drops inside and it opens into a 3D carousel.
+
+Same website, same loader, only the hero is different. Both built with plain CSS 3D and React. No Three.js, no WebGL.
+
+I genuinely can’t decide which one stays on my homepage, so you’re deciding for me. Vote 1 or 2 in the comments.
+
+Comment “code” and I’ll send you the prompt and code for both 🃏
+
+#webdesign #frontend #reactjs #animation #webdev creativecoding uidesign buildinpublic tech, techtok, ai, design, loading animation, cool projects"
+23,무료 도구 소개,https://www.instagram.com/reel/De60ZzgEgru/,@princegupta.ai,14000,7583,263922,34.8,5313,2.01,1821,0.69,186,48,2026-10-25,"💬 Comment ""SECURE"" and I'll send you the repo in your DMs","💬 Comment ""SECURE"" and I'll send you the repo in your DMs
+
+➕ Follow so you don't miss Day 6
+
+Day 5 of finding repositories you should know about 🔐
+
+Cloudflare open-sourced the Security Audit skill. It turns your coding agent into a team of security hunters.
+
+You type ""security audit this codebase"" and it:
+→ maps your app and its trust boundaries
+→ sends separate agents hunting for prompt injection, auth bugs and data leaking between users
+→ hands every finding to a fresh agent whose only job is to prove it wrong
+→ writes a report that splits confirmed from still needs checking
+
+It's the starting point for Cloudflare's own vulnerability-hunting system. 32.5k stars, MIT licensed.
+
+Pro tip: run it more than once. In Cloudflare's tests, a single run found about half of what repeated runs found.
+
+Save this for your next ship day 📌
+
+#cybersecurity #aiagents #github #opensource #claudecode #cloudflare #appsecurity #devtools #aitools #coding #programming #softwareengineering #genai #promptinjection #developers"
+24,커리어/돈,https://www.instagram.com/reel/DfN8bAGvU9m/,@chenbuildsai,7385,50000,247849,5.0,3729,1.50,1761,0.71,143,49,2026-11-01,"If you want an AI job, these 5 certifications are the fastest way to prove you can do it ⬇️","If you want an AI job, these 5 certifications are the fastest way to prove you can do it ⬇️
+
+Comment “CERTIFICATE” and I’ll send all 5 links 📩 (Follow so the DM lands)
+
+#ai #claudecode #claudetips #claude"
+25,커리어/돈,https://www.instagram.com/reel/DeVKSvVhCZS/,@phamm.mp4,247000,13000,206792,15.9,4338,2.10,6008,2.91,160,40,2026-11-07,"Amazon + Claude coloring book method 💰😳","Amazon + Claude coloring book method 💰😳
+
+#sidehustle #everygenpartner"
+26,결과물 쇼케이스,https://www.instagram.com/reel/DfEWcKnSGCa/,@damianodesu,16000,6869,197091,28.7,3069,1.56,10118,5.13,76,38,2026-10-29,"Comment “DITCH” and I’ll send you the free guide to make videos like this 👇","Comment “DITCH” and I’ll send you the free guide to make videos like this 👇
+
+Claude made this whole video. Not one frame in After Effects.
+
+Every character, every number, every cut: Claude Code + HyperFrames. No editor, no motion designer, no templates.
+
+If you got my guide before, please download it again as it’s been UPDATED !"
+27,커리어/돈,https://www.instagram.com/reel/Dc8ziB0KaP_/,@the.rexcodes,77000,37000,166183,4.5,2430,1.46,8093,4.87,573,14,2026-09-06,"Here are all the breakdowns you need to become job ready","Here are all the breakdowns you need to become job ready
+
+Simply comment “Tools” and I will send all of them to you.
+
+#aitips #jobsearch #ai #tech #techtips"
+28,무료 도구 소개,https://www.instagram.com/reel/Dex5OaGFLY6/,@builditlikerahul,4352,1649,165723,100.5,3162,1.91,1053,0.64,34,57,2026-10-30,"Comment GYM and I'll send you the guide on switching to a free gym tracker, plus the download links.","Comment GYM and I'll send you the guide on switching to a free gym tracker, plus the download links.
+
+Claude Code helped one developer build openGym, a free gym tracker with 14,000 GitHub stars in three months.
+
+Duarte Santos built it with Claude Code. It plans your week, fills in last session's weights and maps which muscles are still recovering. No subscription, no ads.
+
+Switching takes three steps: try the demo in your browser, export your history from Strong, Hevy or FitNotes and import it, then install the Android app or run it on your own server.
+
+The catch: there's no iPhone app in the App Store yet, so on iPhone you run it on your own server.
+
+Send this to whoever pays every month just to log their sets.
+
+#gym #claudecode #opensource"
+29,무료 도구 소개,https://www.instagram.com/reel/DcjDj6fyoZ0/,@jackroberts___,89000,28000,123881,4.4,3082,2.49,1422,1.15,63,24,2026-08-27,"Comment “DATA” and I’ll drop you the link to use it.","Comment “DATA” and I’ll drop you the link to use it.
+
+Speed was never why scrapers fail.
+
+They get blocked. Or they break.
+
+700x faster sounds great.
+
+But fast doesn’t matter if you’re flagged.
+
+Most scrapers get caught instantly.
+
+One look at the traffic. Bot detected.
+
+Scrapling doesn’t sneak past Cloudflare.
+
+It looks like a real browser.
+
+Same fingerprint. Same headers.
+
+The site can’t tell the difference.
+
+And here’s the part the demo skips.
+
+Normal scrapers break when a site changes.
+
+New layout. Dead selector. Broken script.
+
+So you rebuild it. Again and again.
+
+Scrapling heals itself.
+
+The page moves, it finds the data anyway.
+
+Like a key that reshapes itself when the lock changes.
+
+Plug it into Claude Code or Codex.
+
+Your agents pull live data.
+
+No blocks. No babysitting.
+
+Fast scrapers were never rare.
+
+Unbreakable ones were.
+
+#scrapling #webscraping #cloudflare #claudecode #codex"
+30,무료 도구 소개,https://www.instagram.com/reel/DerepBfSJSK/,@drcintas,165000,19000,101587,5.3,2497,2.46,2885,2.84,98,31,2026-10-19,"Comment “OPEN” to get this open-source payment gateway that doesn’t have the transaction fees. ","Comment “OPEN” to get this open-source payment gateway that doesn’t have the transaction fees. 
+
+Normally, payment gateways charge around 2% to 3% per transaction, plus tax.
+
+But with this repo, payments go straight from your customer’s payment to your bank account. 
+
+And the Integration is surprisingly simple. You add a script to your website, drop in a pay button, and customers get a payment link.
+
+It even detects payments through bank SMS and email alerts, then updates your website automatically."
