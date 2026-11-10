@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="ko" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>막차 47 · PART 1</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <!-- 캔버스 그림 엔진: 졸라맨, 열차 배경, 휴대폰, 스피커, 손 클로즈업 -->
+    <script src="assets/makcha-engine.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #000;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="44.33"
+      data-fps="30"
+      data-width="1080"
+      data-height="1920"
+    >
+      <!-- ===== 장면 (하드컷). 장면 하나 = compositions/ 의 파일 하나 ===== -->
+      <!-- 1. 휴대폰 문자 -->
+      <div
+        id="s01-phone"
+        class="clip"
+        data-composition-id="s01-phone"
+        data-composition-src="compositions/s01-phone.html"
+        data-start="0"
+        data-duration="4"
+        data-track-index="1"
+        data-track-kind="graphics"
+        data-width="1080"
+        data-height="1920"
+        style="z-index: 1"
+      ></div>
+      <!-- 2. 막차 안에서 깨어남 -->
+      <div
+        id="s02-wake"
+        class="clip"
+        data-composition-id="s02-wake"
+        data-composition-src="compositions/s02-wake.html"
+        data-start="4"
+        data-duration="4.81"
+        data-track-index="1"
+        data-track-kind="graphics"
+        data-width="1080"
+        data-height="1920"
+        style="z-index: 1"
+      ></div>
+      <!-- 3. 안내방송 스피커 -->
+      <div
+        id="s03-speaker"
+        class="clip"
+        data-composition-id="s03-speaker"
+        data-composition-src="compositions/s03-speaker.html"
+        data-start="8.81"
+        data-duration="7.47"
+        data-track-index="1"
+        data-track-kind="graphics"
+        data-width="1080"
+        data-height="1920"
+        style="z-index: 1"
+      ></div>
+      <!-- 4. 숫자판: 상금 0 → 1억 -->
+      <div
+        id="s04-prize"
+        class="clip"
+        data-composition-id="s04-prize"
+        data-composition-src="compositions/s04-prize.html"
+        data-start="16.28"
+        data-duration="3.96"
+        data-track-index="1"
+        data-track-kind="graphics"
+        data-width="1080"
+        data-height="1920"
+        style="z-index: 1"
+      ></div>
+      <!-- 5. 첫 번째 역: 100 → 99 -->
+      <div
+        id="s05-station"
+        class="clip"
+        data-composition-id="s05-station"
+        data-composition-src="compositions/s05-station.html"
+        data-start="20.24"
+        data-duration="2.16"
+        data-track-index="1"
+        data-track-kind="graphics"
+        data-width="1080"
+        data-height="1920"
+        style="z-index: 1"
+      ></div>
+      <!-- 6. 문이 열리고 23번이 사라짐 -->
+      <div
+        id="s06-door"
+        class="clip"
+        data-composition-id="s06-door"
+        data-composition-src="compositions/s06-door.html"
+        data-start="22.4"
+        data-duration="3.75"
+        data-track-index="1"
+        data-track-kind="graphics"
+        data-width="1080"
+        data-height="1920"
+        style="z-index: 1"
+      ></div>
+      <!-- 7. 12번의 귓속말 -->
+      <div
+        id="s07-whisper"
+        class="clip"
+        data-composition-id="s07-whisper"
+        data-composition-src="compositions/s07-whisper.html"
+        data-start="26.15"
+        data-duration="6.03"
+        data-track-index="1"
+        data-track-kind="graphics"
+        data-width="1080"
+        data-height="1920"
+        style="z-index: 1"
+      ></div>
+      <!-- 8. 손 클로즈업, 피 -->
+      <div
+        id="s08-hand"
+        class="clip"
+        data-composition-id="s08-hand"
+        data-composition-src="compositions/s08-hand.html"
+        data-start="32.18"
+        data-duration="4.23"
+        data-track-index="1"
+        data-track-kind="graphics"
+        data-width="1080"
+        data-height="1920"
+        style="z-index: 1"
+      ></div>
+      <!-- 9. 선택지 A / B -->
+      <div
+        id="s09-choice"
+        class="clip"
+        data-composition-id="s09-choice"
+        data-composition-src="compositions/s09-choice.html"
+        data-start="36.41"
+        data-duration="3.72"
+        data-track-index="1"
+        data-track-kind="graphics"
+        data-width="1080"
+        data-height="1920"
+        style="z-index: 1"
+      ></div>
+      <!-- 10. 엔딩: 댓글 입력 → 로고 -->
+      <div
+        id="s10-end"
+        class="clip"
+        data-composition-id="s10-end"
+        data-composition-src="compositions/s10-end.html"
+        data-start="40.13"
+        data-duration="4.2"
+        data-track-index="1"
+        data-track-kind="graphics"
+        data-width="1080"
+        data-height="1920"
+        style="z-index: 1"
+      ></div>
+
+      <!-- ===== 좌상단 HUD: 남은 인원 / 상금 ===== -->
+      <div
+        id="hud"
+        class="clip"
+        data-composition-id="hud"
+        data-composition-src="compositions/hud.html"
+        data-start="0"
+        data-duration="44.33"
+        data-track-index="2"
+        data-track-kind="graphics"
+        data-width="1080"
+        data-height="1920"
+        style="z-index: 5"
+      ></div>
+
+      <!-- ===== 자막 ===== -->
+      <div
+        id="captions"
+        class="clip"
+        data-composition-id="captions"
+        data-composition-src="compositions/captions.html"
+        data-start="0"
+        data-duration="44.33"
+        data-track-index="3"
+        data-track-kind="captions"
+        data-width="1080"
+        data-height="1920"
+        style="z-index: 10"
+      ></div>
+
+      <!-- ===== 내레이션 =====
+           지금은 narration.mp3 가 없어서 무음이다. 녹음 파일을 assets/narration.mp3 로 넣고
+           아래 주석을 풀면 오디오 트랙이 된다. 그다음 자막 시작 시간을 녹음에 맞춘다(CLAUDE.md 참고).
+      <audio id="narration" class="clip" src="assets/narration.mp3" data-start="0" data-track-index="4" data-volume="1"></audio>
+      -->
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

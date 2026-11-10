@@ -1,0 +1,107 @@
+<!-- 자막 전체. 한 줄 = 자막 한 덩어리. data-start 는 영상 전체 기준 초.
+     노란 강조는 <span class="hl">단어</span>. 글자는 Studio 에서 직접 고칠 수 있다. -->
+<template>
+  <style>
+    @font-face {
+      font-family: "Noto Sans KR";
+      font-weight: 900;
+      src: url("assets/fonts/noto-sans-kr-korean-900-normal.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "Noto Sans KR";
+      font-weight: 900;
+      src: url("assets/fonts/noto-sans-kr-latin-900-normal.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2212, U+2215;
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .cap {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 200px;
+      top: 1037px; /* 글자 가운데가 화면 60% 높이에 오도록 (원본 영상과 같은 위치) */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+    }
+    .cap-y80 {
+      top: 1421px; /* 2번 장면: 80% */
+    }
+    .cap-y74 {
+      top: 1306px; /* 9번 장면: 74% */
+    }
+    .cap-t {
+      display: inline-block;
+      font: 900 96px "Noto Sans KR", sans-serif;
+      line-height: 1;
+      white-space: nowrap;
+      color: #fff;
+      -webkit-text-stroke: 18px #000;
+      paint-order: stroke fill;
+      stroke-linejoin: round;
+    }
+    .cap-t .hl {
+      color: #ffd84a;
+    }
+  </style>
+  <div id="root" data-composition-id="captions" data-width="1080" data-height="1920">
+    <!-- 장면 1. 휴대폰 문자 -->
+    <div id="cap-01-1" class="clip cap" data-start="0" data-duration="0.9" data-track-index="1"><span class="cap-t">어젯밤</span></div>
+    <div id="cap-01-2" class="clip cap" data-start="0.9" data-duration="1.38" data-track-index="1"><span class="cap-t"><span class="hl">모르는 번호</span>로</span></div>
+    <div id="cap-01-3" class="clip cap" data-start="2.28" data-duration="1.22" data-track-index="1"><span class="cap-t">문자가 왔다</span></div>
+    <!-- 장면 2. 막차 안에서 깨어남 -->
+    <div id="cap-02-1" class="clip cap cap-y80" data-start="4" data-duration="1.22" data-track-index="1"><span class="cap-t">눈을 떠보니</span></div>
+    <div id="cap-02-2" class="clip cap cap-y80" data-start="5.22" data-duration="1.22" data-track-index="1"><span class="cap-t"><span class="hl">2호선 막차</span></span></div>
+    <div id="cap-02-3" class="clip cap cap-y80" data-start="6.44" data-duration="0.9" data-track-index="1"><span class="cap-t">승객은</span></div>
+    <div id="cap-02-4" class="clip cap cap-y80" data-start="7.34" data-duration="1.22" data-track-index="1"><span class="cap-t">딱 <span class="hl">100명</span></span></div>
+    <!-- 장면 3. 안내방송 스피커 -->
+    <div id="cap-03-1" class="clip cap" data-start="8.81" data-duration="1.7" data-track-index="1"><span class="cap-t">안내방송이 나온다</span></div>
+    <div id="cap-03-2" class="clip cap" data-start="10.51" data-duration="1.38" data-track-index="1"><span class="cap-t">역에 설 때마다</span></div>
+    <div id="cap-03-3" class="clip cap" data-start="11.89" data-duration="1.38" data-track-index="1"><span class="cap-t"><span class="hl">한 명씩</span> 내린다</span></div>
+    <div id="cap-03-4" class="clip cap" data-start="13.27" data-duration="1.22" data-track-index="1"><span class="cap-t">내린 사람은</span></div>
+    <div id="cap-03-5" class="clip cap" data-start="14.49" data-duration="1.54" data-track-index="1"><span class="cap-t"><span class="hl">돌아오지 못한다</span></span></div>
+    <!-- 장면 4. 숫자판: 상금 0 → 1억 -->
+    <div id="cap-04-1" class="clip cap" data-start="16.28" data-duration="1.86" data-track-index="1"><span class="cap-t">한 명이 사라질 때마다</span></div>
+    <div id="cap-04-2" class="clip cap" data-start="18.14" data-duration="1.7" data-track-index="1"><span class="cap-t">상금 <span class="hl">1억</span>이 쌓인다</span></div>
+    <!-- 장면 5. 첫 번째 역: 100 → 99 -->
+    <div id="cap-05-1" class="clip cap" data-start="20.24" data-duration="1.06" data-track-index="1"><span class="cap-t"><span class="hl">첫 번째 역</span></span></div>
+    <!-- 장면 6. 문이 열리고 23번이 사라짐 -->
+    <div id="cap-06-1" class="clip cap" data-start="22.4" data-duration="1.38" data-track-index="1"><span class="cap-t">문 앞에 서 있던</span></div>
+    <div id="cap-06-2" class="clip cap" data-start="23.78" data-duration="1.06" data-track-index="1"><span class="cap-t"><span class="hl">23번</span>이</span></div>
+    <div id="cap-06-3" class="clip cap" data-start="24.84" data-duration="1.06" data-track-index="1"><span class="cap-t">사라졌다</span></div>
+    <!-- 장면 7. 12번의 귓속말 -->
+    <div id="cap-07-1" class="clip cap" data-start="26.15" data-duration="0.74" data-track-index="1"><span class="cap-t">그때</span></div>
+    <div id="cap-07-2" class="clip cap" data-start="26.89" data-duration="1.54" data-track-index="1"><span class="cap-t"><span class="hl">12번</span>이 다가와</span></div>
+    <div id="cap-07-3" class="clip cap" data-start="28.43" data-duration="1.06" data-track-index="1"><span class="cap-t">속삭인다</span></div>
+    <div id="cap-07-4" class="clip cap" data-start="29.49" data-duration="1.06" data-track-index="1"><span class="cap-t">"나 여기서</span></div>
+    <div id="cap-07-5" class="clip cap" data-start="30.55" data-duration="1.38" data-track-index="1"><span class="cap-t"><span class="hl">나가는 법</span> 알아"</span></div>
+    <!-- 장면 8. 손 클로즈업, 피 -->
+    <div id="cap-08-1" class="clip cap" data-start="32.18" data-duration="1.38" data-track-index="1"><span class="cap-t">근데 <span class="hl">이상하다</span></span></div>
+    <div id="cap-08-2" class="clip cap" data-start="33.56" data-duration="1.22" data-track-index="1"><span class="cap-t">12번 손에</span></div>
+    <div id="cap-08-3" class="clip cap" data-start="34.78" data-duration="1.38" data-track-index="1"><span class="cap-t"><span class="hl">피</span>가 묻어 있다</span></div>
+    <!-- 장면 9. 선택지 A / B -->
+    <div id="cap-09-1" class="clip cap cap-y74" data-start="36.41" data-duration="0.9" data-track-index="1"><span class="cap-t">너라면</span></div>
+    <div id="cap-09-2" class="clip cap cap-y74" data-start="37.31" data-duration="1.22" data-track-index="1"><span class="cap-t"><span class="hl">어떻게 할래?</span></span></div>
+  </div>
+  <script>
+    (function () {
+      var tl = gsap.timeline({ paused: true });
+      // 등장할 때 1.18배에서 1배로 줄어드는 팝 (0.12초)
+      document.querySelectorAll('[data-composition-id="captions"] .cap').forEach(function (cap) {
+        tl.fromTo(
+          cap.querySelector(".cap-t"),
+          { scale: 1.18 },
+          { scale: 1, duration: 0.12, ease: "power2.out" },
+          Number(cap.dataset.start),
+        );
+      });
+      window.__timelines = window.__timelines || {};
+      window.__timelines["captions"] = tl;
+    })();
+  </script>
+</template>

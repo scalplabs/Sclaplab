@@ -1,0 +1,101 @@
+<!-- 좌상단 HUD (남은 인원 + 상금). 숫자와 글자는 Studio 에서 직접 고칠 수 있다.
+     4번(상금 0 → 1억), 5번(100 → 99) 장면은 화면 전체가 숫자판이라 HUD 를 숨긴다. -->
+<template>
+  <style>
+    @font-face {
+      font-family: "Noto Sans KR";
+      font-weight: 700;
+      src: url("assets/fonts/noto-sans-kr-korean-700-normal.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "Noto Sans KR";
+      font-weight: 700;
+      src: url("assets/fonts/noto-sans-kr-latin-700-normal.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2212, U+2215;
+    }
+    @font-face {
+      font-family: "Noto Sans KR";
+      font-weight: 900;
+      src: url("assets/fonts/noto-sans-kr-korean-900-normal.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "Noto Sans KR";
+      font-weight: 900;
+      src: url("assets/fonts/noto-sans-kr-latin-900-normal.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2212, U+2215;
+    }
+    @font-face {
+      font-family: "JetBrains Mono";
+      font-weight: 700;
+      src: url("assets/fonts/jetbrains-mono-latin-700-normal.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2212, U+2215;
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .hud {
+      position: absolute;
+      left: 60px;
+      top: 0;
+      width: 600px;
+      height: 280px;
+      color: #fff;
+    }
+    .hud-left {
+      position: absolute;
+      left: 0;
+      top: 67px;
+      margin: 0;
+      white-space: nowrap;
+      line-height: 1;
+      text-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+    }
+    .hud-n {
+      font: 900 110px "Noto Sans KR", sans-serif;
+      line-height: 1;
+    }
+    .hud-u {
+      font: 700 34px "Noto Sans KR", sans-serif;
+      line-height: 1;
+      margin-left: 10px;
+    }
+    .hud-rule {
+      position: absolute;
+      left: 0;
+      top: 196.5px;
+      width: 320px;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.5);
+    }
+    .hud-pool {
+      position: absolute;
+      left: 2px;
+      top: 212px;
+      margin: 0;
+      white-space: nowrap;
+      font: 700 30px "JetBrains Mono", "Noto Sans KR", monospace;
+      line-height: 1;
+      color: #c9d6dc;
+    }
+  </style>
+  <div id="root" data-composition-id="hud" data-width="1080" data-height="1920">
+    <!-- 장면 2~3: 100명, 상금 0 -->
+    <div id="hud-a" class="clip hud" data-start="4" data-duration="12.28" data-track-index="1">
+      <p class="hud-left"><span class="hud-n">100</span><span class="hud-u">명 남음</span></p>
+      <div class="hud-rule"></div>
+      <p class="hud-pool">상금 ₩0</p>
+    </div>
+    <!-- 장면 6~9: 99명, 상금 1억 -->
+    <div id="hud-b" class="clip hud" data-start="22.4" data-duration="17.73" data-track-index="1">
+      <p class="hud-left"><span class="hud-n">99</span><span class="hud-u">명 남음</span></p>
+      <div class="hud-rule"></div>
+      <p class="hud-pool">상금 ₩100,000,000</p>
+    </div>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    window.__timelines["hud"] = gsap.timeline({ paused: true });
+  </script>
+</template>

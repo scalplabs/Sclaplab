@@ -1,0 +1,7 @@
+node_modules/
+.hyperframes/
+renders/
+# 원본 비교용 영상(19MB)은 저장소에 올리지 않는다. 비교할 때 이 경로에 넣는다.
+reference/*.mp4
+out/.*
+out/work-*

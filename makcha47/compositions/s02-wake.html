@@ -1,0 +1,45 @@
+<!-- 장면 2. 막차 안에서 깨어남 (4s ~ 8.81s) -->
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #000;
+    }
+    #s02-cv {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  <div id="root" data-composition-id="s02-wake" data-width="1080" data-height="1920">
+    <!-- 캔버스 그림(hosted): assets/makcha-engine.js 의 "train-wake" 장면 -->
+    <canvas id="s02-cv" width="1080" height="1920" data-layout-allow-overflow></canvas>
+  </div>
+  <script>
+    (function () {
+      var ID = "s02-wake";
+      function build() {
+        var tl = gsap.timeline({ paused: true });
+        // start = 영상 전체에서 이 장면이 시작하는 초 (index.html 의 data-start 와 같게), dur = 장면 길이
+        window.Makcha.mount(document.getElementById("s02-cv"), "train-wake", tl, { start: 4, dur: 4.81 });
+        window.__timelines[ID] = tl;
+      }
+      function start() {
+        window.Makcha.ready.then(build);
+      }
+      window.__timelines = window.__timelines || {};
+      if (window.Makcha) start();
+      else {
+        // 이 장면만 따로 열었을 때: 그림 엔진을 직접 불러온다
+        var s = document.createElement("script");
+        s.src = "assets/makcha-engine.js";
+        s.onload = start;
+        document.head.appendChild(s);
+      }
+    })();
+  </script>
+</template>
