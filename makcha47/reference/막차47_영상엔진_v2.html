@@ -1,0 +1,77 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>막차47 v2</title>
+<style>html,body{margin:0;background:#000}#c{width:360px;height:640px}</style>
+<script type="importmap">{"imports":{"mp4-muxer":"https://cdn.jsdelivr.net/npm/mp4-muxer@5/build/mp4-muxer.mjs"}}</script>
+</head><body><canvas id="c" width="1080" height="1920"></canvas>
+<script type="module">
+import {Muxer, ArrayBufferTarget} from 'mp4-muxer';
+const W=1080,H=1920,FPS=30;const cv=document.getElementById('c');const g=cv.getContext('2d');
+const F='"Apple SD Gothic Neo","Noto Sans KR",sans-serif';
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),lerp=(a,b,k)=>a+(b-a)*k,ease=x=>{x=clamp(x);return x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;},eout=x=>1-Math.pow(1-clamp(x),3);
+const IMG={};const load=n=>new Promise(r=>{const im=new Image();im.onload=()=>{IMG[n]=im;r();};im.src='makcha47_scenes/'+n+'.png';});
+await Promise.all(['s01_phone','s02_wake','s03_speaker','s04_money','s05_99','s06_door','s08_hand','s09_choice','s10_tunnel'].map(load));
+
+// draw square image cover-cropped to 9:16 with ken burns: fx,fy focus (0..1), z0->z1 zoom, optional shake
+function shot(name,k,{fx=0.5,fy=0.5,z0=1.0,z1=1.12,dx=0,dy=0,shake=0,bright=1}={}){
+  const im=IMG[name];const z=lerp(z0,z1,ease(k));const base=H/im.naturalHeight;const s=base*z;const w=im.naturalWidth*s,h=im.naturalHeight*s;
+  let x=W/2-fx*w+dx*k*W,y=H/2-fy*h+dy*k*H;x=Math.min(0,Math.max(W-w,x));y=Math.min(0,Math.max(H-h,y));
+  if(shake){x+=Math.sin(k*90)*shake;y+=Math.cos(k*77)*shake;}
+  g.filter=bright!==1?`brightness(${bright})`:'none';g.drawImage(im,x,y,w,h);g.filter='none';}
+function vignette(a=0.55){const r=g.createRadialGradient(W/2,H*0.48,H*0.25,W/2,H*0.5,H*0.8);r.addColorStop(0,'rgba(0,0,0,0)');r.addColorStop(1,`rgba(0,0,0,${a})`);g.fillStyle=r;g.fillRect(0,0,W,H);
+  const t=g.createLinearGradient(0,0,0,320);t.addColorStop(0,'rgba(0,0,0,.55)');t.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=t;g.fillRect(0,0,W,320);}
+function hud(t,sh){if(sh.hud===false)return;const left=sh.left?sh.left(t):99,pool=sh.pool?sh.pool(t):0;
+  g.textAlign='left';g.textBaseline='alphabetic';g.fillStyle='#fff';g.font=`900 110px ${F}`;g.shadowColor='rgba(0,0,0,.7)';g.shadowBlur=14;g.fillText(String(left),60,170);
+  const w=g.measureText(String(left)).width;g.font=`700 34px ${F}`;g.fillText('명 남음',72+w,165);g.shadowBlur=0;
+  g.strokeStyle='rgba(255,255,255,.5)';g.lineWidth=3;g.beginPath();g.moveTo(60,198);g.lineTo(400,198);g.stroke();
+  g.font=`600 30px Menlo,monospace`;g.fillStyle='#d6e2e8';g.fillText('상금 ₩'+Math.round(pool).toLocaleString(),62,240);}
+function caption(text,k,y=H*0.62){if(!text)return;const parts=text.split(/(\*[^*]+\*)/).filter(Boolean);
+  const s=1+0.18*(1-eout(k/0.12));g.save();g.translate(W/2,y);g.scale(s,s);g.font=`900 100px ${F}`;g.textBaseline='middle';
+  let total=0;const segs=parts.map(p=>{const hl=p.startsWith('*');const tx=hl?p.slice(1,-1):p;const w=g.measureText(tx).width;total+=w;return{tx,hl,w};});
+  let x=-total/2;g.lineJoin='round';for(const sg of segs){g.lineWidth=20;g.strokeStyle='#000';g.textAlign='left';g.strokeText(sg.tx,x,0);g.fillStyle=sg.hl?'#ffd84a':'#fff';g.fillText(sg.tx,x,0);x+=sg.w;}g.restore();}
+function flash(col,a){if(a<=0)return;g.fillStyle=col.replace('A',a.toFixed(3));g.fillRect(0,0,W,H);}
+
+const S=[];const add=o=>S.push(o);
+add({hud:false,chunks:['어젯밤','*모르는 번호*로','문자가 왔다'],tail:0.4,draw(t,d){shot('s01_phone',t/d,{fx:0.55,z0:1.05,z1:1.25});
+  // message overlay on the glow
+  const k=clamp((t-0.6)/1.2);if(k>0){g.save();g.globalAlpha=k;g.fillStyle='rgba(20,28,40,.88)';g.beginPath();g.roundRect(170,980,740,220,30);g.fill();g.fillStyle='#e9f1ff';g.font=`600 46px ${F}`;g.textAlign='left';
+    const m='축하합니다, 참가자 47번.\n당신은 선택되었습니다.'.slice(0,Math.floor(k*30)).split('\n');m.forEach((l,i)=>g.fillText(l,210,1060+i*66));g.restore();}vignette(.6);},capY:H*0.42});
+add({chunks:['눈을 떠보니','*2호선 막차*','승객은','딱 *100명*'],left:()=>100,pool:()=>0,draw(t,d){shot('s02_wake',t/d,{fx:0.5,z0:1.25,z1:1.05});flash('rgba(0,0,0,A)',1-t/0.5);vignette();}});
+add({chunks:['안내방송이 나온다','역에 설 때마다','*한 명씩* 내린다','내린 사람은','*돌아오지 못한다*'],left:()=>100,pool:()=>0,draw(t,d){shot('s03_speaker',t/d,{fx:0.5,fy:0.45,z0:1.0,z1:1.3});
+  const p=0.5+0.5*Math.sin(t*9);flash('rgba(255,20,30,A)',0.10*p);vignette(.6);}});
+add({chunks:['한 명이 사라질 때마다','상금 *1억*이 쌓인다'],tail:0.5,left:()=>100,pool:t=>t>1.4?lerp(0,1e8,eout((t-1.4)/1.3)):0,draw(t,d){shot('s04_money',t/d,{fx:0.5,fy:0.4,z0:1.0,z1:1.15});vignette(.5);
+  if(t>2.7){g.font=`800 50px Menlo,monospace`;g.fillStyle='#9ef0a8';g.textAlign='center';g.shadowColor='#000';g.shadowBlur=12;g.fillText('+ ₩100,000,000 / 1명',W/2,H*0.74);g.shadowBlur=0;}}});
+add({chunks:['*첫 번째 역*'],tail:1.2,left:t=>t<0.9?100:99,pool:()=>1e8,draw(t,d){shot('s05_99',t/d,{fx:0.5,fy:0.35,z0:1.1,z1:1.2,shake:t>0.9&&t<1.4?14:0});
+  flash('rgba(255,0,20,A)',t>0.9?0.55*(1-clamp((t-0.9)/0.6)):0);vignette(.5);
+  if(t>0.9){g.font=`700 40px Menlo,monospace`;g.fillStyle='#ff6b6b';g.textAlign='left';g.fillText('✕ 참가자 23 탈락',70,300);}}});
+add({chunks:['문 앞에 서 있던','*23번*이','사라졌다'],left:()=>99,pool:()=>1e8,draw(t,d){shot('s06_door',t/d,{fx:0.6,z0:1.0,z1:1.18});
+  flash('rgba(255,255,255,A)',t>2.0?0.7*Math.sin(clamp((t-2.0)/0.6)*Math.PI):0);vignette(.5);}});
+add({chunks:['그때','*12번*이 다가와','속삭인다','"나 여기서','*나가는 법* 알아"'],left:()=>99,pool:()=>1e8,draw(t,d){shot('s02_wake',t/d,{fx:0.12,fy:0.5,z0:1.6,z1:1.85,bright:0.8});
+  if(t>2.9){const k=eout((t-2.9)/0.25);g.save();g.translate(W*0.62,H*0.36);g.scale(k,k);g.fillStyle='#fff';g.strokeStyle='#111';g.lineWidth=7;g.beginPath();g.roundRect(-220,-70,440,140,40);g.fill();g.stroke();
+    g.beginPath();g.moveTo(-150,66);g.lineTo(-200,130);g.lineTo(-90,66);g.closePath();g.fill();g.stroke();g.fillStyle='#fff';g.fillRect(-160,58,80,12);g.fillStyle='#111';g.font=`800 50px ${F}`;g.textAlign='center';g.textBaseline='middle';g.fillText('나가는 법 알아',0,4);g.restore();}
+  vignette(.65);}});
+add({chunks:['근데 *이상하다*','12번 손에','*피*가 묻어 있다'],left:()=>99,pool:()=>1e8,draw(t,d){shot('s08_hand',t/d,{fx:0.5,fy:0.5,z0:1.0,z1:1.35});flash('rgba(0,0,0,A)',0.35*(1-clamp(t/1.2)));vignette(.7);}});
+add({chunks:['너라면','*어떻게 할래?*'],tail:2.0,left:()=>99,pool:()=>1e8,capY:H*0.8,draw(t,d){shot('s09_choice',t/d,{fx:0.5,z0:1.0,z1:1.1,bright:0.75});vignette(.5);
+  const c=(y,label,txt,col,dl)=>{const k=eout((t-dl)/0.35);g.save();g.translate(W/2+(1-k)*700,y);g.fillStyle='rgba(10,14,20,.88)';g.strokeStyle=col;g.lineWidth=6;g.beginPath();g.roundRect(-440,-90,880,180,30);g.fill();g.stroke();
+    g.fillStyle=col;g.beginPath();g.arc(-345,0,52,0,7);g.fill();g.fillStyle='#000';g.font=`900 60px ${F}`;g.textAlign='center';g.textBaseline='middle';g.fillText(label,-345,4);g.fillStyle='#fff';g.font=`800 54px ${F}`;g.textAlign='left';g.fillText(txt,-265,4);g.restore();};
+  c(H*0.36,'A','12번을 따라간다','#ffd84a',0.2);c(H*0.36+220,'B','혼자 움직인다','#7fd3ff',0.5);}});
+add({chunks:[],tail:4.4,hud:false,draw(t,d){shot('s10_tunnel',t/d,{fx:0.5,z0:1.0,z1:1.25,bright:0.55});vignette(.6);g.textAlign='center';g.textBaseline='alphabetic';
+  if(t<2.4){g.fillStyle='#fff';g.font=`900 100px ${F}`;g.shadowColor='#000';g.shadowBlur=16;g.fillText('너라면 뭐 할래?',W/2,760);g.shadowBlur=0;g.font=`700 42px ${F}`;g.fillStyle='#cfdbe2';g.fillText('댓글에 너의 선택을 적어줘',W/2,840);
+    g.fillStyle='rgba(20,26,34,.92)';g.beginPath();g.roundRect(130,910,820,116,58);g.fill();const typed='나라면 B. 혼자 간다'.slice(0,Math.floor(clamp((t-0.4)/1.2)*12));g.fillStyle='#eee';g.font=`600 44px ${F}`;g.textAlign='left';g.fillText(typed||'댓글 달기...',190,984);
+    g.fillStyle='#ffd84a';g.beginPath();g.arc(890,968,38,0,7);g.fill();g.textAlign='center';g.font=`900 46px ${F}`;g.fillStyle='#ffd84a';g.fillText('댓글 1등이 PART 2를 정한다',W/2,1160);}
+  else{const k=eout((t-2.4)/0.5);g.globalAlpha=k;g.fillStyle='#7fd3ff';g.font=`900 170px ${F}`;g.shadowColor='#7fd3ff';g.shadowBlur=30;g.fillText('99',W/2,760);g.shadowBlur=0;g.fillStyle='#fff';g.font=`900 130px ${F}`;g.fillText('막차 47',W/2,930);
+    g.fillStyle='#ff5a5a';g.font=`700 42px Menlo,monospace`;g.fillText('PART 1 · 네가 정해',W/2,1005);g.fillStyle='#ff4d6d';g.beginPath();g.arc(430,1190,52,0,7);g.fill();g.fillStyle='#fff';g.font=`900 50px ${F}`;g.fillText('♥',430,1208);
+    g.fillStyle='#ddd';g.beginPath();g.arc(650,1190,52,0,7);g.fill();g.fillStyle='#000';g.fillText('+',650,1208);g.font=`600 30px ${F}`;g.fillStyle='#bbb';g.fillText('좋아요',430,1282);g.fillText('팔로우',650,1282);g.globalAlpha=1;}}});
+
+const syl=s=>s.replace(/[^가-힣A-Za-z0-9]/g,'').length;
+let acc=0;for(const sh of S){sh.start=acc;sh.cs=[];let t=0;for(const c of sh.chunks){const d=0.42+0.16*syl(c.replace(/\*/g,''));sh.cs.push([t,t+d,c]);t+=d;}sh.dur=t+(sh.tail||0.25);acc+=sh.dur;}
+const TOTAL=acc;window.TOTAL=TOTAL;window.S=S;
+function renderAt(T){let i=S.findIndex(s=>T>=s.start&&T<s.start+s.dur);if(i<0)i=S.length-1;const sh=S[i],t=T-sh.start;g.setTransform(1,0,0,1,0,0);g.globalAlpha=1;g.fillStyle='#000';g.fillRect(0,0,W,H);
+  sh.draw(t,sh.dur);hud(t,sh);const c=sh.cs.find(c=>t>=c[0]&&t<c[1]);if(c)caption(c[2],t-c[0],sh.capY||H*0.62);
+  g.fillStyle='rgba(255,255,255,0.03)';const f=Math.floor(T*FPS);for(let k=0;k<80;k++)g.fillRect((k*7919+f*131)%W,(k*104729+f*71)%H,2,2);}
+window.renderAt=renderAt;window.preview=ts=>ts.map(t=>{renderAt(t);return cv.toDataURL('image/jpeg',0.6);});
+window.encode=async(name)=>{window.__done=null;const mux=new Muxer({target:new ArrayBufferTarget(),video:{codec:'avc',width:W,height:H},fastStart:'in-memory'});
+  const enc=new VideoEncoder({output:(c,m)=>mux.addVideoChunk(c,m),error:e=>window.__done='ERR '+e.message});enc.configure({codec:'avc1.640033',width:W,height:H,bitrate:12_000_000,framerate:FPS});
+  const N=Math.round(TOTAL*FPS);for(let f=0;f<N;f++){renderAt(f/FPS);const vf=new VideoFrame(cv,{timestamp:Math.round(f*1e6/FPS),duration:Math.round(1e6/FPS)});enc.encode(vf,{keyFrame:f%60===0});vf.close();if(enc.encodeQueueSize>6)await new Promise(r=>setTimeout(r,4));if(f%15===0)await new Promise(r=>setTimeout(r,0));}
+  await enc.flush();mux.finalize();const r=await fetch('/save?name='+encodeURIComponent(name),{method:'POST',body:mux.target.buffer});window.__done=await r.text();};
+window.__ready=true;renderAt(0);
+</script></body></html>

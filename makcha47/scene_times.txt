@@ -1,0 +1,11 @@
+ 1 s01 s01_phone    start 0.00s  dur 2.67s
+ 2 s02 s02_wake     start 2.67s  dur 2.93s
+ 3 s03 s03_speaker  start 5.60s  dur 5.87s
+ 4 s04 s04_money    start 11.47s  dur 2.53s
+ 5 s05 s05_99       start 14.00s  dur 1.10s
+ 6 s06 s06_door     start 15.10s  dur 2.43s
+ 7 s07 s02_wake     start 17.53s  dur 3.73s
+ 8 s08 s08_hand     start 21.27s  dur 3.30s
+ 9 s09 s09_choice   start 24.57s  dur 2.93s
+10 s10 s10_tunnel   start 27.50s  dur 4.00s
+TOTAL 31.50s

@@ -1,0 +1,16 @@
+{
+  "name": "makcha47",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "gsap": "^3.12.5",
+    "hyperframes": "^0.9.30"
+  }
+}
