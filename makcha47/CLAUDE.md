@@ -42,3 +42,11 @@
 ## 완료 기준
 - 렌더 전에 npx hyperframes diff reference/막차47_PART1_v2_완성본.mp4 . 로 장면마다 비교. 특히 "모든 프레임이 같은 그림"이 아닌지 반드시 확인.
 - 렌더 후 out 경로와 장면별 시작 시간 보고.
+
+## 변경 기록 (작업 중 사용자 결정)
+- 내레이션: eleven_multilingual_v2가 너무 AI 같다는 피드백으로 **eleven_v4 + "my voice"**로 다시 생성 (대본 단어는 그대로, [softly]/[whispers] 등 연기 태그 추가). 테이크2 선택.
+- 필터: **E2** = 강한 안내방송 톤에서 울림만 줄인 것
+  highpass=f=450,lowpass=f=2800,acrusher=bits=8:mix=0.4,asoftclip=type=tanh,equalizer=f=1500:t=q:w=1:g=5,acompressor=threshold=-24dB:ratio=6,aecho=0.8:0.5:45|100:0.15|0.08,loudnorm=I=-16:TP=-1.5
+- 타이밍: narration_alignment.json = v4 테이크2의 단어 타임스탬프(eleven_scribe_v1, 태그 제거). 영상 길이는 내레이션 기준 약 39.6초.
+- 배경음: audio/bgm/bgm1.mp3(공포 앰비언트) + subway1.mp3(지하철 실내 루프) + hit1.mp3(100→99 순간 '쿵'). mix.sh가 목소리에 맞춰 배경을 덕킹하고 audio/mix.mp3로 합친다 (BGM -7dB, 지하철 -13dB, 최종 -14 LUFS).
+- 빌드 순서: node build.mjs → ./mix.sh → npx hyperframes render . -o out/makcha47_part1.mp4

@@ -4,7 +4,7 @@
 import fs from 'node:fs';
 
 const W = 1080, H = 1920, FPS = 30;
-const words = JSON.parse(fs.readFileSync('narration_alignment.json', 'utf8')).words.filter(w => w.type === 'word');
+const words = JSON.parse(fs.readFileSync('narration_alignment.json', 'utf8')).words.filter(w => w.type === 'word' && !/[\[\]]/.test(w.text));
 const NARR_END = words.at(-1).end;
 
 // Caption chunks: [text, firstWordIdx, lastWordIdx]. *x* = yellow highlight.
@@ -129,7 +129,7 @@ SCENES.forEach(s => s.cs.forEach((c, j) => {
 }));
 html += `
   <div id="grain" class="clip" data-start="0" data-duration="${r3(TOTAL)}" data-track-index="3"></div>
-  <audio id="narr" src="narration.mp3" data-start="0" data-duration="${r3(Math.min(TOTAL, NARR_END + 0.3))}" data-track-index="4"></audio>`;
+  <audio id="mix" src="audio/mix.mp3" data-start="0" data-duration="${r3(TOTAL)}" data-track-index="4"></audio>`;
 
 // ---- timeline data for the inline script ----
 const data = {
@@ -235,5 +235,6 @@ const page = `<!doctype html>
 `;
 fs.writeFileSync('index.html', page);
 const report = SCENES.map((s, i) => `${String(i + 1).padStart(2)} ${s.id} ${s.img.padEnd(12)} start ${s.start.toFixed(2)}s  dur ${s.dur.toFixed(2)}s`).join('\n');
+fs.writeFileSync('audio/timing.json', JSON.stringify({ total: TOTAL, narrEnd: NARR_END, hit: SCENES[4].start + EV.drop, ending: SCENES[9].start }));
 fs.writeFileSync('scene_times.txt', report + `\nTOTAL ${TOTAL.toFixed(2)}s\n`);
 console.log(report + `\nTOTAL ${TOTAL.toFixed(2)}s`, '\nEV', EV);
