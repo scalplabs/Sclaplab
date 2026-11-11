@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<style>
+@font-face{font-family:'Pretendard';font-weight:700;src:url('/fonts/Pretendard-Bold.woff2') format('woff2')}
+@font-face{font-family:'Pretendard';font-weight:800;src:url('/fonts/Pretendard-ExtraBold.woff2') format('woff2')}
+html,body{margin:0;background:#05070b;overflow:hidden}
+#c,#kv,#ov,#grain,#flash{position:absolute;left:0;top:0;width:1080px;height:1920px}
+#kv{object-fit:cover;opacity:0}
+#ov{font-family:Pretendard;color:#F2F1EE;letter-spacing:-.04em}
+.ab{position:absolute}
+#sub{position:absolute;left:40px;right:40px;top:1290px;text-align:center;font:800 74px Pretendard;letter-spacing:-.04em;color:#fff;text-shadow:0 0 18px rgba(0,0,0,.9),0 4px 30px rgba(0,0,0,.8)}
+#sub span{display:inline-block;margin:0 .13em}
+#band{position:absolute;left:0;right:0;top:1180px;height:360px;background:linear-gradient(transparent,rgba(0,0,0,.55) 45%,rgba(0,0,0,.55) 70%,transparent)}
+#grain{opacity:.12;mix-blend-mode:overlay}
+#flash{background:#fff;opacity:0}
+#vig{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(0,0,0,.6) 100%)}
+</style></head><body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<img id="kv">
+<div id="vig"></div><div id="band"></div>
+<div id="ov"></div><div id="sub"></div>
+<canvas id="grain" width="540" height="960"></canvas><div id="flash"></div>
+<script type="importmap">{"imports":{"three":"/t3d/node_modules/three/build/three.module.js"}}</script>
+<script type="module">
+import * as THREE from 'three';
+const SEGS=SEGS_JSON, T=TOTAL, OR='#FF5A00', AV='/adman-v1/avatar.png';
+const KA_N=+new URLSearchParams(location.search).get('ka')||0, KB_N=+new URLSearchParams(location.search).get('kb')||0;
+const img=u=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=u;});
+const PAPER=await img('/pix/paper.jpg'),SKY=await img('/pix/sky.jpg'),SKYLINE=await img('/pix/skyline.jpg');
+const KB=[];for(let i=1;i<=KB_N;i++)KB.push(await img(`/reel9/kling/b/${String(i).padStart(4,'0')}.jpg`));
+await document.fonts.load('800 40px Pretendard');await document.fonts.load('700 40px Pretendard');
+let seed=11;const rnd=()=>((seed=Math.imul(seed^seed>>>15,1|seed)+0x6D2B79F5|0,((seed^seed>>>14)>>>0)/4294967296));
+const cl=x=>Math.max(0,Math.min(1,x)),lerp=(a,b,k)=>a+(b-a)*k,ease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2,sm=x=>{x=cl(x);return x*x*(3-2*x)};
+const Sp=(t,f=3,z=.45)=>{if(t<=0)return 0;const w=2*Math.PI*f,wd=w*Math.sqrt(1-z*z);return 1-Math.exp(-z*w*t)*(Math.cos(wd*t)+z*w/wd*Math.sin(wd*t));};
+
+// scene ranges
+const RANGE={};SEGS.forEach((s,i)=>{if(!RANGE[s.scene])RANGE[s.scene]=[s.start,null];});
+const order=[...new Set(SEGS.map(s=>s.scene))];order.forEach((k,i)=>{RANGE[k][1]=i<order.length-1?RANGE[order[i+1]][0]:T;});
+
+const W=1080,H=1920;
+const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(+(new URLSearchParams(location.search).get("r3")||window.devicePixelRatio));renderer.setSize(W,H,false);
+renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.outputColorSpace=THREE.SRGBColorSpace;
+const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0x0a0d13,0.012);
+const cam=new THREE.PerspectiveCamera(42,W/H,0.03,900);
+const tex=(cv)=>{const t=new THREE.CanvasTexture(cv);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t;};
+
+// ---------- sky + city ----------
+const skyTex=new THREE.Texture(SKY);skyTex.needsUpdate=true;skyTex.colorSpace=THREE.SRGBColorSpace;skyTex.wrapS=THREE.MirroredRepeatWrapping;skyTex.repeat.set(3,1);
+const skyM=new THREE.Mesh(new THREE.CylinderGeometry(500,500,600,48,1,true),new THREE.MeshBasicMaterial({map:skyTex,side:THREE.BackSide,fog:false,color:0x8d98aa,depthWrite:false}));skyM.position.y=200;skyM.rotation.y=-0.6;scene.add(skyM);
+const winCv=document.createElement('canvas');winCv.width=64;winCv.height=128;{const g=winCv.getContext('2d');g.fillStyle='#0d1015';g.fillRect(0,0,64,128);
+ for(let y=4;y<128;y+=8)for(let x=4;x<64;x+=8){const r=rnd();g.fillStyle=r>.7?(r>.93?'#ffe2a8':'#f2c27c'):'#141922';g.fillRect(x,y,4,5);}}
+const winTex=tex(winCv);winTex.wrapS=winTex.wrapT=THREE.RepeatWrapping;
+const bmat=new THREE.MeshStandardMaterial({color:0x0e1218,emissive:0xffffff,emissiveMap:winTex,emissiveIntensity:1.0,roughness:.9});
+const bl=[];for(let i=0;i<1500;i++){const a=rnd()*Math.PI*2,d=45+Math.pow(rnd(),.7)*260;const x=8+Math.cos(a)*d,z=Math.sin(a)*d;
+ if(z>0&&Math.abs(x-8)<30+z*.3&&d<110)continue;const w=4+rnd()*9,h=8+rnd()*rnd()*70,dd=4+rnd()*9;
+ bl.push(new THREE.Matrix4().compose(new THREE.Vector3(x,h/2-30,z),new THREE.Quaternion(),new THREE.Vector3(w,h,dd)));}
+const bim=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),bmat,bl.length);bl.forEach((m,i)=>bim.setMatrixAt(i,m));scene.add(bim);
+const street=[];for(let i=0;i<2400;i++){const a=rnd()*Math.PI*2,d=30+rnd()*280;street.push(8+Math.cos(a)*d,-29.7,Math.sin(a)*d);}
+const gc=document.createElement('canvas');gc.width=gc.height=64;{const g=gc.getContext('2d');const gr=g.createRadialGradient(32,32,0,32,32,32);gr.addColorStop(0,'rgba(255,230,190,1)');gr.addColorStop(.18,'rgba(255,180,110,.7)');gr.addColorStop(1,'rgba(255,150,60,0)');g.fillStyle=gr;g.fillRect(0,0,64,64);}
+const gtex=tex(gc);const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.Float32BufferAttribute(street,3));
+scene.add(new THREE.Points(sg,new THREE.PointsMaterial({map:gtex,size:2.2,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending})));
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(1400,1400),new THREE.MeshStandardMaterial({color:0x0b0d11,roughness:.5,metalness:.4}));ground.rotation.x=-Math.PI/2;ground.position.y=-30;scene.add(ground);
+
+// ---------- building (our floor is y 0..3.2, x -3.5..20.5, z -2.4..3.5) ----------
+const X0=-3.5,X1=20.5,ZB=-2.4,ZF=3.5,FH=3.2;
+const winTex2=winTex.clone();winTex2.needsUpdate=true;winTex2.repeat.set(6,9);
+const facade=new THREE.MeshStandardMaterial({color:0x0f1319,emissive:0xffffff,emissiveMap:winTex2,emissiveIntensity:.22,roughness:.8});
+const upper=new THREE.Mesh(new THREE.BoxGeometry(X1-X0,40,ZF-ZB+0.4),facade);upper.position.set((X0+X1)/2,FH+20+.15,(ZB+ZF)/2);scene.add(upper);
+const lower=new THREE.Mesh(new THREE.BoxGeometry(X1-X0,30,ZF-ZB+0.4),facade);lower.position.set((X0+X1)/2,-15-.15,(ZB+ZF)/2);scene.add(lower);
+const dark=new THREE.MeshStandardMaterial({color:0x111318,roughness:.7});
+const floor=new THREE.Mesh(new THREE.BoxGeometry(X1-X0,.3,ZF-ZB),new THREE.MeshStandardMaterial({color:0x17191d,roughness:.35,metalness:.35}));floor.position.set((X0+X1)/2,-.15,(ZB+ZF)/2);scene.add(floor);
+const ceilM=new THREE.MeshStandardMaterial({color:0x111318,emissive:0x000000,roughness:.7});const ceil=new THREE.Mesh(new THREE.BoxGeometry(X1-X0,.3,ZF-ZB),ceilM);ceil.position.set((X0+X1)/2,FH+.15,(ZB+ZF)/2);scene.add(ceil);
+for(const x of [X0,X1]){const w=new THREE.Mesh(new THREE.BoxGeometry(.3,FH,ZF-ZB),dark);w.position.set(x,FH/2,(ZB+ZF)/2);scene.add(w);}
+// ceiling light strips
+const stripM=new THREE.MeshBasicMaterial({color:0x2a2c30});const strips=[];
+for(let i=0;i<6;i++){const s=new THREE.Mesh(new THREE.BoxGeometry(2.6,.03,.12),stripM);s.position.set(-1+i*4.2,FH-.02,.6);scene.add(s);}
+// mullions front & back
+const mull=new THREE.MeshStandardMaterial({color:0x1b1d22,roughness:.5,metalness:.6});
+for(let x=X0;x<=X1+.01;x+=2){for(const z of [ZB,ZF]){const m=new THREE.Mesh(new THREE.BoxGeometry(.07,FH,.07),mull);m.position.set(x,FH/2,z);scene.add(m);}}
+for(const z of [ZB,ZF])for(const y of [.05,FH-.05]){const m=new THREE.Mesh(new THREE.BoxGeometry(X1-X0,.08,.08),mull);m.position.set((X0+X1)/2,y,z);scene.add(m);}
+const glassF=new THREE.Mesh(new THREE.PlaneGeometry(X1-X0,FH),new THREE.MeshStandardMaterial({color:0x223040,transparent:true,opacity:.14,roughness:.05,metalness:.9,depthWrite:false}));glassF.position.set((X0+X1)/2,FH/2,ZF);scene.add(glassF);
+// view behind back window: skyline photo
+const slTex=new THREE.Texture(SKYLINE);slTex.needsUpdate=true;slTex.colorSpace=THREE.SRGBColorSpace;
+const sl=new THREE.Mesh(new THREE.PlaneGeometry(120,80),new THREE.MeshBasicMaterial({map:slTex,fog:false,color:0xb0b4bc}));sl.position.set(8,-6,-40);scene.add(sl);
+
+// ---------- desks ----------
+const ROLES=[['기획팀장','Claude'],['리서치 담당','Perplexity'],['디자이너','ChatGPT 이미지'],['성우','ElevenLabs'],['촬영감독','Kling']];
+const DX=i=>i*4.2;
+const deskM=new THREE.MeshStandardMaterial({color:0x2b2621,roughness:.55});
+const metal=new THREE.MeshStandardMaterial({color:0x2c2f35,roughness:.4,metalness:.7});
+const screens=[],lights=[],plates=[];
+function plateTex(i){const cv=document.createElement('canvas');cv.width=512;cv.height=200;const g=cv.getContext('2d');
+ g.drawImage(PAPER,i*90,40,600,240,0,0,512,200);g.fillStyle='rgba(255,252,245,.55)';g.fillRect(0,0,512,200);
+ g.fillStyle=OR;g.font='800 64px Pretendard';g.fillText('0'+(i+1),26,86);g.fillStyle='#16140f';g.font='800 50px Pretendard';g.fillText(ROLES[i][0],120,82);
+ g.fillStyle='#4b463d';g.font='700 40px Pretendard';g.fillText(ROLES[i][1],28,160);return tex(cv);}
+for(let i=0;i<5;i++){const x=DX(i);
+ const top=new THREE.Mesh(new THREE.BoxGeometry(1.9,.05,.95),deskM);top.position.set(x,.75,0);scene.add(top);
+ for(const sx of [-.88,.88])for(const sz of [-.4,.4]){const l=new THREE.Mesh(new THREE.BoxGeometry(.04,.75,.04),metal);l.position.set(x+sx,.375,sz);scene.add(l);}
+ const bez=new THREE.Mesh(new THREE.BoxGeometry(1.06,.66,.035),new THREE.MeshStandardMaterial({color:0x0b0c0e,roughness:.3,metalness:.5}));bez.position.set(x,1.2,-.22);scene.add(bez);
+ const st=new THREE.Mesh(new THREE.BoxGeometry(.06,.3,.06),metal);st.position.set(x,.92,-.25);scene.add(st);
+ const cv=document.createElement('canvas');cv.width=1024;cv.height=640;const t=tex(cv);
+ const scr=new THREE.Mesh(new THREE.PlaneGeometry(1.0,.625),new THREE.MeshBasicMaterial({map:t,toneMapped:false,color:0x000000}));scr.position.set(x,1.2,-.2);scene.add(scr);screens.push({cv,t,scr});
+ const kb=new THREE.Mesh(new THREE.BoxGeometry(.55,.02,.17),metal);kb.position.set(x,.785,.12);scene.add(kb);
+ const mug=new THREE.Mesh(new THREE.CylinderGeometry(.04,.035,.1,16),new THREE.MeshStandardMaterial({color:i%2?0xe8e2d6:0xFF5A00,roughness:.6}));mug.position.set(x+.62,.825,.08);scene.add(mug);
+ const pl=new THREE.Mesh(new THREE.PlaneGeometry(.42,.164),new THREE.MeshStandardMaterial({map:plateTex(i),roughness:.8}));pl.position.set(x-.55,.83,.33);pl.rotation.x=-.5;scene.add(pl);
+ const seat=new THREE.Mesh(new THREE.BoxGeometry(.5,.07,.5),new THREE.MeshStandardMaterial({color:0x1c1d21,roughness:.8}));seat.position.set(x,.48,.85);scene.add(seat);
+ const back=new THREE.Mesh(new THREE.BoxGeometry(.5,.45,.06),seat.material);back.position.set(x,.74,1.1);back.rotation.x=.12;scene.add(back);
+ const L=new THREE.PointLight(0x9fc4ff,0,4.5,1.6);L.position.set(x,1.25,.35);scene.add(L);lights.push(L);}
+scene.add(new THREE.HemisphereLight(0x6f84a8,0x120f0c,.22));
+const moon=new THREE.DirectionalLight(0xb7c8e6,.5);moon.position.set(-20,30,-40);scene.add(moon);
+const warmFill=new THREE.PointLight(0xffb37a,14,22,1.4);warmFill.position.set(8,2.8,2.6);scene.add(warmFill);
+// dust in office
+const dust=[];for(let i=0;i<260;i++)dust.push(X0+rnd()*(X1-X0),rnd()*FH,ZB+rnd()*(ZF-ZB));
+const dg=new THREE.BufferGeometry();dg.setAttribute('position',new THREE.Float32BufferAttribute(dust,3));
+const dustP=new THREE.Points(dg,new THREE.PointsMaterial({color:0xfff1d8,size:.012,transparent:true,opacity:.55}));scene.add(dustP);
+
+// ---------- screen UIs ----------
+function rr(g,x,y,w,h,r){g.beginPath();g.roundRect(x,y,w,h,r);}
+function chrome(g,title){g.fillStyle='#101114';g.fillRect(0,0,1024,640);g.fillStyle='#1b1c20';g.fillRect(0,0,1024,56);
+ ['#ff5f57','#febc2e','#28c840'].forEach((c,i)=>{g.fillStyle=c;g.beginPath();g.arc(30+i*26,28,8,0,7);g.fill();});
+ g.fillStyle='#8b8a86';g.font='700 24px Pretendard';g.fillText(title,120,36);}
+function typed(s,k){return s.slice(0,Math.floor(s.length*cl(k)));}
+const DRAW=[
+ (g,k)=>{chrome(g,'Claude · 신제품 기획서');g.fillStyle='#f2f1ee';g.font='800 46px Pretendard';g.fillText(typed('신제품 런칭 기획서',k*3),60,140);
+  const L=['1. 타깃: 20대 자취생, 1인 가구','2. 핵심 메시지: 3분이면 한 끼 끝','3. 채널: 릴스 70%, 블로그 30%','4. 일정: 11/20 티저 → 12/1 오픈','5. 예산: 광고 300만 원'];
+  g.font='700 30px Pretendard';L.forEach((l,i)=>{const kk=cl(k*3.2-.5-i*.42);if(kk<=0)return;g.fillStyle='#c9c6bf';g.fillText(typed(l,kk),70,215+i*62);});
+  const cur=Math.floor(k*14)%2;if(cur){g.fillStyle=OR;g.fillRect(70,215+Math.min(4,Math.floor(cl(k*3.2-.5)/.42))*62-26,4,34);}
+  g.fillStyle=OR;rr(g,760,560,210,50,25);g.fill();g.fillStyle='#0B0B0A';g.font='800 24px Pretendard';g.fillText('문서 완성 ✓',800,594);},
+ (g,k)=>{chrome(g,'Perplexity · 리서치');rr(g,50,90,924,72,36);g.fillStyle='#1f2025';g.fill();g.fillStyle='#e9e7e2';g.font='700 30px Pretendard';g.fillText(typed('20대 1인 가구 간편식 트렌드 2026',k*3),86,138);
+  const A=['간편식 구매 1순위는 밀키트·냉동','조리 시간 5분 이하 선호 뚜렷','SNS 후기 보고 구매 결정'];
+  A.forEach((a,i)=>{const kk=cl(k*2.6-.6-i*.35);if(kk<=0)return;g.globalAlpha=kk;g.fillStyle='#d4d1ca';g.font='700 32px Pretendard';g.fillText('• '+a,70,240+i*90);
+   for(let j=0;j<2;j++){rr(g,70+j*120,262+i*90,104,34,17);g.fillStyle='#2b2c31';g.fill();g.fillStyle=OR;g.font='800 20px Pretendard';g.fillText('출처 '+(i*2+j+1),88,286+i*90);}g.globalAlpha=1;});
+  g.fillStyle='#77756f';g.font='700 22px Pretendard';g.fillText('* 화면 예시',70,610);},
+ (g,k)=>{chrome(g,'ChatGPT 이미지 · 썸네일 4종');const C=[['#FF5A00','#3a1400'],['#2b6cff','#0b1633'],['#f2f1ee','#8a877f'],['#16c47f','#03251a']];
+  for(let i=0;i<4;i++){const x=60+(i%2)*470,y=86+Math.floor(i/2)*272,kk=cl(k*2.4-.3-i*.28);rr(g,x,y,440,252,18);g.fillStyle='#1d1e22';g.fill();
+   if(kk>0){g.save();rr(g,x,y,440,252,18);g.clip();const gr=g.createLinearGradient(x,y,x+440,y+252);gr.addColorStop(0,C[i][0]);gr.addColorStop(1,C[i][1]);g.fillStyle=gr;g.fillRect(x,y+252*(1-kk),440,252*kk);
+    g.fillStyle='rgba(0,0,0,.35)';g.beginPath();g.arc(x+330,y+150,70*kk,0,7);g.fill();g.fillStyle='#fff';g.font='800 40px Pretendard';g.globalAlpha=kk;g.fillText('3분 한 끼',x+28,y+70);g.globalAlpha=1;g.restore();}
+   else{g.fillStyle='#3a3b40';g.font='700 22px Pretendard';g.fillText('생성 중…',x+170,y+132);}}},
+ (g,k)=>{chrome(g,'ElevenLabs · 내레이션');rr(g,60,90,300,56,28);g.fillStyle='#24252a';g.fill();g.fillStyle='#e9e7e2';g.font='800 26px Pretendard';g.fillText('🎙 애드맨 목소리',84,127);
+  g.fillStyle='#c9c6bf';g.font='700 30px Pretendard';g.fillText(typed('"지금 이 목소리도 AI예요."',k*2.5),60,215);
+  for(let i=0;i<70;i++){const x=60+i*13,ph=i/70<k?1:0;const a=Math.abs(Math.sin(i*1.7+k*30)*Math.sin(i*.31))*120+8;g.fillStyle=ph?OR:'#3a3b40';g.fillRect(x,400-a/2,7,a);}
+  g.fillStyle='#2b2c31';g.fillRect(60,520,904,6);g.fillStyle=OR;g.fillRect(60,520,904*k,6);g.beginPath();g.arc(60+904*k,523,12,0,7);g.fill();},
+ (g,k)=>{chrome(g,'Kling · 텍스트 → 영상');rr(g,50,80,924,64,32);g.fillStyle='#1f2025';g.fill();g.fillStyle='#e9e7e2';g.font='700 26px Pretendard';g.fillText(typed('비 오는 밤, 네온 골목을 걷는 사람, 시네마틱',k*3),80,122);
+  const x=50,y=166,w=924,h=440;rr(g,x,y,w,h,16);g.fillStyle='#000';g.fill();
+  if(KB.length){const fi=Math.min(KB.length-1,Math.floor(cl(k*1.4-.25)*KB.length));const im=KB[fi];if(im&&k>.25){g.save();rr(g,x,y,w,h,16);g.clip();const s=Math.max(w/im.width,h/im.height);g.drawImage(im,x+(w-im.width*s)/2,y+(h-im.height*s)/2,im.width*s,im.height*s);g.restore();}}
+  else{g.fillStyle='#3a3b40';g.font='700 28px Pretendard';g.fillText('[Kling 영상 들어갈 자리]',360,400);}
+  if(k<.25){g.fillStyle=OR;g.fillRect(x,y+h-8,w*k/.25,8);}}
+];
+// ---------- camera ----------
+const V=(a,b,c)=>new THREE.Vector3(a,b,c);
+const deskCam=i=>[V(DX(i)+.32,1.3,2.55),V(DX(i)+.02,1.12,-.2)];
+const KEYS=[];
+{const o=RANGE.office;KEYS.push([o[0],V(-4.5,2.3,3.1),V(9,1.0,-1)]);KEYS.push([o[1]-.05,V(-2.2,1.8,2.9),V(6,1.05,-1)]);}
+for(let i=0;i<5;i++){const r=RANGE['d'+i];const [p,l]=deskCam(i);KEYS.push([r[0]+.55,p,l]);const p2=p.clone().add(V(-.18,-.02,-.4));KEYS.push([r[1]-.02,p2,l]);}
+{const e=RANGE.ext,o=RANGE.outro;KEYS.push([e[0]+1.0,V(DX(4)-1,1.7,6.5),V(DX(4)-3,1.3,0)]);KEYS.push([e[1],V(16,-4,92),V(8,1,0)]);KEYS.push([o[1],V(13,-8,118),V(8,4,0)]);}
+function camAt(t){if(t<=KEYS[0][0])return KEYS[0];for(let i=0;i<KEYS.length-1;i++){const a=KEYS[i],b=KEYS[i+1];if(t<=b[0]){const k=ease(cl((t-a[0])/(b[0]-a[0])));return [0,a[1].clone().lerp(b[1],k),a[2].clone().lerp(b[2],k)];}}return KEYS[KEYS.length-1];}
+
+// ---------- overlay ----------
+const ov=document.getElementById('ov'),sub=document.getElementById('sub'),kv=document.getElementById('kv'),flash=document.getElementById('flash');
+function segAt(t){let s=null;for(const x of SEGS)if(t>=x.start-0.02)s=x;return s;}
+function setSub(t){const s=segAt(t);if(!s||t>s.start+s.dur+0.35&&SEGS[s.i+1]===undefined){sub.innerHTML='';return;}
+ const ws=s.sub.split(' ');const tot=ws.reduce((a,w)=>a+w.length,0);let acc=0;
+ sub.innerHTML=ws.map(w=>{const st=s.start+(acc/tot)*s.dur*0.8;acc+=w.length;const k=cl((t-st)/0.1);const hot=/^\d|0명|클로드|퍼플렉시티|챗GPT|일레븐랩스|클링|AI|월급|'직원'/.test(w);
+  return `<span style="opacity:${k};transform:translateY(${(1-k)*16}px) scale(${1+(1-k)*.12});color:${hot?OR:'#fff'}">${w}</span>`}).join(' ');}
+function overlay(t){let h='';const s=segAt(t);const sc=s?s.scene:'hook';
+ if(sc==='hook'){const r=RANGE.hook;const lt=t-r[0];const a=Sp(lt-.05,2.6,.5);const b=Sp(lt-SEGS[1].start+.05,2.6,.5);
+  h+=`<div class="ab" style="left:0;right:0;top:${560}px;text-align:center;font-weight:800;font-size:250px;line-height:.95;transform:scale(${.6+.4*a});opacity:${cl(a*1.5)};text-shadow:0 10px 60px rgba(0,0,0,.6)">직원 <span style="color:${OR}">0</span>명</div>`;
+  h+=`<div class="ab" style="left:0;right:0;top:860px;text-align:center;font-weight:800;font-size:92px;opacity:${cl(b*1.4)};transform:translateY(${(1-b)*40}px);text-shadow:0 6px 40px rgba(0,0,0,.7)">회사가 굴러갑니다</div>`;
+  if(!KA_N)h+=`<div class="ab" style="left:60px;right:60px;top:300px;font:700 30px Pretendard;color:#77756f;text-align:center">[Kling 실사 컷: 밤 사무실, 모니터가 하나씩 켜짐]</div>`;}
+ const di=sc[0]==='d'?+sc[1]:-1;
+ if(di>=0){const r=RANGE[sc];const lt=t-r[0];const a=Sp(lt-.1,2.8,.5);
+  h+=`<div class="ab" style="left:64px;top:250px;font-weight:800;font-size:170px;line-height:.9;color:${OR};transform:translateX(${(1-a)*-60}px);opacity:${cl(a*1.5)};font-family:Geist,Pretendard">0${di+1}</div>`;
+  h+=`<div class="ab" style="left:70px;top:420px;font-weight:800;font-size:64px;opacity:${cl((lt-.15)/.15)};text-shadow:0 4px 30px rgba(0,0,0,.8)">${ROLES[di][0]}<br><span style="color:#cfccc5;font-size:52px">${ROLES[di][1]}</span></div>`;
+  h+=`<div class="ab" style="left:70px;top:610px;display:flex;gap:12px">${[0,1,2,3,4].map(j=>`<div style="width:${j===di?46:14}px;height:14px;border-radius:7px;background:${j<=di?OR:'rgba(255,255,255,.3)'}"></div>`).join('')}</div>`;}
+ if(sc==='office'){const lt=t-RANGE.office[0];h+=`<div class="ab" style="left:70px;top:260px;font:800 52px Pretendard;opacity:${cl(lt/.3)}">AI 직원 <span style="color:${OR}">5</span>명 출근 중</div>`;}
+ if(sc==='ext'||sc==='outro'){const lt=t-RANGE.ext[0];const a=Sp(lt-.5,2.4,.5);
+  h+=`<div class="ab" style="left:0;right:0;top:300px;text-align:center;font-weight:800;font-size:66px;opacity:${cl(a*1.4)};text-shadow:0 4px 30px rgba(0,0,0,.8)">직원 <span style="color:${OR}">0</span> · AI <span style="color:${OR}">5</span></div>`;
+  h+=`<div class="ab" style="left:0;right:0;top:390px;text-align:center;font:700 40px Pretendard;color:#cfccc5;opacity:${cl((lt-.9)/.3)}">월 구독료 합계 &lt; 직원 1명 월급</div>`;}
+ if(sc==='outro'){const s2=segAt(t);const lt=t-s2.start;
+  if(s2.sub.includes('팔로우')){const pr=lt>0.6;h+=`<div class="ab" style="left:90px;right:90px;top:1060px;height:110px;border-radius:24px;display:flex;align-items:center;justify-content:center;gap:20px;font-size:44px;font-weight:800;background:${pr?'#2A2927':OR};color:${pr?'#F2F1EE':'#0B0B0A'}"><img src="${AV}" style="width:64px;height:64px;border-radius:32px;image-rendering:pixelated">${pr?'팔로잉 ✓':'애드맨 팔로우'}</div>`;}
+  if(s2.sub.includes('댓글')){const n=Math.min(2,Math.floor((lt-0.2)/0.15)+1);h+=`<div class="ab" style="left:90px;right:90px;top:1060px;height:110px;border-radius:24px;background:#1F1E1C;display:flex;align-items:center;padding:0 34px;gap:18px;font-size:42px;font-weight:700"><span style="color:#77756F">댓글</span><span style="color:${OR}">${lt>0.2?'직원'.slice(0,n):''}</span></div>`;}
+  if(s2.sub.includes('세팅법')){const dm=sm((lt-0.1)/0.2);h+=`<div class="ab" style="left:90px;right:90px;top:1060px;height:110px;border-radius:24px;background:${OR};color:#0B0B0A;display:flex;align-items:center;gap:20px;padding:0 34px;font-size:42px;font-weight:800;opacity:${dm}">📩 AI 직원 세팅법 DM 도착</div>`;}}
+ h+=`<div class="ab" style="left:64px;right:64px;top:170px;display:flex;justify-content:space-between;font:700 24px 'Geist Mono',monospace;letter-spacing:.1em;color:rgba(242,241,238,.55)"><span>ADMAN · AI OFFICE</span><span>@adman_park</span></div>`;
+ ov.innerHTML=h;}
+
+// ---------- seek ----------
+let lastKA=-1;
+window.seek=t=>{const hook=t<RANGE.office[0];
+ // hook video
+ if(hook&&KA_N){const fi=Math.min(KA_N,Math.floor(t*30)+1);if(fi!==lastKA){kv.src=`/reel9/kling/a/${String(fi).padStart(4,'0')}.jpg`;lastKA=fi;}kv.style.opacity=1;kv.style.transform=`scale(${1.04+t*.02})`;}else kv.style.opacity=0;
+ if(hook&&!KA_N){ov.style.background='#0B0B0A';}else ov.style.background='transparent';
+ // screens power
+ for(let i=0;i<5;i++){const on=RANGE.office[0]+0.35+i*0.16;const p=cl((t-on)/0.12);const flick=p>0&&p<1?(Math.floor(t*60)%2?1:.3):p;
+  const focus=RANGE['d'+i];const k=t<focus[0]?0:cl((t-focus[0]-.4)/(focus[1]-focus[0]-.5));
+  const g=screens[i].cv.getContext('2d');DRAW[i](g,t<focus[0]?0:k);screens[i].t.needsUpdate=true;
+  screens[i].scr.material.color.setScalar(flick*(.95));lights[i].intensity=flick*(t>=focus[0]&&t<focus[1]?3.2:1.8);}
+ stripM.color.setHex(t>RANGE.office[0]+.2?0xd9b88a:0x22252a);
+ const [_,P,L]=camAt(t);cam.position.copy(P);cam.lookAt(L);cam.fov=sc_fov(t);cam.updateProjectionMatrix();
+ dustP.position.y=-t*.03;ceilM.emissive.setHex(t>RANGE.office[0]+.2?0x5a3c1e:0);scene.fog.density=lerp(.012,.0035,ease(cl((t-RANGE.ext[0]-.5)/2)));
+ if(!hook||!KA_N)renderer.render(scene,cam);
+ overlay(t);setSub(t);
+ // flash at hook->office and ext start
+ const f1=Math.max(0,1-Math.abs(t-RANGE.office[0])/0.12);flash.style.opacity=f1*0.85;
+ {const gcv=document.getElementById('grain'),g=gcv.getContext('2d'),id=g.createImageData(540,960);let sd=(t*1000|0)+3;for(let i=0;i<id.data.length;i+=4){sd=Math.imul(sd,1664525)+1013904223|0;const v=(sd>>>24);id.data[i]=id.data[i+1]=id.data[i+2]=v;id.data[i+3]=255;}g.putImageData(id,0,0);}
+};
+function sc_fov(t){const e=RANGE.ext[0];return t<e?40:lerp(40,50,ease(cl((t-e)/2.5)));}
+window.ready=true;
+</script></body></html>
