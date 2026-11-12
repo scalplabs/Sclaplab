@@ -1,0 +1,120 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:'Pretendard';font-weight:700;src:url('/fonts/Pretendard-Bold.woff2') format('woff2')}
+@font-face{font-family:'Pretendard';font-weight:800;src:url('/fonts/Pretendard-ExtraBold.woff2') format('woff2')}
+@font-face{font-family:'Pretendard';font-weight:500;src:url('/fonts/Pretendard-Medium.woff2') format('woff2')}
+html,body{margin:0;background:#0B0B0A;overflow:hidden;width:1080px;height:1920px}
+.full{position:absolute;left:0;top:0;width:1080px;height:1920px}
+#stage{overflow:hidden}
+#ph{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:0 0}
+#ph img{width:1080px;height:1920px;object-fit:cover;display:block}
+#ov{font-family:Pretendard;color:#F2F1EE;letter-spacing:-.04em}
+.ab{position:absolute}
+#sub{position:absolute;left:40px;right:40px;top:1290px;text-align:center;font:800 70px Pretendard;letter-spacing:-.04em;color:#fff;line-height:1.18;text-shadow:0 0 18px rgba(0,0,0,.9),0 4px 30px rgba(0,0,0,.8)}
+#sub span{display:inline-block;margin:0 .12em}
+#band{position:absolute;left:0;right:0;top:1180px;height:380px;background:linear-gradient(transparent,rgba(0,0,0,.6) 40%,rgba(0,0,0,.6) 72%,transparent)}
+#grain{opacity:.10;mix-blend-mode:overlay}
+#flash{background:#fff;opacity:0}
+#vig{background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(0,0,0,.55) 100%)}
+.box{position:absolute;border-radius:6px}
+.card{background:rgba(14,14,13,.88);border:2px solid rgba(255,255,255,.12);border-radius:28px;backdrop-filter:blur(8px)}
+</style></head><body>
+<div id="stage" class="full"><div id="ph"><img id="img" src="/reel10/room.jpg"><div style="position:absolute;left:268px;top:1142px;width:96px;height:118px;background:#f4f2ec;transform:rotate(-1deg);font:700 9.5px Pretendard;color:#222;padding:6px 6px;box-sizing:border-box;line-height:1.35;letter-spacing:-.02em;box-shadow:0 1px 2px rgba(0,0,0,.3)"><div style="font:800 11px Pretendard;border-bottom:1px solid #222;margin-bottom:3px">택배 송장</div>받는 분 김○진<br>서울시 ○○구<br>○○로 12, 304호<br>010-****-1234<div style="margin-top:4px;height:16px;background:repeating-linear-gradient(90deg,#222 0 2px,transparent 2px 4px,#222 4px 5px,transparent 5px 8px)"></div></div><div id="boxes" class="full"></div></div></div>
+<div id="dim" class="full" style="background:#0B0B0A;opacity:0"></div>
+<div id="vig" class="full"></div><div id="band"></div>
+<div id="ov" class="full"></div><div id="sub"></div>
+<canvas id="grain" class="full" width="540" height="960"></canvas><div id="flash" class="full"></div>
+<script>
+const SEGS=SEGS_JSON, T=TOTAL, OR='#FF5A00', AV='/adman-v1/avatar.png';
+// clue regions in 1080x1920 photo px: [x,y,w,h], zoom
+const CL=CLUES_JSON;
+const cl=x=>Math.max(0,Math.min(1,x)),lerp=(a,b,k)=>a+(b-a)*k,ease=x=>{x=cl(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2},sm=x=>{x=cl(x);return x*x*(3-2*x)};
+const Sp=(t,f=3,z=.45)=>{if(t<=0)return 0;const w=2*Math.PI*f,wd=w*Math.sqrt(1-z*z);return 1-Math.exp(-z*w*t)*(Math.cos(wd*t)+z*w/wd*Math.sin(wd*t));};
+const RANGE={};SEGS.forEach(s=>{if(!RANGE[s.scene])RANGE[s.scene]=[s.start,null];});
+const order=[...new Set(SEGS.map(s=>s.scene))];order.forEach((k,i)=>{RANGE[k][1]=i<order.length-1?RANGE[order[i+1]][0]:T;});
+const ph=document.getElementById('ph'),ov=document.getElementById('ov'),sub=document.getElementById('sub'),flash=document.getElementById('flash'),dim=document.getElementById('dim'),boxes=document.getElementById('boxes'),stage=document.getElementById('stage');
+function segAt(t){let s=null;for(const x of SEGS)if(t>=x.start-0.02)s=x;return s;}
+function setSub(t){const s=segAt(t);if(!s){sub.innerHTML='';return;}
+ const ws=s.sub.split(' ');const tot=ws.reduce((a,w)=>a+w.length,0);let acc=0;
+ sub.innerHTML=ws.map(w=>{const st=s.start+(acc/tot)*s.dur*0.8;acc+=w.length;const k=cl((t-st)/0.1);const hot=/AI|챗GPT|동네|시간대|이름|주소|위치|3개|'사진'|한 장|끝/.test(w);
+  return `<span style="opacity:${k};transform:translateY(${(1-k)*16}px) scale(${1+(1-k)*.12});color:${hot?OR:'#fff'}">${w}</span>`}).join(' ');}
+// camera: focus point fx,fy at screen (540,cy), scale s
+const C0={fx:540,fy:960,s:1,cy:960};
+function camFor(sc){const c=CL[sc];if(!c)return C0;return {fx:c[0]+c[2]/2,fy:c[1]+c[3]/2,s:c[4],cy:640};}
+function setCam(c){const tx=540-c.fx*c.s,ty=c.cy-c.fy*c.s;
+ // clamp so photo covers frame
+ const cx=Math.min(0,Math.max(1080-1080*c.s,tx)),cy=Math.min(0,Math.max(1920-1920*c.s,ty));ph.style.transform=`translate(${cx}px,${cy}px) scale(${c.s})`;return {tx:cx,ty:cy,s:c.s};}
+const mix=(a,b,k)=>({fx:lerp(a.fx,b.fx,k),fy:lerp(a.fy,b.fy,k),s:lerp(a.s,b.s,k),cy:lerp(a.cy,b.cy,k)});
+const CLUE={c0:['🏪','단서 1 · 간판·건물','○○동 상가 거리 추정'],c1:['☀️','단서 2 · 그림자 각도','서향 창 · 오후 4~5시'],c2:['📦','단서 3 · 택배 송장','이름 · 주소 · 번호 노출'],c3:['🛰️','단서 4 · 파일 정보','촬영 위치 좌표 기록']};
+function bracket(x,y,w,h,k,col,s){const L=Math.min(w,h)*.28;const lw=7/s;const a=k;
+ const o=`position:absolute;border-color:${col};border-style:solid;width:${L}px;height:${L}px;opacity:${cl(a*2)}`;const d=(1-a)*40/s;
+ return `<div style="${o};left:${x-d}px;top:${y-d}px;border-width:${lw}px 0 0 ${lw}px"></div><div style="${o};left:${x+w-L+d}px;top:${y-d}px;border-width:${lw}px ${lw}px 0 0"></div><div style="${o};left:${x-d}px;top:${y+h-L+d}px;border-width:0 0 ${lw}px ${lw}px"></div><div style="${o};left:${x+w-L+d}px;top:${y+h-L+d}px;border-width:0 ${lw}px ${lw}px 0"></div>`+
+  `<div style="position:absolute;left:${x}px;top:${y}px;width:${w}px;height:${h}px;background:${col};opacity:${.14*cl(a)};border-radius:${8/s}px"></div>`;}
+function overlay(t){let h='';const s=segAt(t);const sc=s?s.scene:'hook';let bx='';
+ const head=(txt,col)=>`<div class="ab" style="left:64px;right:64px;top:170px;display:flex;justify-content:space-between;font:700 24px monospace;letter-spacing:.1em;color:rgba(242,241,238,.6)"><span>${txt}</span><span>@adman_park</span></div>`;
+ if(sc==='hook'){const lt=t;const a=Sp(lt-.05,2.6,.5);const b=Sp(lt-SEGS[1].start+.05,2.6,.5);
+  h+=`<div class="ab" style="left:0;right:0;top:330px;text-align:center;font-weight:800;font-size:120px;line-height:1;transform:scale(${.6+.4*a});opacity:${cl(a*1.5)};text-shadow:0 10px 60px rgba(0,0,0,.7)">사진 <span style="color:${OR}">한 장</span>으로</div>`;
+  h+=`<div class="ab" style="left:0;right:0;top:470px;text-align:center;font-weight:800;font-size:96px;line-height:1.05;opacity:${cl(b*1.4)};transform:translateY(${(1-b)*40}px);text-shadow:0 6px 40px rgba(0,0,0,.8)">사는 <span style="color:${OR}">동네</span>까지 맞힘</div>`;
+  // pin drop
+  const p=Sp(lt-SEGS[1].start-.3,2.2,.35);if(lt>SEGS[1].start+.3){const pc=CL.c0;const px=pc[0]+pc[2]/2,py=pc[1]+pc[3]/2;
+   h+=`<div class="ab" style="left:${px-60}px;top:${py-150-(1-p)*260}px;width:120px;text-align:center;font-size:120px;opacity:${cl(p*2)};filter:drop-shadow(0 12px 20px rgba(0,0,0,.6))">📍</div>`;
+   h+=`<div class="ab" style="left:${px-90}px;top:${py-8}px;width:180px;height:40px;border-radius:50%;border:5px solid ${OR};opacity:${cl(p)*(1-cl((lt-SEGS[1].start-.6)/.8))};transform:scale(${1+cl((lt-SEGS[1].start-.6)/.8)*1.5})"></div>`;}
+  h+=head('ADMAN · PHOTO SCAN');}
+ if(sc==='ask'){const r=RANGE.ask;const lt=t-r[0];const a=Sp(lt,2.6,.6);
+  // chat card
+  h+=`<div class="ab card" style="left:70px;right:70px;top:${420+(1-a)*80}px;padding:36px;opacity:${cl(a*1.5)}">
+   <div style="display:flex;justify-content:flex-end"><div style="background:${OR};color:#0B0B0A;border-radius:28px 28px 6px 28px;padding:16px 16px 22px;max-width:640px">
+    <div style="width:260px;height:462px;border-radius:18px;overflow:hidden;margin-left:auto"><img src="/reel10/room.jpg" style="width:100%;height:100%;object-fit:cover"></div>
+    <div style="font:800 44px Pretendard;margin:16px 10px 0">이 사진 어디서 찍었을까?</div></div></div>
+   <div style="display:flex;align-items:center;gap:18px;margin-top:30px;opacity:${cl((lt-.6)/.2)}"><div style="width:72px;height:72px;border-radius:36px;background:#2A2927;display:flex;align-items:center;justify-content:center;font:800 30px Pretendard">AI</div>
+    <div style="background:#2A2927;border-radius:28px 28px 28px 6px;padding:22px 30px;font:700 40px Pretendard">${lt<1.4?'분석 중'+'.'.repeat(1+Math.floor(lt*4)%3):'단서 <span style="color:'+OR+'">4개</span> 찾았어요 🔍'}</div></div></div>`;
+  h+=head('ADMAN · PHOTO SCAN');}
+ if(/^c\d$/.test(sc)){const r=RANGE[sc];const lt=t-r[0];const ci=+sc[1];const c=CL[sc];const cam=camFor(sc);
+  const k=sm((lt-.45)/.35);bx+=bracket(c[0],c[1],c[2],c[3],k,OR,cam.s);
+  if(sc==='c2')bx+=`<div style="position:absolute;left:${c[0]}px;top:${c[1]}px;width:${c[2]}px;height:${c[3]}px;backdrop-filter:blur(${6*cl((lt-1.2)/.3)}px)"></div>`;
+  // scan line during first .5s
+  const sl=cl(lt/.55);if(lt<.6)h+=`<div class="ab" style="left:0;right:0;top:${200+sl*1000}px;height:6px;background:${OR};box-shadow:0 0 40px 12px rgba(255,90,0,.55);opacity:.9"></div>`;
+  const a=Sp(lt-.7,2.6,.55);const L=CLUE[sc];
+  if(sc!=='c3')h+=`<div class="ab card" style="left:70px;right:70px;top:${960+(1-a)*60}px;padding:30px 36px;display:flex;align-items:center;gap:26px;opacity:${cl(a*1.6)}">
+   <div style="font-size:84px;line-height:1">${L[0]}</div><div><div style="font:700 32px Pretendard;color:#9b988f">${L[1]}</div><div style="font:800 52px Pretendard;margin-top:6px">${L[2]}</div></div></div>`;
+  else{const b=Sp(lt-.3,2.4,.6);
+   h+=`<div class="ab card" style="left:90px;right:90px;top:${380+(1-b)*80}px;padding:40px 44px;opacity:${cl(b*1.6)}">
+    <div style="font:800 46px Pretendard;margin-bottom:26px">🛰️ 사진 파일 정보</div>
+    ${[['촬영 일시','2026.11.12 16:42'],['기기','스마트폰 카메라'],['위치','37.5•••° N, 127.0•••° E']].map((row,j)=>{const q=cl((lt-.8-j*.35)/.2);return `<div style="display:flex;justify-content:space-between;font:700 38px Pretendard;padding:20px 0;border-top:2px solid rgba(255,255,255,.1);opacity:${q}"><span style="color:#9b988f">${row[0]}</span><span style="color:${j==2?OR:'#F2F1EE'}">${row[1]}</span></div>`}).join('')}
+    <div style="margin-top:24px;height:250px;border-radius:20px;overflow:hidden;position:relative;background:#1a1a18;opacity:${cl((lt-1.7)/.3)}">
+     <svg width="820" height="250" style="position:absolute;inset:0">${Array.from({length:14},(_,i)=>`<line x1="${i*64}" y1="0" x2="${i*64-120}" y2="250" stroke="#2c2b28" stroke-width="10"/>`).join('')}<path d="M0 150 C200 120 380 190 820 110" stroke="#3a3833" stroke-width="22" fill="none"/></svg>
+     <div style="position:absolute;left:380px;top:${40-(1-Sp(lt-1.9,2.2,.35))*120}px;font-size:90px">📍</div></div></div>`;}
+  h+=`<div class="ab" style="left:70px;top:260px;display:flex;gap:12px">${[0,1,2,3].map(j=>`<div style="width:${j===ci?46:14}px;height:14px;border-radius:7px;background:${j<=ci?OR:'rgba(255,255,255,.35)'}"></div>`).join('')}</div>`;
+  h+=head('AI 분석 중 · 단서 '+(ci+1)+'/4');}
+ if(sc==='check'){const r=RANGE.check;const lt=t-r[0];const a=Sp(lt,2.6,.55);const s8=SEGS.find(x=>x.scene==='check'&&x.sub.includes('풍경'));
+  h+=`<div class="ab" style="left:0;right:0;top:330px;text-align:center;font:800 92px Pretendard;opacity:${cl(a*1.5)};transform:scale(${.8+.2*a})">올리기 전 <span style="color:${OR}">체크 3</span></div>`;
+  const items=['창밖 풍경 가리기','택배 송장 지우기','카메라 위치 정보 끄기'];const at=[0,.3,.58];
+  items.forEach((it,j)=>{const st=s8.start+at[j]*s8.dur;const q=Sp(t-st,2.8,.55);const ck=cl((t-st-.15)/.12);
+   h+=`<div class="ab card" style="left:90px;right:90px;top:${560+j*150}px;height:120px;display:flex;align-items:center;gap:26px;padding:0 34px;opacity:${cl(q*1.6)};transform:translateX(${(1-q)*-80}px)">
+    <div style="width:64px;height:64px;border-radius:16px;border:5px solid ${ck>0?OR:'#555'};background:${ck>0?OR:'transparent'};display:flex;align-items:center;justify-content:center;font:800 44px Pretendard;color:#0B0B0A">${ck>0?'✓':''}</div>
+    <div style="font:800 50px Pretendard">${it}</div></div>`;});
+  h+=head('ADMAN · SAFE UPLOAD');}
+ if(sc==='outro'){const s2=segAt(t);const lt=t-s2.start;const o=t-RANGE.outro[0];const a=Sp(o,2.4,.55);
+  h+=`<div class="ab" style="left:0;right:0;top:420px;text-align:center;font:800 76px Pretendard;line-height:1.15;opacity:${cl(a*1.5)}">사진 올리기 전<br><span style="color:${OR}">이것만</span> 끄세요</div>`;
+  if(s2.sub.includes('팔로우')){const pr=lt>0.6;h+=`<div class="ab" style="left:90px;right:90px;top:1060px;height:110px;border-radius:24px;display:flex;align-items:center;justify-content:center;gap:20px;font-size:44px;font-weight:800;background:${pr?'#2A2927':OR};color:${pr?'#F2F1EE':'#0B0B0A'}"><img src="${AV}" style="width:64px;height:64px;border-radius:32px;image-rendering:pixelated">${pr?'팔로잉 ✓':'애드맨 팔로우'}</div>`;}
+  if(s2.sub.includes('댓글')){const n=Math.min(2,Math.floor((lt-0.2)/0.15)+1);h+=`<div class="ab" style="left:90px;right:90px;top:1060px;height:110px;border-radius:24px;background:#1F1E1C;display:flex;align-items:center;padding:0 34px;gap:18px;font-size:42px;font-weight:700"><span style="color:#77756F">댓글</span><span style="color:${OR}">${lt>0.2?'사진'.slice(0,n):''}</span></div>`;}
+  if(s2.sub.includes('설정법')){const dm=sm((lt-0.1)/0.2);h+=`<div class="ab" style="left:90px;right:90px;top:1060px;height:110px;border-radius:24px;background:${OR};color:#0B0B0A;display:flex;align-items:center;gap:20px;padding:0 34px;font-size:42px;font-weight:800;opacity:${dm}">📩 안전 업로드 설정법 DM 도착</div>`;}
+  h+=head('ADMAN · SAFE UPLOAD');}
+ ov.innerHTML=h;boxes.innerHTML=bx;}
+window.seek=t=>{const s=segAt(t);const sc=s?s.scene:'hook';
+ // camera
+ let cam=C0,dm=0,bl=0;
+ if(sc==='hook'){const z=1.08-0.06*ease(t/RANGE.hook[1]);cam={...C0,s:z};dm=.35;}
+ else if(sc==='ask'){cam=C0;dm=.82;bl=14;}
+ else if(/^c\d$/.test(sc)){const r=RANGE[sc];const lt=t-r[0];const prev=sc==='c0'?C0:camFor('c'+(+sc[1]-1));const tgt=camFor(sc);
+  cam=mix(prev,tgt,ease(lt/.55));cam.s*=1+.015*lt;dm=sc==='c3'?.55*cl((lt-.2)/.3):.12;}
+ else if(sc==='check'){const lt=t-RANGE.check[0];cam=mix(camFor('c3'),C0,ease(lt/.5));dm=.72;bl=22*cl(lt/.4);}
+ else {cam=C0;dm=.85;bl=26;}
+ setCam(cam);stage.style.filter=bl?`blur(${bl}px)`:'none';dim.style.opacity=dm;
+ overlay(t);setSub(t);
+ // flash at ask->c0 and c3->check
+ let f=0;for(const k of ['c0','check'])f=Math.max(f,1-Math.abs(t-RANGE[k][0])/0.1);flash.style.opacity=f*.8;
+ {const gcv=document.getElementById('grain'),g=gcv.getContext('2d'),id=g.createImageData(540,960);let sd=(t*1000|0)+3;for(let i=0;i<id.data.length;i+=4){sd=Math.imul(sd,1664525)+1013904223|0;const v=(sd>>>24);id.data[i]=id.data[i+1]=id.data[i+2]=v;id.data[i+3]=255;}g.putImageData(id,0,0);}
+};
+Promise.all([document.fonts.load('800 40px Pretendard'),document.fonts.load('700 40px Pretendard'),new Promise(r=>{const i=document.getElementById('img');i.complete?r():i.onload=r;})]).then(()=>window.ready=true);
+</script></body></html>
