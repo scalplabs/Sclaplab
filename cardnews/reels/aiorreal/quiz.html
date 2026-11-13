@@ -1,0 +1,99 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:'Pretendard';font-weight:700;src:url('/fonts/Pretendard-Bold.woff2') format('woff2')}
+@font-face{font-family:'Pretendard';font-weight:800;src:url('/fonts/Pretendard-ExtraBold.woff2') format('woff2')}
+html,body{margin:0;background:#0B0B0A;overflow:hidden;width:1080px;height:1920px}
+.full{position:absolute;left:0;top:0;width:1080px;height:1920px}
+#stage{overflow:hidden}
+#ph{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:0 0}
+#ph img{width:1080px;height:1920px;object-fit:cover;display:block}
+#ov{font-family:Pretendard;color:#F2F1EE;letter-spacing:-.04em}
+.ab{position:absolute}
+#sub{position:absolute;left:40px;right:40px;top:1400px;text-align:center;font:800 68px Pretendard;letter-spacing:-.04em;color:#fff;line-height:1.18;text-shadow:0 0 18px rgba(0,0,0,.9),0 4px 30px rgba(0,0,0,.8)}
+#sub span{display:inline-block;margin:0 .12em}
+#band{position:absolute;left:0;right:0;top:1290px;height:400px;background:linear-gradient(transparent,rgba(0,0,0,.6) 40%,rgba(0,0,0,.6) 72%,transparent)}
+#grain{opacity:.10;mix-blend-mode:overlay}
+#flash{background:#fff;opacity:0}
+#vig{background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(0,0,0,.55) 100%)}
+.card{background:rgba(14,14,13,.9);border:2px solid rgba(255,255,255,.12);border-radius:28px}
+.qi{position:absolute;top:520px;width:500px;height:760px;border-radius:30px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.qi img{width:100%;height:100%;object-fit:cover}
+.tag{position:absolute;left:22px;top:22px;width:84px;height:84px;border-radius:42px;background:#F2F1EE;color:#0B0B0A;font:800 52px Pretendard;display:flex;align-items:center;justify-content:center}
+</style></head><body>
+<div id="stage" class="full"><div id="ph"><img src="/reel11/ai.jpg"><div id="boxes" class="full"></div></div></div>
+<div id="dim" class="full" style="background:#0B0B0A;opacity:0"></div>
+<div id="vig" class="full"></div><div id="band"></div>
+<div id="ov" class="full"></div><div id="sub"></div>
+<canvas id="grain" class="full" width="540" height="960"></canvas><div id="flash" class="full"></div>
+<script>
+const SEGS=SEGS_JSON, T=TOTAL, OR='#FF5A00', AV='/adman-v1/avatar.png';
+const CL=CLUES_JSON;
+const cl=x=>Math.max(0,Math.min(1,x)),lerp=(a,b,k)=>a+(b-a)*k,ease=x=>{x=cl(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2},sm=x=>{x=cl(x);return x*x*(3-2*x)};
+const Sp=(t,f=3,z=.45)=>{if(t<=0)return 0;const w=2*Math.PI*f,wd=w*Math.sqrt(1-z*z);return 1-Math.exp(-z*w*t)*(Math.cos(wd*t)+z*w/wd*Math.sin(wd*t));};
+const RANGE={};SEGS.forEach(s=>{if(!RANGE[s.scene])RANGE[s.scene]=[s.start,null];});
+const order=[...new Set(SEGS.map(s=>s.scene))];order.forEach((k,i)=>{RANGE[k][1]=i<order.length-1?RANGE[order[i+1]][0]:T;});
+const ph=document.getElementById('ph'),ov=document.getElementById('ov'),sub=document.getElementById('sub'),flash=document.getElementById('flash'),dim=document.getElementById('dim'),boxes=document.getElementById('boxes'),stage=document.getElementById('stage');
+const isC=sc=>/^c\d$/.test(sc);
+function segAt(t){let s=null;for(const x of SEGS)if(t>=x.start-0.02)s=x;return s;}
+function setSub(t){const s=segAt(t);if(!s){sub.innerHTML='';return;}
+ const ws=s.sub.split(' ');const tot=ws.reduce((a,w)=>a+w.length,0);let acc=0;
+ sub.innerHTML=ws.map(w=>{const st=s.start+(acc/tot)*s.dur*0.8;acc+=w.length;const k=cl((t-st)/0.1);const hot=/AI|3초|B\.|3가지|글씨|손가락|귀걸이|그림자|빛|이미지|출처|'판별'|첫째|둘째|셋째/.test(w);
+  return `<span style="opacity:${k};transform:translateY(${(1-k)*16}px) scale(${1+(1-k)*.12});color:${hot?OR:'#fff'}">${w}</span>`}).join(' ');}
+const C0={fx:540,fy:960,s:1,cy:960};
+function camFor(sc){const c=CL[sc];if(!c)return C0;return {fx:c[0]+c[2]/2,fy:c[1]+c[3]/2,s:c[4],cy:660};}
+function setCam(c){const tx=540-c.fx*c.s,ty=c.cy-c.fy*c.s;const cx=Math.min(0,Math.max(1080-1080*c.s,tx)),cy=Math.min(0,Math.max(1920-1920*c.s,ty));ph.style.transform=`translate(${cx}px,${cy}px) scale(${c.s})`;}
+const mix=(a,b,k)=>({fx:lerp(a.fx,b.fx,k),fy:lerp(a.fy,b.fy,k),s:lerp(a.s,b.s,k),cy:lerp(a.cy,b.cy,k)});
+const CLUE={c0:['🔤','단서 1 · 글씨','간판 글자가 읽히지 않아요'],c1:['✋','단서 2 · 손가락','손가락 모양이 뭉개져 있어요'],c2:['💡','단서 3 · 빛 방향','뒤는 역광인데 얼굴은 정면 조명']};
+function bracket(x,y,w,h,k,col,s){const L=Math.min(w,h)*.28;const lw=7/s;const a=k;
+ const o=`position:absolute;border-color:${col};border-style:solid;width:${L}px;height:${L}px;opacity:${cl(a*2)}`;const d=(1-a)*40/s;
+ return `<div style="${o};left:${x-d}px;top:${y-d}px;border-width:${lw}px 0 0 ${lw}px"></div><div style="${o};left:${x+w-L+d}px;top:${y-d}px;border-width:${lw}px ${lw}px 0 0"></div><div style="${o};left:${x-d}px;top:${y+h-L+d}px;border-width:0 0 ${lw}px ${lw}px"></div><div style="${o};left:${x+w-L+d}px;top:${y+h-L+d}px;border-width:0 ${lw}px ${lw}px 0"></div>`+
+  `<div style="position:absolute;left:${x}px;top:${y}px;width:${w}px;height:${h}px;background:${col};opacity:${.14*cl(a)};border-radius:${8/s}px"></div>`;}
+const head=txt=>`<div class="ab" style="left:64px;right:64px;top:170px;display:flex;justify-content:space-between;font:700 24px monospace;letter-spacing:.1em;color:rgba(242,241,238,.6)"><span>${txt}</span><span>@adman_park</span></div>`;
+function overlay(t){let h='';const s=segAt(t);const sc=s?s.scene:'hook';let bx='';
+ if(sc==='hook'||sc==='quiz'||(sc==='reveal'&&t<RANGE.reveal[0]+1.0)){
+  const a=Sp(t-.05,2.4,.55);const rv=t>=RANGE.reveal[0];const rk=rv?Sp(t-RANGE.reveal[0],2.6,.4):0;
+  h+=`<div class="ab" style="left:0;right:0;top:300px;text-align:center;font:800 96px Pretendard;line-height:1.05;opacity:${cl(a*1.5)};transform:scale(${.8+.2*a})">어느 쪽이 <span style="color:${OR}">AI</span>?</div>`;
+  const off=(1-a)*120;
+  h+=`<div class="qi" style="left:30px;transform:translateY(${off}px) rotate(${-1.5*a}deg);opacity:${cl(a*1.4)*(rv?1-.6*cl(rk):1)}"><img src="/reel11/real.jpg"><div class="tag">A</div>${rv?`<div class="ab" style="left:0;right:0;bottom:30px;text-align:center;font:800 54px Pretendard;color:#fff;text-shadow:0 2px 20px #000;opacity:${cl(rk)}">진짜 사진</div>`:''}</div>`;
+  h+=`<div class="qi" style="left:550px;transform:translateY(${off}px) rotate(${1.5*a}deg) scale(${1+.04*rk});opacity:${cl(a*1.4)};outline:${rv?`10px solid ${OR}`:'none'}"><img src="/reel11/ai.jpg"><div class="tag" ${rv?`style="background:${OR}"`:''}>B</div></div>`;
+  if(rv){h+=`<div class="ab" style="left:600px;top:760px;width:400px;height:240px;border:12px solid ${OR};border-radius:30px;color:${OR};font:800 150px Pretendard;display:flex;align-items:center;justify-content:center;transform:rotate(-12deg) scale(${2.4-1.4*cl(rk)});opacity:${cl(rk*3)};background:rgba(11,11,10,.55)">AI</div>`;}
+  if(sc==='quiz'){const q=t-RANGE.quiz[0];const n=3-Math.floor((q-0.9)/0.55);if(q>0.9&&n>=1){const f=((q-0.9)%0.55)/0.55;
+   h+=`<div class="ab" style="left:440px;top:1060px;width:200px;height:200px;border-radius:100px;background:${OR};color:#0B0B0A;font:800 140px Pretendard;display:flex;align-items:center;justify-content:center;transform:scale(${1.25-.25*Sp(f*0.55,4,.5)});box-shadow:0 0 0 ${f*40}px rgba(255,90,0,${.4*(1-f)})">${n}</div>`;}}
+  h+=head('ADMAN · AI OR REAL');}
+ else if(sc==='reveal'){const lt=t-RANGE.reveal[0]-1.0;const a=Sp(lt,2.4,.6);
+  h+=`<div class="ab" style="left:0;right:0;top:330px;text-align:center;font:800 110px Pretendard;opacity:${cl(a*1.5)};transform:scale(${.85+.15*a});text-shadow:0 8px 40px rgba(0,0,0,.8)">딱 <span style="color:${OR}">3가지</span>만</div>`;
+  h+=head('ADMAN · AI OR REAL');}
+ if(isC(sc)){const r=RANGE[sc];const lt=t-r[0];const ci=+sc[1];const c=CL[sc];const cam=camFor(sc);
+  bx+=bracket(c[0],c[1],c[2],c[3],sm((lt-.45)/.35),OR,cam.s);
+  const sl=cl(lt/.55);if(lt<.6)h+=`<div class="ab" style="left:0;right:0;top:${200+sl*1000}px;height:6px;background:${OR};box-shadow:0 0 40px 12px rgba(255,90,0,.55);opacity:.9"></div>`;
+  const a=Sp(lt-.7,2.6,.55);const L=CLUE[sc];
+  h+=`<div class="ab card" style="left:70px;right:70px;top:${(sc==="c1"?340:1110)+(1-a)*60}px;padding:28px 36px;display:flex;align-items:center;gap:26px;opacity:${cl(a*1.6)}">
+   <div style="font-size:80px;line-height:1">${L[0]}</div><div><div style="font:700 32px Pretendard;color:#9b988f">${L[1]}</div><div style="font:800 50px Pretendard;margin-top:6px">${L[2]}</div></div></div>`;
+  h+=`<div class="ab" style="left:70px;top:260px;display:flex;gap:12px">${[0,1,2].map(j=>`<div style="width:${j===ci?46:14}px;height:14px;border-radius:7px;background:${j<=ci?OR:'rgba(255,255,255,.35)'}"></div>`).join('')}</div>`;
+  h+=head('AI 판별 · 단서 '+(ci+1)+'/3');}
+ if(sc==='tip'){const lt=t-RANGE.tip[0];const a=Sp(lt,2.4,.6);
+  h+=`<div class="ab card" style="left:90px;right:90px;top:${380+(1-a)*80}px;padding:40px;opacity:${cl(a*1.6)}">
+   <div style="display:flex;align-items:center;gap:20px;height:100px;border-radius:50px;background:#1f1e1c;padding:0 30px;font:700 40px Pretendard;color:#9b988f">🔍 <span>이미지로 검색</span><div style="margin-left:auto;width:70px;height:70px;border-radius:14px;overflow:hidden"><img src="/reel11/ai.jpg" style="width:100%;height:100%;object-fit:cover"></div></div>
+   ${[['원본 출처','찾을 수 없음'],['같은 사진','다른 사이트 0곳'],['판정','AI 생성 의심']].map((row,j)=>{const q=cl((lt-.6-j*.4)/.2);return `<div style="display:flex;justify-content:space-between;font:700 40px Pretendard;padding:26px 6px;border-top:2px solid rgba(255,255,255,.1);margin-top:${j?0:24}px;opacity:${q}"><span style="color:#9b988f">${row[0]}</span><span style="color:${j==2?OR:'#F2F1EE'}">${row[1]}</span></div>`}).join('')}</div>`;
+  h+=head('ADMAN · AI OR REAL');}
+ if(sc==='outro'){const s2=segAt(t);const lt=t-s2.start;const o=t-RANGE.outro[0];const a=Sp(o,2.4,.55);
+  h+=`<div class="ab" style="left:0;right:0;top:420px;text-align:center;font:800 76px Pretendard;line-height:1.15;opacity:${cl(a*1.5)}">AI 사진<br><span style="color:${OR}">3초</span> 판별법</div>`;
+  if(s2.sub.includes('팔로우')){const pr=lt>0.6;h+=`<div class="ab" style="left:90px;right:90px;top:1060px;height:110px;border-radius:24px;display:flex;align-items:center;justify-content:center;gap:20px;font-size:44px;font-weight:800;background:${pr?'#2A2927':OR};color:${pr?'#F2F1EE':'#0B0B0A'}"><img src="${AV}" style="width:64px;height:64px;border-radius:32px;image-rendering:pixelated">${pr?'팔로잉 ✓':'애드맨 팔로우'}</div>`;}
+  if(s2.sub.includes('댓글')){const n=Math.min(2,Math.floor((lt-0.2)/0.15)+1);h+=`<div class="ab" style="left:90px;right:90px;top:1060px;height:110px;border-radius:24px;background:#1F1E1C;display:flex;align-items:center;padding:0 34px;gap:18px;font-size:42px;font-weight:700"><span style="color:#77756F">댓글</span><span style="color:${OR}">${lt>0.2?'판별'.slice(0,n):''}</span></div>`;}
+  if(s2.sub.includes('체크리스트')){const dm=sm((lt-0.1)/0.2);h+=`<div class="ab" style="left:90px;right:90px;top:1060px;height:110px;border-radius:24px;background:${OR};color:#0B0B0A;display:flex;align-items:center;gap:20px;padding:0 34px;font-size:42px;font-weight:800;opacity:${dm}">📩 AI 사진 판별 체크리스트 도착</div>`;}
+  h+=head('ADMAN · AI OR REAL');}
+ ov.innerHTML=h;boxes.innerHTML=bx;}
+window.seek=t=>{const s=segAt(t);const sc=s?s.scene:'hook';
+ let cam=C0,dm=0,bl=0;const quiz=sc==='hook'||sc==='quiz'||(sc==='reveal'&&t<RANGE.reveal[0]+1.0);
+ if(quiz){dm=.88;bl=30;}
+ else if(sc==='reveal'){const lt=t-RANGE.reveal[0]-1.0;dm=lerp(.5,.3,cl(lt/.5));cam={...C0,s:1+.02*lt};}
+ else if(isC(sc)){const r=RANGE[sc];const lt=t-r[0];const prev=sc==='c0'?C0:camFor('c'+(+sc[1]-1));cam=mix(prev,camFor(sc),ease(lt/.55));cam.s*=1+.015*lt;dm=.1;}
+ else if(sc==='tip'){const lt=t-RANGE.tip[0];cam=mix(camFor('c2'),C0,ease(lt/.5));dm=.72;bl=22*cl(lt/.4);}
+ else {dm=.85;bl=26;}
+ setCam(cam);stage.style.filter=bl?`blur(${bl}px)`:'none';dim.style.opacity=dm;
+ overlay(t);setSub(t);
+ let f=0;for(const k of [RANGE.reveal[0]+1.0,RANGE.c0[0]])f=Math.max(f,1-Math.abs(t-k)/0.1);flash.style.opacity=f*.8;
+ {const gcv=document.getElementById('grain'),g=gcv.getContext('2d'),id=g.createImageData(540,960);let sd=(t*1000|0)+3;for(let i=0;i<id.data.length;i+=4){sd=Math.imul(sd,1664525)+1013904223|0;const v=(sd>>>24);id.data[i]=id.data[i+1]=id.data[i+2]=v;id.data[i+3]=255;}g.putImageData(id,0,0);}
+};
+Promise.all([document.fonts.load('800 40px Pretendard'),document.fonts.load('700 40px Pretendard'),...[...document.images].map(i=>i.complete?1:new Promise(r=>i.onload=r))]).then(()=>window.ready=true);
+</script></body></html>
