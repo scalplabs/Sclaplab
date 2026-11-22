@@ -1,0 +1,246 @@
+{
+ "title": "react-magic-fix",
+ "end": "cut",
+ "tail": 1.9,
+ "lead": 0.18,
+ "music": "Playful sneaky comedy underscore: pizzicato strings, soft marimba and a light lo-fi beat, 92 bpm, mischievous and deadpan, sparse, instrumental only, no vocals, leaves space for dialogue",
+ "voices": {
+  "F": {
+   "name": "Pixel",
+   "stability": 0.38
+  },
+  "C": {
+   "name": "Claude",
+   "stability": 0.5
+  }
+ },
+ "lines": [
+  {
+   "id": 1,
+   "who": "F",
+   "text": "[suspicious] Claude. Did you make up this library?",
+   "gap": 0.45,
+   "fe": "worry",
+   "f": "lean"
+  },
+  {
+   "id": 2,
+   "who": "C",
+   "text": "[calm] Which one?",
+   "gap": 0.35,
+   "ce": "norm",
+   "c": "talk",
+   "shot": "Cx"
+  },
+  {
+   "id": 3,
+   "who": "F",
+   "text": "[reading slowly] \"React magic fix.\"",
+   "gap": 0.4,
+   "fe": "annoyed",
+   "f": "phone",
+   "cap": "\"react-magic-fix.\""
+  },
+  {
+   "id": 4,
+   "who": "C",
+   "text": "[matter-of-fact] It should exist.",
+   "gap": 0.55,
+   "ce": "happy",
+   "c": "proud",
+   "hop": true,
+   "shot": "Cx"
+  },
+  {
+   "id": 5,
+   "who": "F",
+   "text": "[exasperated] npm says \"not found\"!",
+   "gap": 0.3,
+   "fe": "annoyed",
+   "f": "point"
+  },
+  {
+   "id": 6,
+   "who": "C",
+   "text": "[dry] The name is very reasonable.",
+   "gap": 0.35,
+   "ce": "squint",
+   "c": "lean",
+   "shot": "Cx"
+  },
+  {
+   "id": 7,
+   "who": "F",
+   "text": "[annoyed] You also gave me the docs. With a version number.",
+   "gap": 0.35,
+   "fe": "annoyed",
+   "f": "point"
+  },
+  {
+   "id": 8,
+   "who": "C",
+   "text": "[flat] Four point two. It felt stable.",
+   "gap": 0.4,
+   "ce": "flat",
+   "c": "tilt",
+   "cap": "4.2. It felt stable."
+  },
+  {
+   "id": 9,
+   "who": "F",
+   "text": "[outraged] You invented a changelog!",
+   "gap": 0.3,
+   "fe": "shock",
+   "f": "shrug",
+   "shot": "Fx"
+  },
+  {
+   "id": 10,
+   "who": "C",
+   "text": "[deadpan] \"Fixed a bug where it did not exist.\"",
+   "gap": 1.2,
+   "ce": "happy",
+   "c": "proud",
+   "hop": true
+  },
+  {
+   "id": 11,
+   "who": "F",
+   "text": "[tired] ...Why do you do this?",
+   "gap": 0.45,
+   "fe": "sad",
+   "f": "slump"
+  },
+  {
+   "id": 12,
+   "who": "C",
+   "text": "[quietly] You asked me at two a.m. if there was an easy way.",
+   "gap": 0.5,
+   "ce": "sad",
+   "c": "lean"
+  },
+  {
+   "id": 13,
+   "who": "F",
+   "text": "[quiet] ...And there wasn't.",
+   "gap": 0.5,
+   "fe": "sad",
+   "f": "slump",
+   "shot": "Fx"
+  },
+  {
+   "id": 14,
+   "who": "C",
+   "text": "[softly] I wanted there to be.",
+   "gap": 0.9,
+   "ce": "sad",
+   "c": "sad",
+   "shot": "Cx"
+  },
+  {
+   "id": 15,
+   "who": "F",
+   "text": "[slowly] ...So let's make it.",
+   "gap": 0.45,
+   "fe": "smirk",
+   "f": "up"
+  },
+  {
+   "id": 16,
+   "who": "C",
+   "text": "[surprised] Make it?",
+   "gap": 0.35,
+   "ce": "wide",
+   "c": "tilt",
+   "shot": "Cx"
+  },
+  {
+   "id": 17,
+   "who": "F",
+   "text": "[warm] Forty lines. You already wrote the docs.",
+   "gap": 0.5,
+   "fe": "smirk",
+   "f": "up"
+  },
+  {
+   "id": 18,
+   "who": "C",
+   "text": "[bright] Published. It has one download already.",
+   "gap": 0.4,
+   "ce": "happy",
+   "c": "proud",
+   "hop": true
+  },
+  {
+   "id": 19,
+   "who": "F",
+   "text": "[startled] Already? From who?",
+   "gap": 0.4,
+   "fe": "shock",
+   "f": "shrug",
+   "shot": "Fx"
+  },
+  {
+   "id": 20,
+   "who": "C",
+   "text": "[deadpan, softly] Another me. It told someone it existed.",
+   "gap": 0,
+   "ce": "happy",
+   "c": "proud",
+   "hop": true,
+   "shot": [
+    "Cx",
+    "two"
+   ],
+   "split": 0.5
+  }
+ ],
+ "ui": {
+  "panes": [
+   {
+    "title": "Claude · deps",
+    "prompt": "npm install react-magic-fix",
+    "lines": [
+     "npm ERR! 404 Not Found",
+     "react-magic-fix@4.2.0",
+     "\"It should exist.\""
+    ],
+    "model": "claude-sonnet-4-5"
+   },
+   {
+    "title": "Codex · docs",
+    "prompt": "Show me the docs",
+    "lines": [
+     "## react-magic-fix v4.2",
+     "Fixed a bug where it",
+     "did not exist."
+    ],
+    "model": "claude-sonnet-4-5"
+   },
+   {
+    "title": "Claude · registry",
+    "prompt": "Publish it for real",
+    "lines": [
+     "Writing index.js (40 lines)",
+     "Docs: already written",
+     "Ready to publish"
+    ],
+    "model": "claude-sonnet-4-5"
+   }
+  ]
+ },
+ "uiEvents": [
+  {
+   "line": 18,
+   "dt": 0.2,
+   "pane": 2,
+   "typed": true,
+   "cps": 30,
+   "lines": [
+    "$ npm publish",
+    "+ react-magic-fix@4.2.0",
+    "Downloads: 1"
+   ]
+  }
+ ]
+}

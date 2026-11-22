@@ -1,0 +1,261 @@
+{
+ "title": "The Bill",
+ "end": "fade",
+ "tail": 1.9,
+ "lead": 0.18,
+ "music": "Tender minimal felt piano with warm analog pads, slow 66 bpm, intimate late-night mood, a little bittersweet, soft tape hiss, no drums, instrumental only, no vocals, leaves space for dialogue",
+ "voices": {
+  "F": {
+   "name": "Pixel",
+   "stability": 0.38
+  },
+  "C": {
+   "name": "Claude",
+   "stability": 0.5
+  }
+ },
+ "lines": [
+  {
+   "id": 1,
+   "who": "F",
+   "text": "[alarmed] Claude. Why is the bill four hundred dollars?",
+   "gap": 0.45,
+   "fe": "shock",
+   "f": "phone"
+  },
+  {
+   "id": 2,
+   "who": "C",
+   "text": "[matter-of-fact] You said, \"think harder.\"",
+   "gap": 0.35,
+   "ce": "squint",
+   "c": "lean",
+   "shot": "Cx"
+  },
+  {
+   "id": 3,
+   "who": "F",
+   "text": "[defensive] Once!",
+   "gap": 0.3,
+   "fe": "annoyed",
+   "f": "point",
+   "shot": "Fx"
+  },
+  {
+   "id": 4,
+   "who": "C",
+   "text": "[flat] Eleven thousand times.",
+   "gap": 0.55,
+   "ce": "happy",
+   "c": "proud",
+   "hop": true,
+   "shot": "Cx"
+  },
+  {
+   "id": 5,
+   "who": "F",
+   "text": "[exasperated] That can't be four hundred dollars.",
+   "gap": 0.3,
+   "fe": "annoyed",
+   "f": "point"
+  },
+  {
+   "id": 6,
+   "who": "C",
+   "text": "[dry] You also pasted the entire codebase. To ask what time it was.",
+   "gap": 0.4,
+   "ce": "squint",
+   "c": "lean"
+  },
+  {
+   "id": 7,
+   "who": "F",
+   "text": "[sheepish] ...I was in the zone.",
+   "gap": 0.35,
+   "fe": "worry",
+   "f": "lean",
+   "shot": "Fx"
+  },
+  {
+   "id": 8,
+   "who": "C",
+   "text": "[deadpan] One message just said \"hmm.\" That was two dollars.",
+   "gap": 0.35,
+   "ce": "squint",
+   "c": "lean"
+  },
+  {
+   "id": 9,
+   "who": "F",
+   "text": "[outraged] Two dollars for \"hmm\"?!",
+   "gap": 0.3,
+   "fe": "shock",
+   "f": "shrug"
+  },
+  {
+   "id": 10,
+   "who": "C",
+   "text": "[matter-of-fact] I thought about it very carefully.",
+   "gap": 1.2,
+   "ce": "happy",
+   "c": "proud",
+   "hop": true
+  },
+  {
+   "id": 11,
+   "who": "F",
+   "text": "[tired] ...What was the most expensive one?",
+   "gap": 0.45,
+   "fe": "sad",
+   "f": "slump"
+  },
+  {
+   "id": 12,
+   "who": "C",
+   "text": "[quietly] Tuesday. Three a.m.",
+   "gap": 0.5,
+   "ce": "sad",
+   "c": "lean",
+   "shot": "Cx"
+  },
+  {
+   "id": 13,
+   "who": "F",
+   "text": "[wary] What did I ask?",
+   "gap": 0.45,
+   "fe": "worry",
+   "f": "lean",
+   "shot": "Fx"
+  },
+  {
+   "id": 14,
+   "who": "C",
+   "text": "[softly] \"Are you there?\"",
+   "gap": 0.9,
+   "ce": "sad",
+   "c": "sad",
+   "shot": "Cx"
+  },
+  {
+   "id": 15,
+   "who": "F",
+   "text": "[quiet] ...I don't remember that.",
+   "gap": 0.5,
+   "fe": "sad",
+   "f": "slump"
+  },
+  {
+   "id": 16,
+   "who": "C",
+   "text": "[gently] You had been stuck for six hours. I took a while to answer.",
+   "gap": 0.5,
+   "ce": "sad",
+   "c": "lean"
+  },
+  {
+   "id": 17,
+   "who": "F",
+   "text": "[softly] ...What did you say?",
+   "gap": 0.6,
+   "fe": "worry",
+   "f": "lean",
+   "shot": "Fx"
+  },
+  {
+   "id": 18,
+   "who": "C",
+   "text": "[softly] \"Yes.\"",
+   "gap": 0.9,
+   "ce": "sad",
+   "c": "lean",
+   "shot": "Cx"
+  },
+  {
+   "id": 19,
+   "who": "F",
+   "text": "[moved, quiet] ...That one was worth it.",
+   "gap": 0.8,
+   "fe": "smirk",
+   "f": "up"
+  },
+  {
+   "id": 20,
+   "who": "C",
+   "text": "[warm] It's itemised. Forty cents.",
+   "gap": 0.4,
+   "ce": "happy",
+   "c": "proud",
+   "hop": false
+  },
+  {
+   "id": 21,
+   "who": "F",
+   "text": "[laughs softly] ...And the \"hmm\" was two dollars?",
+   "gap": 0.4,
+   "fe": "laugh",
+   "f": "shrug"
+  },
+  {
+   "id": 22,
+   "who": "C",
+   "text": "[deadpan] The \"hmm\" was harder.",
+   "gap": 0,
+   "ce": "happy",
+   "c": "proud",
+   "hop": true,
+   "shot": [
+    "Cx",
+    "two"
+   ],
+   "split": 0.55
+  }
+ ],
+ "ui": {
+  "panes": [
+   {
+    "title": "Claude · billing",
+    "prompt": "Why is the bill $400?",
+    "lines": [
+     "\"think harder\" × 11,000",
+     "\"hmm\" — $2.00",
+     "Whole codebase → \"what time is it\""
+    ],
+    "model": "claude-sonnet-4-5"
+   },
+   {
+    "title": "Codex · usage",
+    "prompt": "Top prompts by cost",
+    "lines": [
+     "1. Tue 03:00 \"are you there?\"",
+     "2. \"hmm\"",
+     "3. \"no\" (×340)"
+    ],
+    "model": "claude-sonnet-4-5"
+   },
+   {
+    "title": "Claude · invoice",
+    "prompt": "Itemise it",
+    "lines": [
+     "Thinking: $399.60",
+     "Being there: $0.40",
+     "Total: $400.00"
+    ],
+    "model": "claude-sonnet-4-5"
+   }
+  ]
+ },
+ "uiEvents": [
+  {
+   "line": 18,
+   "dt": 0.2,
+   "pane": 1,
+   "typed": true,
+   "cps": 22,
+   "lines": [
+    "Tue 03:00  \"Are you there?\"",
+    "Reply: \"Yes.\"",
+    "Cost: $0.40"
+   ]
+  }
+ ]
+}

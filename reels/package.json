@@ -1,0 +1,14 @@
+{
+  "name": "claude-and-pixel-kit",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Make Claude and Pixel skit videos in code: three.js scenes, ElevenLabs voices, one command to render.",
+  "scripts": {
+    "doctor": "python3 tools/env.py",
+    "preview": "node tools/render.mjs serve"
+  },
+  "dependencies": {
+    "playwright-core": "^1.63.0"
+  }
+}

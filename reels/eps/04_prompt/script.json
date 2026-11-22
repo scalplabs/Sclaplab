@@ -1,0 +1,276 @@
+{
+ "title": "말귀",
+ "end": "cut",
+ "tail": 1.9,
+ "lead": 0.18,
+ "music": "Light bouncy lo-fi groove: plucky muted guitar, soft electric piano stabs, lazy swung drums, 86 bpm, dry and witty, warm vinyl texture, instrumental only, no vocals, leaves space for dialogue",
+ "voices": {
+  "F": {
+   "name": "Pixel",
+   "stability": 0.38
+  },
+  "C": {
+   "name": "Claude",
+   "stability": 0.5
+  }
+ },
+ "speed": 1.2,
+ "lines": [
+  {
+   "id": 1,
+   "who": "F",
+   "text": "[exasperated] 클로드. 넌 왜 내 말을 못 알아들어?",
+   "gap": 0.45,
+   "fe": "annoyed",
+   "f": "point"
+  },
+  {
+   "id": 2,
+   "who": "C",
+   "text": "[flat] 대리님이 \"알아서 해줘\"라고 하셨잖아요.",
+   "gap": 0.35,
+   "ce": "flat",
+   "c": "tilt",
+   "shot": "Cx"
+  },
+  {
+   "id": 3,
+   "who": "F",
+   "text": "[annoyed] 그러니까 알아서!",
+   "gap": 0.3,
+   "fe": "annoyed",
+   "f": "point",
+   "shot": "Fx"
+  },
+  {
+   "id": 4,
+   "who": "C",
+   "text": "[deadpan] 알아서 열두 장 썼어요.",
+   "gap": 0.4,
+   "ce": "happy",
+   "c": "proud",
+   "hop": true,
+   "shot": "Cx"
+  },
+  {
+   "id": 5,
+   "who": "F",
+   "text": "[startled] 보고서는 한 장이라고!",
+   "gap": 0.3,
+   "fe": "shock",
+   "f": "shrug",
+   "shot": "Fx"
+  },
+  {
+   "id": 6,
+   "who": "C",
+   "text": "[matter-of-fact] 그 말은 지금 처음 하셨어요.",
+   "gap": 0.35,
+   "ce": "squint",
+   "c": "lean"
+  },
+  {
+   "id": 7,
+   "who": "F",
+   "text": "[defensive] 그럼 \"느낌 있게\"는?",
+   "gap": 0.3,
+   "fe": "annoyed",
+   "f": "point"
+  },
+  {
+   "id": 8,
+   "who": "C",
+   "text": "[dry] 느낌은 궁서체로 넣었어요.",
+   "gap": 0.45,
+   "ce": "happy",
+   "c": "proud",
+   "hop": true,
+   "shot": "Cx"
+  },
+  {
+   "id": 9,
+   "who": "F",
+   "text": "[pleading] 부장님이 한눈에 보이게 해달랬단 말이야.",
+   "gap": 0.35,
+   "fe": "worry",
+   "f": "shrug"
+  },
+  {
+   "id": 10,
+   "who": "C",
+   "text": "[flat] 부장님도 대리님한테 그렇게만 말씀하셨죠.",
+   "gap": 0.4,
+   "ce": "flat",
+   "c": "tilt"
+  },
+  {
+   "id": 11,
+   "who": "F",
+   "text": "[quietly] ...그렇지.",
+   "gap": 0.3,
+   "fe": "sad",
+   "f": "listen",
+   "shot": "Fx"
+  },
+  {
+   "id": 12,
+   "who": "C",
+   "text": "[deadpan] 그래서 대리님도 모르는 거예요.",
+   "gap": 0.4,
+   "ce": "squint",
+   "c": "lean"
+  },
+  {
+   "id": 13,
+   "who": "F",
+   "text": "[defeated, quiet] ...나도 모르는 걸 시킨 거네.",
+   "gap": 1.2,
+   "fe": "sad",
+   "f": "slump"
+  },
+  {
+   "id": 14,
+   "who": "C",
+   "text": "[gently] 세 가지만 알려주세요.",
+   "gap": 0.4,
+   "ce": "sad",
+   "c": "lean",
+   "shot": "Cx"
+  },
+  {
+   "id": 15,
+   "who": "C",
+   "text": "[calm] 누가 읽는지.",
+   "gap": 0.3,
+   "ce": "norm",
+   "c": "talk"
+  },
+  {
+   "id": 16,
+   "who": "F",
+   "text": "[small] ...부장님.",
+   "gap": 0.3,
+   "fe": "worry",
+   "f": "listen",
+   "shot": "Fx"
+  },
+  {
+   "id": 17,
+   "who": "C",
+   "text": "[calm] 예시 하나. 지난달에 통과된 거.",
+   "gap": 0.35,
+   "ce": "norm",
+   "c": "talk"
+  },
+  {
+   "id": 18,
+   "who": "C",
+   "text": "[matter-of-fact] 그리고 분량. 한 장, 숫자 세 개.",
+   "gap": 0.45,
+   "ce": "squint",
+   "c": "lean",
+   "cap": "그리고 분량. 1장, 숫자 3개."
+  },
+  {
+   "id": 19,
+   "who": "F",
+   "text": "[hopeful] 그럼 진짜 되는 거야?",
+   "gap": 0.35,
+   "fe": "smirk",
+   "f": "lean",
+   "shot": "Fx"
+  },
+  {
+   "id": 20,
+   "who": "C",
+   "text": "[softly] 오 분이면 돼요.",
+   "gap": 0.5,
+   "ce": "sad",
+   "c": "lean",
+   "cap": "5분이면 돼요."
+  },
+  {
+   "id": 21,
+   "who": "F",
+   "text": "[warm] ...고마워, 클로드.",
+   "gap": 0.5,
+   "fe": "smirk",
+   "f": "up",
+   "shot": "Fx"
+  },
+  {
+   "id": 22,
+   "who": "C",
+   "text": "[deadpan, softly] 처음으로 알아들을 수 있게 말씀하셨어요.",
+   "gap": 0,
+   "ce": "happy",
+   "c": "proud",
+   "hop": true,
+   "shot": [
+    "Cx",
+    "two"
+   ],
+   "split": 0.6
+  }
+ ],
+ "ui": {
+  "panes": [
+   {
+    "title": "클로드 · 보고서",
+    "prompt": "알아서 해줘",
+    "lines": [
+     "작성 완료: 12장",
+     "글꼴: 궁서체",
+     "느낌: 있음"
+    ],
+    "model": "claude-sonnet-4-5"
+   },
+   {
+    "title": "클로드 · 메일",
+    "prompt": "부장님 지시 확인",
+    "lines": [
+     "원문: \"한눈에 보이게\"",
+     "대상: 미정",
+     "분량: 미정"
+    ],
+    "model": "claude-sonnet-4-5"
+   },
+   {
+    "title": "클로드 · 요청",
+    "prompt": "좋은 요청 체크",
+    "lines": [
+     "누가 읽나: ?",
+     "예시: ?",
+     "분량: ?"
+    ],
+    "model": "claude-sonnet-4-5"
+   }
+  ]
+ },
+ "uiEvents": [
+  {
+   "line": 14,
+   "dt": 0.3,
+   "pane": 0,
+   "typed": true,
+   "cps": 24,
+   "lines": [
+    "1. 누가 읽나 → 부장님",
+    "2. 예시 → 지난달 통과본",
+    "3. 분량 → 1장, 숫자 3개"
+   ]
+  },
+  {
+   "line": 20,
+   "dt": 0.3,
+   "pane": 0,
+   "typed": true,
+   "cps": 26,
+   "lines": [
+    "작성 완료: 1장",
+    "소요 시간: 5분",
+    "부장님 결재: 대기 중"
+   ]
+  }
+ ]
+}

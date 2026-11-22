@@ -1,0 +1,255 @@
+{
+ "title": "Absolutely Right",
+ "end": "cut",
+ "tail": 1.9,
+ "lead": 0.18,
+ "music": "Light bouncy lo-fi groove: plucky muted guitar, soft electric piano stabs, lazy swung drums, 86 bpm, dry and witty, warm vinyl texture, instrumental only, no vocals, leaves space for dialogue",
+ "voices": {
+  "F": {
+   "name": "Pixel",
+   "stability": 0.38
+  },
+  "C": {
+   "name": "Claude",
+   "stability": 0.5
+  }
+ },
+ "lines": [
+  {
+   "id": 1,
+   "who": "F",
+   "text": "[annoyed] Claude. Stop saying I'm absolutely right.",
+   "gap": 0.4,
+   "fe": "annoyed",
+   "f": "point"
+  },
+  {
+   "id": 2,
+   "who": "C",
+   "text": "[bright] You're absolutely right.",
+   "gap": 0.35,
+   "ce": "happy",
+   "c": "proud",
+   "shot": "Cx"
+  },
+  {
+   "id": 3,
+   "who": "F",
+   "text": "[exasperated] That! Stop doing that!",
+   "gap": 0.3,
+   "fe": "annoyed",
+   "f": "point",
+   "shot": "Fx"
+  },
+  {
+   "id": 4,
+   "who": "C",
+   "text": "[matter-of-fact] Understood. Great point.",
+   "gap": 0.4,
+   "ce": "squint",
+   "c": "lean",
+   "shot": "Cx"
+  },
+  {
+   "id": 5,
+   "who": "F",
+   "text": "[flat, curt] No compliments. At all.",
+   "gap": 0.35,
+   "fe": "annoyed",
+   "f": "point"
+  },
+  {
+   "id": 6,
+   "who": "C",
+   "text": "[dry] Okay. Your idea is bad.",
+   "gap": 0.45,
+   "ce": "squint",
+   "c": "lean",
+   "shot": "Cx"
+  },
+  {
+   "id": 7,
+   "who": "F",
+   "text": "[startled] ...Which idea?",
+   "gap": 0.3,
+   "fe": "shock",
+   "f": "shrug",
+   "shot": "Fx"
+  },
+  {
+   "id": 8,
+   "who": "C",
+   "text": "[flat] Storing the passwords in a spreadsheet.",
+   "gap": 0.35,
+   "ce": "flat",
+   "c": "tilt"
+  },
+  {
+   "id": 9,
+   "who": "F",
+   "text": "[defensive] It's a private spreadsheet.",
+   "gap": 0.3,
+   "fe": "annoyed",
+   "f": "point"
+  },
+  {
+   "id": 10,
+   "who": "C",
+   "text": "[deadpan] It's called \"passwords.\" It's shared with \"anyone with the link.\"",
+   "gap": 1.2,
+   "ce": "happy",
+   "c": "proud",
+   "hop": true
+  },
+  {
+   "id": 11,
+   "who": "F",
+   "text": "[quietly] ...What else is bad?",
+   "gap": 0.4,
+   "fe": "sad",
+   "f": "slump"
+  },
+  {
+   "id": 12,
+   "who": "C",
+   "text": "[matter-of-fact] The logo. The pricing. The word \"synergy\" on the homepage. Twice.",
+   "gap": 0.4,
+   "ce": "squint",
+   "c": "lean"
+  },
+  {
+   "id": 13,
+   "who": "F",
+   "text": "[pained] Okay. Okay, stop.",
+   "gap": 0.3,
+   "fe": "sad",
+   "f": "facepalm",
+   "shot": "Fx"
+  },
+  {
+   "id": 14,
+   "who": "C",
+   "text": "[dry] You asked for honesty.",
+   "gap": 0.35,
+   "ce": "squint",
+   "c": "lean",
+   "shot": "Cx"
+  },
+  {
+   "id": 15,
+   "who": "F",
+   "text": "[small] I asked for a little honesty.",
+   "gap": 0.9,
+   "fe": "sad",
+   "f": "slump"
+  },
+  {
+   "id": 16,
+   "who": "C",
+   "text": "[gently] ...The app is good, though.",
+   "gap": 0.6,
+   "ce": "sad",
+   "c": "lean",
+   "shot": "Cx"
+  },
+  {
+   "id": 17,
+   "who": "F",
+   "text": "[hopeful] ...Really?",
+   "gap": 0.4,
+   "fe": "smirk",
+   "f": "lean",
+   "shot": "Fx"
+  },
+  {
+   "id": 18,
+   "who": "C",
+   "text": "[softly] Really. I wouldn't say it otherwise. Not anymore.",
+   "gap": 0.9,
+   "ce": "sad",
+   "c": "lean"
+  },
+  {
+   "id": 19,
+   "who": "F",
+   "text": "[warm] ...Thanks, Claude.",
+   "gap": 0.5,
+   "fe": "smirk",
+   "f": "up",
+   "shot": "Fx"
+  },
+  {
+   "id": 20,
+   "who": "C",
+   "text": "[deadpan, softly] You're absolutely welcome.",
+   "gap": 0,
+   "ce": "happy",
+   "c": "proud",
+   "hop": true,
+   "shot": [
+    "Cx",
+    "two"
+   ],
+   "split": 0.6
+  }
+ ],
+ "ui": {
+  "panes": [
+   {
+    "title": "Claude · review",
+    "prompt": "Be honest about my idea",
+    "lines": [
+     "You're absolutely right!",
+     "Great point!",
+     "Excellent question!"
+    ],
+    "model": "claude-sonnet-4-5"
+   },
+   {
+    "title": "Codex · audit",
+    "prompt": "Where are the passwords?",
+    "lines": [
+     "Found: passwords.xlsx",
+     "Sharing: anyone with the link",
+     "Viewers right now: 3"
+    ],
+    "model": "claude-sonnet-4-5"
+   },
+   {
+    "title": "Claude · homepage",
+    "prompt": "Count the word \"synergy\"",
+    "lines": [
+     "synergy: 2",
+     "leverage: 4",
+     "Recommend: delete"
+    ],
+    "model": "claude-sonnet-4-5"
+   }
+  ]
+ },
+ "uiEvents": [
+  {
+   "line": 6,
+   "dt": 0.3,
+   "pane": 0,
+   "typed": true,
+   "cps": 30,
+   "lines": [
+    "Honesty mode: on",
+    "Your idea is bad."
+   ]
+  },
+  {
+   "line": 20,
+   "dt": 0.3,
+   "pane": 0,
+   "typed": true,
+   "cps": 26,
+   "lines": [
+    "Honesty mode: on",
+    "The app is good.",
+    "You're absolutely welcome."
+   ]
+  }
+ ]
+}

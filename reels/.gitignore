@@ -1,0 +1,13 @@
+.env
+node_modules/
+out/
+qa/
+audio/*/*.wav
+audio/*/*.log
+audio/*/scribe.json
+audio/*/vo_check.mp3
+eps/*/*.log
+eps/*/vo_check.txt
+eps/*/tts_usage.json
+__pycache__/
+.DS_Store
