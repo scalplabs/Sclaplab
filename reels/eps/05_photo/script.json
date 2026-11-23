@@ -1,0 +1,275 @@
+{
+ "title": "사진 보정",
+ "end": "cut",
+ "tail": 1.9,
+ "lead": 0.18,
+ "music": "Light bouncy lo-fi groove: plucky muted guitar, soft electric piano stabs, lazy swung drums, 86 bpm, dry and witty, warm vinyl texture, instrumental only, no vocals, leaves space for dialogue",
+ "voices": {
+  "F": {
+   "name": "Pixel",
+   "stability": 0.38
+  },
+  "C": {
+   "name": "Claude",
+   "stability": 0.5
+  }
+ },
+ "speed": 1.2,
+ "lines": [
+  {
+   "id": 1,
+   "who": "F",
+   "text": "[hopeful] 클로드. 이력서 사진 좀 잘 나오게 해줘.",
+   "gap": 0.45,
+   "fe": "smirk",
+   "f": "up"
+  },
+  {
+   "id": 2,
+   "who": "C",
+   "text": "[flat] 사진은 제가 못 고쳐요.",
+   "gap": 0.35,
+   "ce": "flat",
+   "c": "tilt",
+   "shot": "Cx"
+  },
+  {
+   "id": 3,
+   "who": "C",
+   "text": "[matter-of-fact] 이미지 AI에 넣을 말은 써드릴 수 있어요.",
+   "gap": 0.4,
+   "ce": "squint",
+   "c": "lean"
+  },
+  {
+   "id": 4,
+   "who": "F",
+   "text": "[annoyed] 그럼 그냥 \"잘 나오게\"라고 쓰면 되잖아.",
+   "gap": 0.3,
+   "fe": "annoyed",
+   "f": "point"
+  },
+  {
+   "id": 5,
+   "who": "C",
+   "text": "[dry] 지난번에 그렇게 쓰셨죠.",
+   "gap": 0.35,
+   "ce": "squint",
+   "c": "lean",
+   "shot": "Cx"
+  },
+  {
+   "id": 6,
+   "who": "F",
+   "text": "[wary] ...어떻게 됐는데?",
+   "gap": 0.3,
+   "fe": "worry",
+   "f": "lean",
+   "shot": "Fx"
+  },
+  {
+   "id": 7,
+   "who": "C",
+   "text": "[deadpan] 턱이 반으로 줄었어요.",
+   "gap": 0.4,
+   "ce": "happy",
+   "c": "proud",
+   "hop": true,
+   "shot": "Cx"
+  },
+  {
+   "id": 8,
+   "who": "F",
+   "text": "[defensive] 그 정도면 괜찮지.",
+   "gap": 0.3,
+   "fe": "annoyed",
+   "f": "point"
+  },
+  {
+   "id": 9,
+   "who": "C",
+   "text": "[flat] 피부는 도자기가 됐고요.",
+   "gap": 0.35,
+   "ce": "flat",
+   "c": "tilt"
+  },
+  {
+   "id": 10,
+   "who": "C",
+   "text": "[deadpan] 눈은 아이돌 연습생이요.",
+   "gap": 0.45,
+   "ce": "happy",
+   "c": "proud",
+   "hop": true,
+   "shot": "Cx"
+  },
+  {
+   "id": 11,
+   "who": "F",
+   "text": "[startled] 그래서 면접관이...",
+   "gap": 0.3,
+   "fe": "shock",
+   "f": "shrug",
+   "shot": "Fx"
+  },
+  {
+   "id": 12,
+   "who": "C",
+   "text": "[matter-of-fact] \"본인 맞으세요?\" 하셨어요. 두 번이요.",
+   "gap": 0.4,
+   "ce": "squint",
+   "c": "lean"
+  },
+  {
+   "id": 13,
+   "who": "F",
+   "text": "[defeated, quiet] ...그래서 떨어진 거였어?",
+   "gap": 1.2,
+   "fe": "sad",
+   "f": "listen"
+  },
+  {
+   "id": 14,
+   "who": "C",
+   "text": "[gently] 세 가지만 쓰면 돼요.",
+   "gap": 0.4,
+   "ce": "sad",
+   "c": "lean",
+   "shot": "Cx",
+   "noBeat": true
+  },
+  {
+   "id": 15,
+   "who": "C",
+   "text": "[calm] 바꾸지 말 것. 얼굴, 체형, 옷.",
+   "gap": 0.35,
+   "ce": "norm",
+   "c": "talk"
+  },
+  {
+   "id": 16,
+   "who": "F",
+   "text": "[small] ...응.",
+   "gap": 0.3,
+   "fe": "worry",
+   "f": "listen",
+   "shot": "Fx"
+  },
+  {
+   "id": 17,
+   "who": "C",
+   "text": "[calm] 바꿀 것. 조명, 배경, 색감.",
+   "gap": 0.35,
+   "ce": "norm",
+   "c": "talk"
+  },
+  {
+   "id": 18,
+   "who": "C",
+   "text": "[matter-of-fact] 그리고 마지막. \"AI 티 안 나게.\"",
+   "gap": 0.45,
+   "ce": "squint",
+   "c": "lean"
+  },
+  {
+   "id": 19,
+   "who": "F",
+   "text": "[hopeful] 그럼 진짜 나처럼 나와?",
+   "gap": 0.35,
+   "fe": "smirk",
+   "f": "lean",
+   "shot": "Fx"
+  },
+  {
+   "id": 20,
+   "who": "C",
+   "text": "[softly] 대리님처럼 나와요. 조금 덜 피곤한.",
+   "gap": 0.5,
+   "ce": "sad",
+   "c": "lean"
+  },
+  {
+   "id": 21,
+   "who": "F",
+   "text": "[warm] ...고마워, 클로드.",
+   "gap": 0.5,
+   "fe": "smirk",
+   "f": "up",
+   "shot": "Fx"
+  },
+  {
+   "id": 22,
+   "who": "C",
+   "text": "[deadpan, softly] 이번엔 면접관이 \"본인 맞네요\" 하실 거예요.",
+   "gap": 0,
+   "ce": "happy",
+   "c": "proud",
+   "hop": true,
+   "shot": [
+    "Cx",
+    "twoLow"
+   ],
+   "split": 0.6
+  }
+ ],
+ "ui": {
+  "panes": [
+   {
+    "title": "이미지 AI · 보정",
+    "prompt": "잘 나오게 해줘",
+    "lines": [
+     "턱: -50%",
+     "피부: 도자기",
+     "눈: 연습생"
+    ],
+    "model": "claude-sonnet-4-5"
+   },
+   {
+    "title": "클로드 · 면접 기록",
+    "prompt": "지난 면접 피드백",
+    "lines": [
+     "면접관: \"본인 맞으세요?\"",
+     "횟수: 2회",
+     "결과: 불합격"
+    ],
+    "model": "claude-sonnet-4-5"
+   },
+   {
+    "title": "클로드 · 프롬프트",
+    "prompt": "사진 보정 요청 쓰기",
+    "lines": [
+     "바꾸지 말 것: ?",
+     "바꿀 것: ?",
+     "AI 티: ?"
+    ],
+    "model": "claude-sonnet-4-5"
+   }
+  ]
+ },
+ "uiEvents": [
+  {
+   "line": 15,
+   "dt": 0.2,
+   "pane": 0,
+   "typed": true,
+   "cps": 24,
+   "lines": [
+    "1. 바꾸지 말 것 → 얼굴, 체형, 옷",
+    "2. 바꿀 것 → 조명, 배경, 색감",
+    "3. AI 티 안 나게"
+   ]
+  },
+  {
+   "line": 21,
+   "dt": 0.3,
+   "pane": 0,
+   "typed": true,
+   "cps": 26,
+   "lines": [
+    "보정 완료",
+    "얼굴 변화: 0%",
+    "면접관 반응: 본인 맞음"
+   ]
+  }
+ ]
+}
