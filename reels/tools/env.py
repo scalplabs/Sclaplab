@@ -7,7 +7,7 @@ DEFAULTS = {
     'ELEVENLABS_MODEL_ID': 'eleven_v4',
     'PIXEL_VOICE_ID': 'hp3u3xWyyDK3Zr5h8Ltt',   # 김대리
     'CLAUDE_VOICE_ID': '8zHuDw1bbkbkL93Inv5N',  # 클로드
-    'TYPECAST_F_VOICE': 'tc_6059dad0b83880769a50502f',  # 김대리 = 박창수 (Typecast)
+    'TYPECAST_F_VOICE': 'tc_68257f68bc6e3c161ab5078d',  # 김대리 = 필재 (Typecast)
     'TYPECAST_C_VOICE': 'tc_69f2e455ea79fd197aa0476f',  # 클로드 = 서현 (Typecast)
     'TYPECAST_MODEL': 'ssfm-v31',
 }
