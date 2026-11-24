@@ -26,7 +26,7 @@ F_FACES = 'norm worry shock sad laugh smirk deadpan annoyed shut'.split()
 C_POSES = 'idle talk listen lean tilt flap hunch proud away sad point'.split()
 C_EYES = 'norm wide squint flat sad happy up'.split()
 SHOTS = 'F Fx Fp Flow Fm C Cx Clow Cm otsF otsC two twoLow wide hi ext duck scr'.split()
-KEYS = 'f fe c ce shot split hop hopAt noBeat extra cap seed shift lead'.split()
+KEYS = 'f fe c ce shot split hop hopAt noBeat extra cap seed shift lead emo emo_int'.split()
 
 def infer(who, text):
     tags = ' '.join(re.findall(r'\[([^\]]*)\]', text)).lower(); d = {}
@@ -79,8 +79,8 @@ def check(ep, lines, out, events):
     if err: raise SystemExit(f'{ep}: script not written\n  ' + '\n  '.join(err))
     return words
 
-def build(ep, title, lines, ui=None, events=None, end='cut', tail=1.9, hideF=None, music='cozy', speed=1.0):
-    out = {"title": title, "end": end, "tail": tail, "lead": 0.18, "music": MUSIC.get(music, music), "voices": VOICES, "speed": speed, "lines": []}
+def build(ep, title, lines, ui=None, events=None, end='cut', tail=1.9, hideF=None, music='cozy', speed=1.0, tts='typecast'):
+    out = {"title": title, "end": end, "tail": tail, "lead": 0.18, "music": MUSIC.get(music, music), "voices": VOICES, "speed": speed, "tts": tts, "lines": []}
     for i, ln in enumerate(lines, 1):
         who, text, gap = ln[0], ln[1], ln[2]; rest = ln[3:]
         punch = 'p' in rest; ov = next((r for r in rest if isinstance(r, dict)), {})
@@ -95,6 +95,6 @@ def build(ep, title, lines, ui=None, events=None, end='cut', tail=1.9, hideF=Non
     if hideF is not None: out["hideF"] = hideF
     d = P / 'eps' / ep; d.mkdir(parents=True, exist_ok=True); (d / 'script.json').write_text(json.dumps(out, indent=1, ensure_ascii=False))
     chars = sum(len(l['text']) for l in out['lines'])
-    print(f'{ep}: {len(lines)} lines, {words} spoken words, {chars} characters for ElevenLabs -> eps/{ep}/script.json')
+    print(f'{ep}: {len(lines)} lines, {words} spoken words, {chars} characters for TTS -> eps/{ep}/script.json')
 
 pane = lambda t, p, lines, m='claude-sonnet-4-5': dict(title=t, prompt=p, lines=lines, model=m)

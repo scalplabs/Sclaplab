@@ -7,6 +7,9 @@ DEFAULTS = {
     'ELEVENLABS_MODEL_ID': 'eleven_v4',
     'PIXEL_VOICE_ID': 'hp3u3xWyyDK3Zr5h8Ltt',   # 김대리
     'CLAUDE_VOICE_ID': '8zHuDw1bbkbkL93Inv5N',  # 클로드
+    'TYPECAST_F_VOICE': 'tc_6059dad0b83880769a50502f',  # 김대리 = 박창수 (Typecast)
+    'TYPECAST_C_VOICE': 'tc_69f2e455ea79fd197aa0476f',  # 클로드 = 서현 (Typecast)
+    'TYPECAST_MODEL': 'ssfm-v31',
 }
 # Homebrew / python.org Pythons on macOS often ship without a CA bundle: point them at the system one.
 if not os.environ.get('SSL_CERT_FILE') and os.path.exists('/etc/ssl/cert.pem'): os.environ['SSL_CERT_FILE'] = '/etc/ssl/cert.pem'
@@ -19,7 +22,7 @@ def load():
             if not l or l.startswith('#') or '=' not in l: continue
             k, v = l.split('=', 1); v = v.strip().strip('"').strip("'")
             if v: env[k.strip()] = v
-    for k in list(DEFAULTS) + ['ELEVENLABS_API_KEY', 'APP_NAME', 'CHROME_PATH']:
+    for k in list(DEFAULTS) + ['ELEVENLABS_API_KEY', 'TYPECAST_API_KEY', 'APP_NAME', 'CHROME_PATH']:
         if os.environ.get(k): env[k] = os.environ[k]
     return env
 
