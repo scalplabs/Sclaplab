@@ -35,12 +35,19 @@ def tc_emotion(line):
     else: e = 'normal'
     return e, float(line.get('emo_int', 1.0))
 
-def tts_typecast(line):
-    emo, inten = tc_emotion(line)
+TC_MODE = S.get('tc_mode', 'smart')  # 'smart': Typecast infers emotion from the neighbouring lines; 'preset': from the [tag]
+
+def tts_typecast(line, prev, nxt):
     vid = ENV['TYPECAST_F_VOICE' if line['who'] == 'F' else 'TYPECAST_C_VOICE']
+    if TC_MODE == 'smart' and not line.get('emo'):
+        prompt = {'emotion_type': 'smart'}
+        if prev: prompt['previous_text'] = prev
+        if nxt: prompt['next_text'] = nxt
+    else:
+        emo, inten = tc_emotion(line)
+        prompt = {'emotion_type': 'preset', 'emotion_preset': emo, 'emotion_intensity': inten}
     body = {'voice_id': vid, 'text': strip(line['text']), 'model': TC_MODEL, 'language': 'kor',
-            'prompt': {'emotion_type': 'preset', 'emotion_preset': emo, 'emotion_intensity': inten},
-            'output': {'audio_format': 'mp3'}}
+            'prompt': prompt, 'output': {'audio_format': 'mp3'}}
     if line.get('seed'): body['seed'] = line['seed']
     h = hashlib.sha1(json.dumps(body, ensure_ascii=False).encode()).hexdigest()[:10]
     out = D / 'vo' / f"L{line['id']:02d}_tc_{h}.mp3"
@@ -67,7 +74,7 @@ def tts_typecast(line):
     raise SystemExit('tts failed ' + str(line['id']))
 
 def tts(line, prev, nxt):
-    if PROVIDER == 'typecast': return tts_typecast(line)
+    if PROVIDER == 'typecast': return tts_typecast(line, prev, nxt)
     v = {'voice_id': voice_id(line['who']), 'stability': S.get('voices', {}).get(line['who'], {}).get('stability', STAB[line['who']])}
     body = {'text': line['text'], 'model_id': MODEL, 'voice_settings': {'stability': v['stability'], 'similarity_boost': 0.8, 'use_speaker_boost': True}, 'seed': 2000 + line['id'] + line.get('seed', 0)}
     if prev: body['previous_text'] = prev

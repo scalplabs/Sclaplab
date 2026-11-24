@@ -79,8 +79,8 @@ def check(ep, lines, out, events):
     if err: raise SystemExit(f'{ep}: script not written\n  ' + '\n  '.join(err))
     return words
 
-def build(ep, title, lines, ui=None, events=None, end='cut', tail=1.9, hideF=None, music='cozy', speed=1.0, tts='typecast'):
-    out = {"title": title, "end": end, "tail": tail, "lead": 0.18, "music": MUSIC.get(music, music), "voices": VOICES, "speed": speed, "tts": tts, "lines": []}
+def build(ep, title, lines, ui=None, events=None, end='cut', tail=1.9, hideF=None, music='cozy', speed=1.0, tts='typecast', tc_mode='smart'):
+    out = {"title": title, "end": end, "tail": tail, "lead": 0.18, "music": MUSIC.get(music, music), "voices": VOICES, "speed": speed, "tts": tts, "tc_mode": tc_mode, "lines": []}
     for i, ln in enumerate(lines, 1):
         who, text, gap = ln[0], ln[1], ln[2]; rest = ln[3:]
         punch = 'p' in rest; ov = next((r for r in rest if isinstance(r, dict)), {})
