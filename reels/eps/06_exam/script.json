@@ -1,0 +1,272 @@
+{
+ "title": "시험",
+ "end": "cut",
+ "tail": 1.9,
+ "lead": 0.18,
+ "music": "Playful sneaky comedy underscore: pizzicato strings, soft marimba and a light lo-fi beat, 92 bpm, mischievous and deadpan, sparse, instrumental only, no vocals, leaves space for dialogue",
+ "voices": {
+  "F": {
+   "name": "Pixel",
+   "stability": 0.38
+  },
+  "C": {
+   "name": "Claude",
+   "stability": 0.5
+  }
+ },
+ "speed": 1.0,
+ "tts": "typecast",
+ "tc_mode": "smart",
+ "lines": [
+  {
+   "id": 1,
+   "who": "F",
+   "text": "[hopeful] 클로드. 다음 주 승진시험, 너 안경에 넣어 가도 돼?",
+   "gap": 0.45,
+   "fe": "smirk",
+   "f": "up"
+  },
+  {
+   "id": 2,
+   "who": "C",
+   "text": "[flat] 안 돼요.",
+   "gap": 0.35,
+   "ce": "flat",
+   "c": "tilt",
+   "shot": "Cx"
+  },
+  {
+   "id": 3,
+   "who": "F",
+   "text": "[defensive] 왜! 너 똑똑하잖아.",
+   "gap": 0.3,
+   "fe": "annoyed",
+   "f": "point"
+  },
+  {
+   "id": 4,
+   "who": "C",
+   "text": "[matter-of-fact] 이번 수능에서 그거 하다 걸린 뉴스 보셨잖아요.",
+   "gap": 0.4,
+   "ce": "squint",
+   "c": "lean"
+  },
+  {
+   "id": 5,
+   "who": "F",
+   "text": "[wary] ...그건 수능이고.",
+   "gap": 0.3,
+   "fe": "worry",
+   "f": "lean",
+   "shot": "Fx"
+  },
+  {
+   "id": 6,
+   "who": "C",
+   "text": "[dry] 형사고발까지 갔어요.",
+   "gap": 0.4,
+   "ce": "happy",
+   "c": "proud",
+   "hop": true,
+   "shot": "Cx"
+  },
+  {
+   "id": 7,
+   "who": "F",
+   "text": "[defensive] 승진시험은 수능이 아니잖아.",
+   "gap": 0.3,
+   "fe": "annoyed",
+   "f": "point"
+  },
+  {
+   "id": 8,
+   "who": "C",
+   "text": "[deadpan] 감독관이 부장님이세요.",
+   "gap": 0.45,
+   "ce": "happy",
+   "c": "proud",
+   "hop": true,
+   "shot": "Cx"
+  },
+  {
+   "id": 9,
+   "who": "F",
+   "text": "[alarmed] ...부장님이 내 안경을 왜 봐.",
+   "gap": 0.3,
+   "fe": "shock",
+   "f": "shrug",
+   "shot": "Fx"
+  },
+  {
+   "id": 10,
+   "who": "C",
+   "text": "[deadpan] 그 뉴스, 단톡방에 세 번 올리셨어요.",
+   "gap": 0.4,
+   "ce": "squint",
+   "c": "lean"
+  },
+  {
+   "id": 11,
+   "who": "F",
+   "text": "[defeated, quiet] ...그럼 나 어떡해.",
+   "gap": 1.2,
+   "fe": "sad",
+   "f": "listen"
+  },
+  {
+   "id": 12,
+   "who": "C",
+   "text": "[gently] 시험장엔 못 따라가요. 대신 오늘 밤엔 같이 있을게요.",
+   "gap": 0.45,
+   "ce": "sad",
+   "c": "lean",
+   "shot": "Cx",
+   "noBeat": true
+  },
+  {
+   "id": 13,
+   "who": "F",
+   "text": "[confused] 오늘 밤?",
+   "gap": 0.3,
+   "fe": "worry",
+   "f": "chin",
+   "shot": "Fx"
+  },
+  {
+   "id": 14,
+   "who": "C",
+   "text": "[calm] 작년 기출 주세요. 모의고사 세 번 만들어 드릴게요.",
+   "gap": 0.4,
+   "ce": "norm",
+   "c": "talk"
+  },
+  {
+   "id": 15,
+   "who": "C",
+   "text": "[calm] 틀린 문제는 왜 틀렸는지 설명해 드리고요.",
+   "gap": 0.35,
+   "ce": "norm",
+   "c": "talk"
+  },
+  {
+   "id": 16,
+   "who": "F",
+   "text": "[small] ...그게 돼?",
+   "gap": 0.3,
+   "fe": "worry",
+   "f": "listen",
+   "shot": "Fx"
+  },
+  {
+   "id": 17,
+   "who": "C",
+   "text": "[matter-of-fact] 대리님 약점도 이미 알아요.",
+   "gap": 0.35,
+   "ce": "squint",
+   "c": "lean"
+  },
+  {
+   "id": 18,
+   "who": "F",
+   "text": "[wary] 뭔데.",
+   "gap": 0.3,
+   "fe": "worry",
+   "f": "lean",
+   "shot": "Fx"
+  },
+  {
+   "id": 19,
+   "who": "C",
+   "text": "[dry] 모르면 삼번만 고르시는 거요.",
+   "gap": 0.5,
+   "ce": "happy",
+   "c": "proud",
+   "hop": true,
+   "shot": "Cx",
+   "cap": "모르면 3번만 고르시는 거요."
+  },
+  {
+   "id": 20,
+   "who": "F",
+   "text": "[warm] ...고마워, 클로드.",
+   "gap": 0.5,
+   "fe": "smirk",
+   "f": "up",
+   "shot": "Fx"
+  },
+  {
+   "id": 21,
+   "who": "C",
+   "text": "[deadpan, softly] 안경은 그냥 쓰고 가세요. 도수만 있는 걸로요.",
+   "gap": 0,
+   "ce": "happy",
+   "c": "proud",
+   "hop": true,
+   "shot": [
+    "Cx",
+    "twoLow"
+   ],
+   "split": 0.6
+  }
+ ],
+ "ui": {
+  "panes": [
+   {
+    "title": "클로드 · 뉴스",
+    "prompt": "수능 AI 부정행위",
+    "lines": [
+     "스마트안경 적발",
+     "형사고발",
+     "신고센터 운영 중"
+    ],
+    "model": "claude-sonnet-4-5"
+   },
+   {
+    "title": "부장님 · 단톡방",
+    "prompt": "공유한 링크",
+    "lines": [
+     "[뉴스] 수능 AI 부정행위",
+     "[뉴스] 수능 AI 부정행위",
+     "[뉴스] 수능 AI 부정행위"
+    ],
+    "model": "claude-sonnet-4-5"
+   },
+   {
+    "title": "클로드 · 승진시험",
+    "prompt": "공부 계획",
+    "lines": [
+     "기출: ?",
+     "모의고사: ?",
+     "약점: ?"
+    ],
+    "model": "claude-sonnet-4-5"
+   }
+  ]
+ },
+ "uiEvents": [
+  {
+   "line": 14,
+   "dt": 0.3,
+   "pane": 0,
+   "typed": true,
+   "cps": 24,
+   "lines": [
+    "기출 분석 완료",
+    "모의고사 3회 생성",
+    "오답 해설: 문항별"
+   ]
+  },
+  {
+   "line": 19,
+   "dt": 0.3,
+   "pane": 0,
+   "typed": true,
+   "cps": 26,
+   "lines": [
+    "약점 진단",
+    "모르는 문제: 3번 선택 92%",
+    "추천: 오답노트"
+   ]
+  }
+ ]
+}
