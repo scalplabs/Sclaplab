@@ -10,12 +10,16 @@ claude-and-pixel-kit을 기반으로 한국어 버전으로 고쳤어요. 형식
 ## 고정 설정
 | 항목 | 값 |
 |---|---|
-| 목소리 모델 | `eleven_v4` (항상 v4) |
-| 김대리 목소리 | `hp3u3xWyyDK3Zr5h8Ltt` |
-| 클로드 목소리 | `8zHuDw1bbkbkL93Inv5N` |
-| 말하기 속도 | 1.2배 (`build(..., speed=1.2)`, ffmpeg atempo라 크레딧 추가 없음) |
+| 목소리 엔진 | **타입캐스트** `ssfm-v31`, 스마트 감정 모드(앞뒤 대사 문맥) |
+| 김대리 목소리 | 필재 `tc_68257f68bc6e3c161ab5078d` |
+| 클로드 목소리 | 서현 `tc_69f2e455ea79fd197aa0476f` |
+| 말하기 속도 | 1.0배 (`build(..., speed=1.0)`) |
 | 자막, 화면 폰트 | Pretendard (`fonts/`) |
 | 뒤 화면 앱 | "칼퇴" (`engine/ui.js`의 DEFAULT) |
+
+- 타입캐스트 키는 클라우드 환경의 네트워크 시크릿으로 `api.typecast.ai` 요청에 자동으로 붙어요. 로컬에서 돌릴 때는 `.env`에 `TYPECAST_API_KEY=`를 넣으세요.
+- 특정 대사만 감정을 직접 지정하려면 그 줄에 `{'emo': 'angry', 'emo_int': 1.2}`처럼 넣으세요(normal happy sad angry whisper toneup tonedown).
+- EP01, EP02는 ElevenLabs(eleven_v4, 1.2배속)로 만든 버전이에요. 그 대본은 `script.json`에 `tts`가 없어서 계속 ElevenLabs 캐시를 써요.
 
 ## 원본 키트에서 바꾼 것
 - `index.html`, `engine/main.js`, `engine/ui.js`: Pretendard 한글 폰트 추가, 화면 패널 한국어화
