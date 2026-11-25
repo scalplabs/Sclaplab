@@ -47,21 +47,12 @@
    "id": 4,
    "who": "C",
    "text": "[matter-of-fact] 이번 수능에서 그거 하다 걸린 뉴스 보셨잖아요.",
-   "gap": 0.4,
+   "gap": 0.35,
    "ce": "squint",
    "c": "lean"
   },
   {
    "id": 5,
-   "who": "F",
-   "text": "[wary] ...그건 수능이고.",
-   "gap": 0.3,
-   "fe": "worry",
-   "f": "lean",
-   "shot": "Fx"
-  },
-  {
-   "id": 6,
    "who": "C",
    "text": "[dry] 형사고발까지 갔어요.",
    "gap": 0.4,
@@ -71,7 +62,7 @@
    "shot": "Cx"
   },
   {
-   "id": 7,
+   "id": 6,
    "who": "F",
    "text": "[defensive] 승진시험은 수능이 아니잖아.",
    "gap": 0.3,
@@ -79,7 +70,7 @@
    "f": "point"
   },
   {
-   "id": 8,
+   "id": 7,
    "who": "C",
    "text": "[deadpan] 감독관이 부장님이세요.",
    "gap": 0.45,
@@ -89,7 +80,7 @@
    "shot": "Cx"
   },
   {
-   "id": 9,
+   "id": 8,
    "who": "F",
    "text": "[alarmed] ...부장님이 내 안경을 왜 봐.",
    "gap": 0.3,
@@ -98,7 +89,7 @@
    "shot": "Fx"
   },
   {
-   "id": 10,
+   "id": 9,
    "who": "C",
    "text": "[deadpan] 그 뉴스, 단톡방에 세 번 올리셨어요.",
    "gap": 0.4,
@@ -106,7 +97,7 @@
    "c": "lean"
   },
   {
-   "id": 11,
+   "id": 10,
    "who": "F",
    "text": "[defeated, quiet] ...그럼 나 어떡해.",
    "gap": 1.2,
@@ -114,53 +105,61 @@
    "f": "listen"
   },
   {
-   "id": 12,
+   "id": 11,
    "who": "C",
-   "text": "[gently] 시험장엔 못 따라가요. 대신 오늘 밤엔 같이 있을게요.",
-   "gap": 0.45,
+   "text": "[gently] 시험장엔 못 가요. 대신 오늘 밤, 세 가지만 해요.",
+   "gap": 0.4,
    "ce": "sad",
    "c": "lean",
    "shot": "Cx",
    "noBeat": true
   },
   {
-   "id": 13,
-   "who": "F",
-   "text": "[confused] 오늘 밤?",
-   "gap": 0.3,
-   "fe": "worry",
-   "f": "chin",
-   "shot": "Fx"
-  },
-  {
-   "id": 14,
+   "id": 12,
    "who": "C",
-   "text": "[calm] 작년 기출 주세요. 모의고사 세 번 만들어 드릴게요.",
-   "gap": 0.4,
-   "ce": "norm",
-   "c": "talk"
-  },
-  {
-   "id": 15,
-   "who": "C",
-   "text": "[calm] 틀린 문제는 왜 틀렸는지 설명해 드리고요.",
+   "text": "[calm] 하나. 기출 주고, \"같은 유형으로 모의고사 만들어 줘.\"",
    "gap": 0.35,
    "ce": "norm",
    "c": "talk"
   },
   {
-   "id": 16,
+   "id": 13,
    "who": "F",
-   "text": "[small] ...그게 돼?",
+   "text": "[small] ...응.",
    "gap": 0.3,
    "fe": "worry",
    "f": "listen",
    "shot": "Fx"
   },
   {
+   "id": 14,
+   "who": "C",
+   "text": "[calm] 둘. 틀린 건 \"왜 틀렸는지, 뭘 다시 볼지 알려 줘.\"",
+   "gap": 0.35,
+   "ce": "norm",
+   "c": "talk"
+  },
+  {
+   "id": 15,
+   "who": "C",
+   "text": "[matter-of-fact] 셋. 다 풀면 \"내가 자주 틀리는 유형만 정리해 줘.\"",
+   "gap": 0.4,
+   "ce": "squint",
+   "c": "lean"
+  },
+  {
+   "id": 16,
+   "who": "F",
+   "text": "[hopeful] 그럼 진짜 붙어?",
+   "gap": 0.35,
+   "fe": "smirk",
+   "f": "lean",
+   "shot": "Fx"
+  },
+  {
    "id": 17,
    "who": "C",
-   "text": "[matter-of-fact] 대리님 약점도 이미 알아요.",
+   "text": "[dry] 약점 하나는 벌써 나왔어요.",
    "gap": 0.35,
    "ce": "squint",
    "c": "lean"
@@ -177,7 +176,7 @@
   {
    "id": 19,
    "who": "C",
-   "text": "[dry] 모르면 삼번만 고르시는 거요.",
+   "text": "[deadpan] 모르면 삼번만 고르시는 거요.",
    "gap": 0.5,
    "ce": "happy",
    "c": "proud",
@@ -236,7 +235,7 @@
     "prompt": "공부 계획",
     "lines": [
      "기출: ?",
-     "모의고사: ?",
+     "오답: ?",
      "약점: ?"
     ],
     "model": "claude-sonnet-4-5"
@@ -245,15 +244,15 @@
  },
  "uiEvents": [
   {
-   "line": 14,
-   "dt": 0.3,
+   "line": 12,
+   "dt": 0.2,
    "pane": 0,
    "typed": true,
-   "cps": 24,
+   "cps": 22,
    "lines": [
-    "기출 분석 완료",
-    "모의고사 3회 생성",
-    "오답 해설: 문항별"
+    "1. 기출 → 같은 유형 모의고사",
+    "2. 오답 → 왜 틀렸나, 뭘 다시 볼까",
+    "3. 약점 → 자주 틀리는 유형 정리"
    ]
   },
   {
