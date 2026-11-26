@@ -2,3 +2,4 @@ server/_cache/
 __pycache__/
 *.pyc
 tests/node_modules/
+*.blend1

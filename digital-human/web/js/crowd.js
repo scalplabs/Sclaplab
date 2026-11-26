@@ -1,6 +1,7 @@
 // 100-agent crowd demo: shared LOD2 resources, shared gait pose tables, AI round-robin scheduling, spatial hashing.
 import * as THREE from '../vendor/three/three.module.js';
 import { GLTFLoader } from '../vendor/three/jsm/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from '../vendor/three/jsm/libs/meshopt_decoder.module.js';
 import { OrbitControls } from '../vendor/three/jsm/controls/OrbitControls.js';
 import * as SkeletonUtils from '../vendor/three/jsm/utils/SkeletonUtils.js';
 import { Character } from './character.js';
@@ -30,7 +31,7 @@ const controls = new OrbitControls(camera, renderer.domElement); controls.target
 
 // --- 1. shared gait pose table, evaluated ONCE with the hero DOF system on an offscreen character
 const hero = new Character(new THREE.Scene(), { base: '/assets/characters/minjun', quality: 'rt' });
-const gltfHero = await new GLTFLoader().loadAsync('/assets/characters/minjun/minjun_lod2.glb');
+const gltfHero = await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync('/assets/characters/minjun/minjun_lod2.glb');
 hero.root.add(gltfHero.scene); hero.model = gltfHero.scene; hero.meta = { correctives: {} };
 hero.bones = {}; gltfHero.scene.traverse((o) => { if (o.isBone) hero.bones[o.name] = o; });
 hero.restQuat = {}; hero.restPos = {};

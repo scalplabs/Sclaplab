@@ -2,6 +2,7 @@
 // pose-space correctives, expression wrinkle drivers and LOD.
 import * as THREE from '../vendor/three/three.module.js';
 import { GLTFLoader } from '../vendor/three/jsm/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from '../vendor/three/jsm/libs/meshopt_decoder.module.js';
 import * as M from './materials.js';
 
 export const sanitize = (n) => n.replace(/\s/g, '_').replace(/[\[\]\.:\/]/g, '');
@@ -76,7 +77,7 @@ export class Character {
 
   async load(lod = 0) {
     this.meta = await (await fetch(`${this.base}/rig_meta.json`)).json();
-    const gltf = await new GLTFLoader().loadAsync(`${this.base}/minjun_lod${lod}.glb`);
+    const gltf = await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(`${this.base}/minjun_lod${lod}.glb`);
     this.gltf = gltf;
     this.model = gltf.scene;
     this.root.add(this.model);
