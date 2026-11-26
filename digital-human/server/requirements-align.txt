@@ -1,0 +1,3 @@
+# acoustic forced alignment (wav2vec2 phoneme CTC); CPU is sufficient
+torch>=2.2
+transformers>=4.40,<5

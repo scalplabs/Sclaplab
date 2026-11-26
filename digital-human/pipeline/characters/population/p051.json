@@ -1,0 +1,83 @@
+{
+ "id": "p051",
+ "name": "Mei #51",
+ "notes": "Hero character #1. Adult male, 30y, 180 cm, natural build, East-Asian. All values are data so 100 characters can be generated from the same pipeline.",
+ "macro": {
+  "gender": 1.0,
+  "age_years": 53.1,
+  "muscle": 0.31,
+  "weight": 0.77,
+  "height_cm": 178.6,
+  "proportions": 0.78,
+  "african": 0.046,
+  "asian": 0.859,
+  "caucasian": 0.096
+ },
+ "modifiers": {
+  "nose/nose-scale-horiz-decr|incr": -0.268,
+  "nose/nose-width2-decr|incr": 0.35,
+  "nose/nose-point-width-decr|incr": -0.015,
+  "chin/chin-width-decr|incr": -0.18,
+  "chin/chin-prominent-decr|incr": 0.073,
+  "head/head-square": -0.207,
+  "mouth/mouth-scale-horiz-decr|incr": 0.291,
+  "mouth/mouth-lowerlip-volume-decr|incr": 0.036,
+  "eyebrows/eyebrows-trans-down|up": 0.193,
+  "neck/neck-scale-horiz-decr|incr": -0.084,
+  "torso/torso-scale-horiz-decr|incr": 0.024
+ },
+ "asymmetry": {
+  "asym-eye-2-r": 0.144,
+  "asym-mouth-1-l": 0.105,
+  "asym-ear-2-r": 0.205,
+  "asym-nose-1-l": 0.199,
+  "asym-brown-1-l": 0.039,
+  "asym-jaw-1-r": 0.393,
+  "asym-cheek-1-l": 0.188
+ },
+ "assets": {
+  "skeleton": "default",
+  "eyes": "eyes/high-poly/high-poly.mhclo",
+  "eye_color": "brownlight",
+  "eyebrows": "eyebrows/eyebrow010/eyebrow010.mhclo",
+  "eyelashes": "eyelashes/eyelashes02/eyelashes02.mhclo",
+  "teeth": "teeth/teeth_base/teeth_base.mhclo",
+  "tongue": "tongue/tongue01/tongue01.mhclo",
+  "hair_cards": "hair/short02/short02.mhclo",
+  "clothes": [
+   "clothes/male_casualsuit01/male_casualsuit01.mhclo",
+   "clothes/shoes06/shoes06.mhclo"
+  ]
+ },
+ "look": {
+  "skin_base": "skins/textures/young_lightskinned_male_diffuse3.png",
+  "melanin": 0.274,
+  "hemoglobin": 0.5,
+  "hair_color_linear": [
+   0.018,
+   0.012,
+   0.009
+  ],
+  "beard_shadow": 0.42,
+  "freckle_density": 0.12,
+  "seed": 687695741,
+  "hair_melanin": 0.68
+ },
+ "voice": {
+  "ko": {
+   "provider": "typecast",
+   "voice_id": null
+  },
+  "en": {
+   "provider": "typecast",
+   "voice_id": null
+  }
+ },
+ "personality": {
+  "openness": 0.32,
+  "conscientiousness": 0.26,
+  "extraversion": 0.35,
+  "agreeableness": 0.85,
+  "neuroticism": 0.58
+ }
+}

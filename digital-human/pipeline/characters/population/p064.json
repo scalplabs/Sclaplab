@@ -1,0 +1,83 @@
+{
+ "id": "p064",
+ "name": "Kenji #64",
+ "notes": "Hero character #1. Adult male, 30y, 180 cm, natural build, East-Asian. All values are data so 100 characters can be generated from the same pipeline.",
+ "macro": {
+  "gender": 0.0,
+  "age_years": 30.3,
+  "muscle": 0.5,
+  "weight": 0.3,
+  "height_cm": 165.4,
+  "proportions": 0.54,
+  "african": 0.685,
+  "asian": 0.0,
+  "caucasian": 0.315
+ },
+ "modifiers": {
+  "nose/nose-scale-horiz-decr|incr": -0.266,
+  "nose/nose-width2-decr|incr": 0.252,
+  "nose/nose-point-width-decr|incr": 0.136,
+  "chin/chin-width-decr|incr": -0.016,
+  "chin/chin-prominent-decr|incr": -0.19,
+  "head/head-square": -0.287,
+  "mouth/mouth-scale-horiz-decr|incr": 0.214,
+  "mouth/mouth-lowerlip-volume-decr|incr": -0.278,
+  "eyebrows/eyebrows-trans-down|up": -0.093,
+  "neck/neck-scale-horiz-decr|incr": -0.141,
+  "torso/torso-scale-horiz-decr|incr": -0.082
+ },
+ "asymmetry": {
+  "asym-eye-2-r": 0.325,
+  "asym-mouth-1-l": 0.35,
+  "asym-ear-2-r": 0.257,
+  "asym-nose-1-l": 0.271,
+  "asym-brown-1-l": 0.027,
+  "asym-jaw-1-r": 0.225,
+  "asym-cheek-1-l": 0.244
+ },
+ "assets": {
+  "skeleton": "default",
+  "eyes": "eyes/high-poly/high-poly.mhclo",
+  "eye_color": "brownlight",
+  "eyebrows": "eyebrows/eyebrow010/eyebrow010.mhclo",
+  "eyelashes": "eyelashes/eyelashes02/eyelashes02.mhclo",
+  "teeth": "teeth/teeth_base/teeth_base.mhclo",
+  "tongue": "tongue/tongue01/tongue01.mhclo",
+  "hair_cards": "hair/short02/short02.mhclo",
+  "clothes": [
+   "clothes/male_casualsuit01/male_casualsuit01.mhclo",
+   "clothes/shoes06/shoes06.mhclo"
+  ]
+ },
+ "look": {
+  "skin_base": "skins/textures/young_lightskinned_male_diffuse3.png",
+  "melanin": 0.714,
+  "hemoglobin": 0.5,
+  "hair_color_linear": [
+   0.018,
+   0.012,
+   0.009
+  ],
+  "beard_shadow": 0.0,
+  "freckle_density": 0.22,
+  "seed": 352437610,
+  "hair_melanin": 0.73
+ },
+ "voice": {
+  "ko": {
+   "provider": "typecast",
+   "voice_id": null
+  },
+  "en": {
+   "provider": "typecast",
+   "voice_id": null
+  }
+ },
+ "personality": {
+  "openness": 0.26,
+  "conscientiousness": 0.46,
+  "extraversion": 0.66,
+  "agreeableness": 0.79,
+  "neuroticism": 0.22
+ }
+}

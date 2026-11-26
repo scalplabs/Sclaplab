@@ -1,0 +1,83 @@
+{
+ "id": "p006",
+ "name": "Alex #6",
+ "notes": "Hero character #1. Adult male, 30y, 180 cm, natural build, East-Asian. All values are data so 100 characters can be generated from the same pipeline.",
+ "macro": {
+  "gender": 0.0,
+  "age_years": 73.1,
+  "muscle": 0.36,
+  "weight": 0.62,
+  "height_cm": 160.9,
+  "proportions": 0.58,
+  "african": 0.23,
+  "asian": 0.735,
+  "caucasian": 0.035
+ },
+ "modifiers": {
+  "nose/nose-scale-horiz-decr|incr": 0.3,
+  "nose/nose-width2-decr|incr": 0.305,
+  "nose/nose-point-width-decr|incr": -0.343,
+  "chin/chin-width-decr|incr": 0.085,
+  "chin/chin-prominent-decr|incr": 0.044,
+  "head/head-square": -0.28,
+  "mouth/mouth-scale-horiz-decr|incr": 0.026,
+  "mouth/mouth-lowerlip-volume-decr|incr": 0.004,
+  "eyebrows/eyebrows-trans-down|up": -0.257,
+  "neck/neck-scale-horiz-decr|incr": -0.106,
+  "torso/torso-scale-horiz-decr|incr": -0.302
+ },
+ "asymmetry": {
+  "asym-eye-2-r": 0.098,
+  "asym-mouth-1-l": 0.114,
+  "asym-ear-2-r": 0.175,
+  "asym-nose-1-l": 0.217,
+  "asym-brown-1-l": 0.121,
+  "asym-jaw-1-r": 0.394,
+  "asym-cheek-1-l": 0.323
+ },
+ "assets": {
+  "skeleton": "default",
+  "eyes": "eyes/high-poly/high-poly.mhclo",
+  "eye_color": "brownlight",
+  "eyebrows": "eyebrows/eyebrow010/eyebrow010.mhclo",
+  "eyelashes": "eyelashes/eyelashes02/eyelashes02.mhclo",
+  "teeth": "teeth/teeth_base/teeth_base.mhclo",
+  "tongue": "tongue/tongue01/tongue01.mhclo",
+  "hair_cards": "hair/short02/short02.mhclo",
+  "clothes": [
+   "clothes/male_casualsuit01/male_casualsuit01.mhclo",
+   "clothes/shoes06/shoes06.mhclo"
+  ]
+ },
+ "look": {
+  "skin_base": "skins/textures/young_lightskinned_male_diffuse3.png",
+  "melanin": 0.384,
+  "hemoglobin": 0.5,
+  "hair_color_linear": [
+   0.018,
+   0.012,
+   0.009
+  ],
+  "beard_shadow": 0.0,
+  "freckle_density": 0.17,
+  "seed": 16799992,
+  "hair_melanin": 0.93
+ },
+ "voice": {
+  "ko": {
+   "provider": "typecast",
+   "voice_id": null
+  },
+  "en": {
+   "provider": "typecast",
+   "voice_id": null
+  }
+ },
+ "personality": {
+  "openness": 0.23,
+  "conscientiousness": 0.81,
+  "extraversion": 0.35,
+  "agreeableness": 0.82,
+  "neuroticism": 0.71
+ }
+}

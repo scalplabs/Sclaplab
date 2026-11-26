@@ -1,0 +1,52 @@
+{
+ "name": "look_around",
+ "duration": 4.0,
+ "description": "look around the room",
+ "space": "anatomical_dof_degrees",
+ "tracks": {
+  "neck_rotation": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    35
+   ],
+   [
+    2,
+    35
+   ],
+   [
+    3,
+    -35
+   ],
+   [
+    4,
+    0
+   ]
+  ],
+  "spine_rotation": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    12
+   ],
+   [
+    2,
+    12
+   ],
+   [
+    3,
+    -12
+   ],
+   [
+    4,
+    0
+   ]
+  ]
+ }
+}

@@ -1,0 +1,83 @@
+{
+ "id": "p024",
+ "name": "Maria #24",
+ "notes": "Hero character #1. Adult male, 30y, 180 cm, natural build, East-Asian. All values are data so 100 characters can be generated from the same pipeline.",
+ "macro": {
+  "gender": 1.0,
+  "age_years": 73.5,
+  "muscle": 0.31,
+  "weight": 0.74,
+  "height_cm": 167.7,
+  "proportions": 0.62,
+  "african": 0.111,
+  "asian": 0.234,
+  "caucasian": 0.656
+ },
+ "modifiers": {
+  "nose/nose-scale-horiz-decr|incr": 0.291,
+  "nose/nose-width2-decr|incr": -0.195,
+  "nose/nose-point-width-decr|incr": -0.306,
+  "chin/chin-width-decr|incr": 0.227,
+  "chin/chin-prominent-decr|incr": 0.287,
+  "head/head-square": -0.138,
+  "mouth/mouth-scale-horiz-decr|incr": -0.064,
+  "mouth/mouth-lowerlip-volume-decr|incr": -0.252,
+  "eyebrows/eyebrows-trans-down|up": 0.312,
+  "neck/neck-scale-horiz-decr|incr": -0.137,
+  "torso/torso-scale-horiz-decr|incr": -0.005
+ },
+ "asymmetry": {
+  "asym-eye-2-r": 0.039,
+  "asym-mouth-1-l": 0.355,
+  "asym-ear-2-r": 0.054,
+  "asym-nose-1-l": 0.181,
+  "asym-brown-1-l": 0.268,
+  "asym-jaw-1-r": 0.297,
+  "asym-cheek-1-l": 0.378
+ },
+ "assets": {
+  "skeleton": "default",
+  "eyes": "eyes/high-poly/high-poly.mhclo",
+  "eye_color": "brownlight",
+  "eyebrows": "eyebrows/eyebrow010/eyebrow010.mhclo",
+  "eyelashes": "eyelashes/eyelashes02/eyelashes02.mhclo",
+  "teeth": "teeth/teeth_base/teeth_base.mhclo",
+  "tongue": "tongue/tongue01/tongue01.mhclo",
+  "hair_cards": "hair/short02/short02.mhclo",
+  "clothes": [
+   "clothes/male_casualsuit01/male_casualsuit01.mhclo",
+   "clothes/shoes06/shoes06.mhclo"
+  ]
+ },
+ "look": {
+  "skin_base": "skins/textures/young_lightskinned_male_diffuse3.png",
+  "melanin": 0.277,
+  "hemoglobin": 0.5,
+  "hair_color_linear": [
+   0.018,
+   0.012,
+   0.009
+  ],
+  "beard_shadow": 0.64,
+  "freckle_density": 0.27,
+  "seed": 900067848,
+  "hair_melanin": 0.75
+ },
+ "voice": {
+  "ko": {
+   "provider": "typecast",
+   "voice_id": null
+  },
+  "en": {
+   "provider": "typecast",
+   "voice_id": null
+  }
+ },
+ "personality": {
+  "openness": 0.78,
+  "conscientiousness": 0.61,
+  "extraversion": 0.85,
+  "agreeableness": 0.36,
+  "neuroticism": 0.67
+ }
+}

@@ -1,0 +1,247 @@
+[
+ {
+  "test": "lod0: file exists & loads",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "test": "lod0: skeleton has 163 joints",
+  "pass": true,
+  "detail": "163"
+ },
+ {
+  "test": "lod0: single skeleton root",
+  "pass": true,
+  "detail": "root"
+ },
+ {
+  "test": "lod0: required joints (root..toes, jaw, eyes, twist bones, facial)",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "test": "lod0 mesh DH_Body: finite verts, valid indices, UV in [0,1], weights sum=1, joint idx valid, degenerate<0.5%",
+  "pass": true,
+  "detail": "v=8317 t=15316 degen=0.00% wsum=ok uv=ok"
+ },
+ {
+  "test": "lod0 body: no zero (dead) face morph targets",
+  "pass": true,
+  "detail": "corr_elbowFlex_L,corr_kneeFlex_L,corr_hipFlex_L,corr_elbowFlex_R,corr_kneeFlex_R,corr_hipFlex_R"
+ },
+ {
+  "test": "lod0 mesh Sphere: finite verts, valid indices, UV in [0,1], weights sum=1, joint idx valid, degenerate<0.5%",
+  "pass": true,
+  "detail": "v=323 t=528 degen=0.00% wsum=ok uv=ok"
+ },
+ {
+  "test": "lod0 mesh Sphere.001: finite verts, valid indices, UV in [0,1], weights sum=1, joint idx valid, degenerate<0.5%",
+  "pass": true,
+  "detail": "v=323 t=528 degen=0.00% wsum=ok uv=ok"
+ },
+ {
+  "test": "lod0 mesh DH_Eye_L_mesh: finite verts, valid indices, UV in [0,1], weights sum=1, joint idx valid, degenerate<0.5%",
+  "pass": true,
+  "detail": "v=6050 t=12096 degen=0.00% wsum=ok uv=ok"
+ },
+ {
+  "test": "lod0 mesh DH_Eye_L_cornea_mesh: finite verts, valid indices, UV in [0,1], weights sum=1, joint idx valid, degenerate<0.5%",
+  "pass": true,
+  "detail": "v=1153 t=2208 degen=0.00% wsum=ok uv=ok"
+ },
+ {
+  "test": "lod0 mesh DH_Eye_R_mesh: finite verts, valid indices, UV in [0,1], weights sum=1, joint idx valid, degenerate<0.5%",
+  "pass": true,
+  "detail": "v=6050 t=12096 degen=0.00% wsum=ok uv=ok"
+ },
+ {
+  "test": "lod0 mesh DH_Eye_R_cornea_mesh: finite verts, valid indices, UV in [0,1], weights sum=1, joint idx valid, degenerate<0.5%",
+  "pass": true,
+  "detail": "v=1153 t=2208 degen=0.00% wsum=ok uv=ok"
+ },
+ {
+  "test": "lod0 mesh DH_Eyebrows: finite verts, valid indices, UV in [0,1], weights sum=1, joint idx valid, degenerate<0.5%",
+  "pass": true,
+  "detail": "v=124 t=192 degen=0.00% wsum=ok uv=ok"
+ },
+ {
+  "test": "lod0 mesh DH_Eyelashes: finite verts, valid indices, UV in [0,1], weights sum=1, joint idx valid, degenerate<0.5%",
+  "pass": true,
+  "detail": "v=250 t=368 degen=0.00% wsum=ok uv=ok"
+ },
+ {
+  "test": "lod0 mesh eyeocc_L: finite verts, valid indices, UV in [0,1], weights sum=1, joint idx valid, degenerate<0.5%",
+  "pass": true,
+  "detail": "v=114 t=114 degen=0.00% wsum=ok uv=ok"
+ },
+ {
+  "test": "lod0 mesh eyeocc_R: finite verts, valid indices, UV in [0,1], weights sum=1, joint idx valid, degenerate<0.5%",
+  "pass": true,
+  "detail": "v=114 t=114 degen=0.00% wsum=ok uv=ok"
+ },
+ {
+  "test": "lod0 mesh DH_HairCards: finite verts, valid indices, UV in [0,1], weights sum=1, joint idx valid, degenerate<0.5%",
+  "pass": true,
+  "detail": "v=110704 t=100640 degen=0.00% wsum=ok uv=ok"
+ },
+ {
+  "test": "lod0 mesh DH_male_casualsuit01: finite verts, valid indices, UV in [0,1], weights sum=1, joint idx valid, degenerate<0.5%",
+  "pass": true,
+  "detail": "v=8864 t=16672 degen=0.00% wsum=ok uv=ok"
+ },
+ {
+  "test": "lod0 clothes carry correctives for skin regions hidden under clothing",
+  "pass": true,
+  "detail": "6/6"
+ },
+ {
+  "test": "lod0 mesh DH_shoes06: finite verts, valid indices, UV in [0,1], weights sum=1, joint idx valid, degenerate<0.5%",
+  "pass": true,
+  "detail": "v=1738 t=3064 degen=0.00% wsum=ok uv=ok"
+ },
+ {
+  "test": "lod0 mesh tearline_L: finite verts, valid indices, UV in [0,1], weights sum=1, joint idx valid, degenerate<0.5%",
+  "pass": true,
+  "detail": "v=114 t=114 degen=0.00% wsum=ok uv=ok"
+ },
+ {
+  "test": "lod0 mesh tearline_R: finite verts, valid indices, UV in [0,1], weights sum=1, joint idx valid, degenerate<0.5%",
+  "pass": true,
+  "detail": "v=114 t=114 degen=0.00% wsum=ok uv=ok"
+ },
+ {
+  "test": "lod0 mesh DH_Teeth: finite verts, valid indices, UV in [0,1], weights sum=1, joint idx valid, degenerate<0.5%",
+  "pass": true,
+  "detail": "v=4494 t=7120 degen=0.00% wsum=ok uv=ok"
+ },
+ {
+  "test": "lod0 mesh DH_Tongue: finite verts, valid indices, UV in [0,1], weights sum=1, joint idx valid, degenerate<0.5%",
+  "pass": true,
+  "detail": "v=253 t=448 degen=0.00% wsum=ok uv=ok"
+ },
+ {
+  "test": "lod0: all 52 ARKit blendshapes present (union over face meshes)",
+  "pass": true,
+  "detail": "missing []"
+ },
+ {
+  "test": "lod0: triangle budget",
+  "pass": true,
+  "detail": "173940 tris"
+ },
+ {
+  "test": "lod1: file exists & loads",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "test": "lod1: skeleton has 163 joints",
+  "pass": true,
+  "detail": "163"
+ },
+ {
+  "test": "lod1: single skeleton root",
+  "pass": true,
+  "detail": "root"
+ },
+ {
+  "test": "lod1: triangle budget",
+  "pass": true,
+  "detail": "156688 tris"
+ },
+ {
+  "test": "lod2: file exists & loads",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "test": "lod2: skeleton has 163 joints",
+  "pass": true,
+  "detail": "163"
+ },
+ {
+  "test": "lod2: single skeleton root",
+  "pass": true,
+  "detail": "root"
+ },
+ {
+  "test": "lod2: triangle budget",
+  "pass": true,
+  "detail": "53508 tris"
+ },
+ {
+  "test": "rig_meta: correctives with drivers",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "test": "rig_meta: joint limits table",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "test": "rig_meta: stature 180 cm",
+  "pass": true,
+  "detail": "180.00"
+ },
+ {
+  "test": "textures: 4K face/body albedo",
+  "pass": true,
+  "detail": "(4096, 4096)"
+ },
+ {
+  "test": "textures: skin_normal_4k.png",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "test": "textures: skin_rough_spec_2k.png",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "test": "textures: skin_masks_2k.png",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "test": "textures: skin_wrinkle_normal_2k.jpg",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "test": "textures: skin_wrinkle_mask_1k.png",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "test": "textures: skin_micro_normal.jpg",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "test": "textures: eye_albedo_2k.jpg",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "test": "textures: eye_normal_1k.jpg",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "test": "textures: hair_card_atlas.png",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "test": "textures: teeth.png",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "test": "textures: tongue.png",
+  "pass": true,
+  "detail": ""
+ }
+]

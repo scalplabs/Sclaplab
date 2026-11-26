@@ -1,0 +1,152 @@
+[
+ {
+  "test": "g2p ko '국물'",
+  "pass": true,
+  "detail": "k u ŋ m u l (expected k u ŋ m u l)"
+ },
+ {
+  "test": "g2p ko '좋다'",
+  "pass": true,
+  "detail": "tɕ o tʰ a (expected tɕ o tʰ a)"
+ },
+ {
+  "test": "g2p ko '신라'",
+  "pass": true,
+  "detail": "s i l l a (expected s i l l a)"
+ },
+ {
+  "test": "g2p ko '음악'",
+  "pass": true,
+  "detail": "ɯ m a k (expected ɯ m a k)"
+ },
+ {
+  "test": "g2p ko '입니다'",
+  "pass": true,
+  "detail": "i m n i t a (expected i m n i t a)"
+ },
+ {
+  "test": "g2p ko '안녕'",
+  "pass": true,
+  "detail": "a n n jʌ ŋ (expected a n n jʌ ŋ)"
+ },
+ {
+  "test": "g2p en CMUdict 'Hello world'",
+  "pass": true,
+  "detail": "h ə l oʊ w ɚ l d"
+ },
+ {
+  "test": "g2p en OOV letter-to-sound fallback",
+  "pass": true,
+  "detail": "m ɪ n dʒ ʌ n"
+ },
+ {
+  "test": "lang detect",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "test": "viseme coverage (>= 12 of 15 classes on pangrams)",
+  "pass": true,
+  "detail": "['CH', 'DD', 'E', 'FF', 'I', 'O', 'PP', 'RR', 'SS', 'TH', 'U', 'aa', 'kk', 'nn']"
+ },
+ {
+  "test": "server health",
+  "pass": true,
+  "detail": "{'ok': True, 'tts': ['typecast', 'elevenlabs'], 'forced_alignment_model': True, 'llm': 'rule_based_fallback', 'runtimes_connected': 0}"
+ },
+ {
+  "test": "tts+align ko: 200 with phones",
+  "pass": true,
+  "detail": "status 200  "
+ },
+ {
+  "test": "ko: phone times monotonic & non-negative durations",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "test": "ko: phones inside audio duration",
+  "pass": true,
+  "detail": "last end 3.24 / 3.8"
+ },
+ {
+  "test": "ko: acoustic forced alignment used (not approximate)",
+  "pass": true,
+  "detail": "ctc_forced_alignment"
+ },
+ {
+  "test": "ko: phones agree with Typecast syllable timestamps (>=90%)",
+  "pass": true,
+  "detail": "38/38"
+ },
+ {
+  "test": "ko: bilabials detected and mapped to PP",
+  "pass": true,
+  "detail": "['m']"
+ },
+ {
+  "test": "ko: energy envelope 50 Hz",
+  "pass": true,
+  "detail": "190"
+ },
+ {
+  "test": "ko: audio served",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "test": "tts+align en: 200 with phones",
+  "pass": true,
+  "detail": "status 200  "
+ },
+ {
+  "test": "en: phone times monotonic & non-negative durations",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "test": "en: phones inside audio duration",
+  "pass": true,
+  "detail": "last end 2.74 / 3.05"
+ },
+ {
+  "test": "en: acoustic forced alignment used (not approximate)",
+  "pass": true,
+  "detail": "ctc_forced_alignment"
+ },
+ {
+  "test": "en: bilabials detected and mapped to PP",
+  "pass": true,
+  "detail": "['p', 'p', 'p', 'p', 'm']"
+ },
+ {
+  "test": "en: energy envelope 50 Hz",
+  "pass": true,
+  "detail": "152"
+ },
+ {
+  "test": "en: audio served",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "test": "tts rejects empty text (400)",
+  "pass": true,
+  "detail": "{'error': 'text required'}"
+ },
+ {
+  "test": "tts rejects > 600 chars (400)",
+  "pass": true,
+  "detail": "{'error': 'text too long (max 600 chars per utterance)'}"
+ },
+ {
+  "test": "chat returns full intent schema",
+  "pass": true,
+  "detail": "{'reply': '안녕하세요! 만나서 반가워요.', 'language': 'ko', 'emotion': 'joy', 'intensity': 0.6, 'gesture': 'wave', 'action': 'none', 'action_target': '', 'remember': '', 'source': 'rule_based'}"
+ },
+ {
+  "test": "chat: language detected ko",
+  "pass": true,
+  "detail": "ko"
+ }
+]
