@@ -118,7 +118,10 @@ export class GazeController {
     // --- head-eye coordination: head takes over the part of eccentricity beyond ~12 deg
     const charInv = this.ch.root.quaternion.clone().invert();
     const dLocal = this.gazePoint.clone().sub(o).applyQuaternion(charInv).normalize();
-    const yaw = Math.atan2(dLocal.x, dLocal.z) * R2D, pitch = Math.asin(THREE.MathUtils.clamp(dLocal.y, -1, 1)) * R2D;
+    let yaw = Math.atan2(dLocal.x, dLocal.z) * R2D;
+    const pitch = Math.asin(THREE.MathUtils.clamp(dLocal.y, -1, 1)) * R2D;
+    // targets near 180 deg behind: keep turning toward the side already committed to (no left/right flip-flop)
+    if (Math.abs(yaw) > 150 && this.headYawDeg && Math.sign(yaw) !== Math.sign(this.headYawDeg)) yaw = Math.sign(this.headYawDeg) * 180;
     const share = (a, thr) => (Math.abs(a) > thr ? (Math.abs(a) - thr * 0.7) * Math.sign(a) * 0.85 : a * 0.15);
     this.headYawDeg = this.headYaw.update(THREE.MathUtils.clamp(share(yaw, 12), -70, 70), dt);
     this.headPitchDeg = this.headPitch.update(THREE.MathUtils.clamp(share(pitch, 10), -40, 35), dt);

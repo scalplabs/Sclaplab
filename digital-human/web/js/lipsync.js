@@ -90,7 +90,8 @@ export class LipSync {
     }
     // bilabial closure guarantee: when a PP/FF centre is within its own duration, enforce closure
     for (const [s] of contributions) {
-      if ((s.v === 'PP') && Math.abs(t - s.c) < s.d * 0.45) {
+      // lips start closing before the acoustic segment (anticipatory coarticulation, ~60-90 ms)
+      if (s.v === 'PP' && t > s.c - s.d * 0.5 - 0.07 && t < s.c + s.d * 0.4) {
         out.jawOpen = Math.min(out.jawOpen || 0, 0.07);
         out.mouthPressLeft = Math.max(out.mouthPressLeft || 0, 0.3);
         out.mouthPressRight = Math.max(out.mouthPressRight || 0, 0.3);

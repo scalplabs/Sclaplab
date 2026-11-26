@@ -19,10 +19,10 @@ Blender: `pip install bpy==5.3.0` into `/home/user/work/venv` (Python 3.13).
 - [~] P2 lookdev: bake_geometry_maps.py, tex_skin.py, tex_micro.py, tex_eye.py, hair_strands.py, lookdev.py, render.py (iterating)
 - [x] P3 face_rig.py: 52 ARKit + 11 extra from MH FACS units (BVH zup); 12 body correctives. NOTE Blender5 shape_key_add value=1 -> set 0
 - [x] P4 export_glb.py -> assets/characters/minjun (lod0/1/2 glb, fbx, textures, rig_meta.json)
-- [ ] P5 web runtime (three.js): rendering, rig control, IK, gaze, idle, locomotion
+- [x] P5 web runtime web/js/* (character, materials, motion, eyes, face, lipsync, ai, api, app, ui, world, crowd)
 - [x] P6 server/: Typecast TTS w/ timestamps + G2P(ko/en) + wav2vec2 CTC forced alignment (speechvenv). Claude brain w/ rule fallback
-- [ ] P7 AI behavior + API + dev UI
-- [ ] P8 verification: renders, video, tests, report
+- [x] P7 AI (ai.js) + API (api.js, docs/API.md, /api/control bridge, tools/dh_client.py) + dev UI (index.html/ui.js)
+- [~] P8 tests: tests/test_assets.py 49/49, tests/test_speech.py 30/30, tests/runtime_test.js (pending run); video capture via webtest/capture.js + video/assemble.py (15 fps, ~1.9 s/frame on SwiftShader)
 - [ ] P9 docs, commit, push
 
 ## Build order (reproduce)
@@ -36,3 +36,9 @@ $venv face_rig.py B/minjun_ld.blend B/minjun_rig.blend B/rig_meta.json
 $venv export_glb.py B/minjun_rig.blend TEX ../assets B/rig_meta.json
 $venv render.py B/minjun_rig.blend OUT --shots face_34,... --light studio
 Server: /home/user/work/speechvenv/bin/python -m server.app --preload  (port 8765)
+
+## Notes / gotchas
+- MakeHuman bind pose has elbows bent ~46 deg -> Character.dofRest offsets (DOF values are absolute anatomical angles)
+- Garments bound to helper-tights -> correctives transferred via nearest-skin mapping (face_rig.transfer_correctives_to_clothes)
+- Git LFS endpoint (lfs.github.com) blocked by env proxy -> binaries committed directly (all < 25 MB)
+- SwiftShader cost dominated by double-sided alpha-tested hair cards (~1.8 s/frame at 640x360)

@@ -1,0 +1,319 @@
+{
+ "results": [
+  {
+   "test": "model loaded: 163 bones",
+   "pass": true,
+   "detail": "{\"bones\":163,\"morphs\":75,\"dofs\":82,\"h\":1.823}"
+  },
+  {
+   "test": "morph targets >= 75 (52 ARKit + extras + correctives)",
+   "pass": true,
+   "detail": "75"
+  },
+  {
+   "test": "character height with shoes 1.80-1.84 m",
+   "pass": true,
+   "detail": "1.823"
+  },
+  {
+   "test": "setPosition",
+   "pass": true,
+   "detail": "[0,0,0]"
+  },
+  {
+   "test": "error INVALID_ARGUMENT: DH.setPosition({x: 'a', z: 1})",
+   "pass": true,
+   "detail": "INVALID_ARGUMENT"
+  },
+  {
+   "test": "error UNREACHABLE: DH.moveTo({x: 20, z: 0})",
+   "pass": true,
+   "detail": "UNREACHABLE"
+  },
+  {
+   "test": "error OUT_OF_RANGE: DH.moveTo({x: 1, z: 1}, {speed: 30})",
+   "pass": true,
+   "detail": "OUT_OF_RANGE"
+  },
+  {
+   "test": "idle 15 s: blinks occur (5-12 expected at ~17/min)",
+   "pass": true,
+   "detail": "6"
+  },
+  {
+   "test": "idle 15 s: saccades + micro-saccades occur",
+   "pass": true,
+   "detail": "{\"b\":6,\"s\":13,\"m\":17}"
+  },
+  {
+   "test": "breathing moves the chest (0.5-15 mm)",
+   "pass": true,
+   "detail": "3.51 mm"
+  },
+  {
+   "test": "setEmotion joy 80%: smile + cheek raise blend in",
+   "pass": true,
+   "detail": "{\"s\":0.6740800431712537,\"c\":0.5131330502032447}"
+  },
+  {
+   "test": "emotion intensity scales continuously (30% < 80%)",
+   "pass": true,
+   "detail": "0.2586890435642806"
+  },
+  {
+   "test": "anger: brows lowered + glabella wrinkle map active",
+   "pass": true,
+   "detail": "{\"bd\":0.9374546109482355,\"wr\":1}"
+  },
+  {
+   "test": "error INVALID_ARGUMENT: DH.setEmotion('hungry', 1)",
+   "pass": true,
+   "detail": "INVALID_ARGUMENT"
+  },
+  {
+   "test": "setBlendshape override reaches the mesh",
+   "pass": true,
+   "detail": "0.7"
+  },
+  {
+   "test": "error NOT_FOUND: DH.setBlendshape('nope', 1)",
+   "pass": true,
+   "detail": "NOT_FOUND"
+  },
+  {
+   "test": "blink(): lids close within 300 ms (peak eyeBlink > 0.8)",
+   "pass": true,
+   "detail": "0.972325042439214"
+  },
+  {
+   "test": "lookAt left target: both eyes rotate toward +x (yaw>5)",
+   "pass": true,
+   "detail": "{\"L\":{\"yaw\":15.267018336193603,\"pitch\":-4.36337304897427},\"R\":{\"yaw\":16.903238480710424,\"pitch\":-4.267875989814314}}"
+  },
+  {
+   "test": "near target 25 cm: binocular convergence (L yaw < 0 < R yaw)",
+   "pass": true,
+   "detail": "{\"L\":{\"yaw\":-7.331348775520718,\"pitch\":0.03594743425936589},\"R\":{\"yaw\":6.5675617469499015,\"pitch\":0.5127451875351233}}"
+  },
+  {
+   "test": "pupil near-response (constricts for near target)",
+   "pass": true,
+   "detail": "{\"pupNear\":0.3457055469555659,\"pupFar\":0.39891729263843917}"
+  },
+  {
+   "test": "pupil light reflex (dilates in dark)",
+   "pass": true,
+   "detail": "{\"pupFar\":0.39891729263843917,\"pupDark\":0.5993518103125854}"
+  },
+  {
+   "test": "target behind: head turns (head-eye coordination, |yaw| > 30)",
+   "pass": true,
+   "detail": "-69.95692400089177"
+  },
+  {
+   "test": "setJointRotation clamps to human ROM (elbow 145)",
+   "pass": true,
+   "detail": "{\"joint\":\"elbow_flexion_L\",\"value\":145,\"clamped\":true,\"limit\":[0,145]}"
+  },
+  {
+   "test": "elbow geometric flexion ~ commanded 145 deg",
+   "pass": true,
+   "detail": "144.4"
+  },
+  {
+   "test": "error NOT_FOUND: DH.setJointRotation('nose_wiggle', 3)",
+   "pass": true,
+   "detail": "NOT_FOUND"
+  },
+  {
+   "test": "setJointTarget hand IK reaches target (< 2 cm)",
+   "pass": true,
+   "detail": "{\"err_m\":0,\"tgt\":{\"effector\":\"hand_R\",\"reachable\":true,\"distance\":0.525}}"
+  },
+  {
+   "test": "walkTo arrives within 10 cm",
+   "pass": true,
+   "detail": "{\"ok\":true,\"v\":{\"arrived\":true,\"pos\":{\"x\":0,\"y\":0,\"z\":2.9555079537784392}},\"simSec\":3,\"p\":[0,0,2.96],\"slip\":0}"
+  },
+  {
+   "test": "walk duration plausible for 3 m at 1.35 m/s (2.5-6 s incl. accel/decel)",
+   "pass": true,
+   "detail": "3"
+  },
+  {
+   "test": "no foot sliding in mid-stance while walking (ankle speed < 0.15 m/s)",
+   "pass": true,
+   "detail": "0.144 m/s"
+  },
+  {
+   "test": "runTo arrives",
+   "pass": true,
+   "detail": "{\"done\":true,\"maxSlip\":0.2644873906836657,\"peak\":0,\"pos\":[0,0,-1.961]}"
+  },
+  {
+   "test": "no foot sliding in mid-stance while running (ankle speed < 0.15 m/s)",
+   "pass": false,
+   "detail": "0.264 m/s"
+  },
+  {
+   "test": "walk backward arrives",
+   "pass": true,
+   "detail": "{\"ok\":true,\"v\":{\"arrived\":true,\"pos\":{\"x\":-1.1725409429086997e-16,\"y\":0,\"z\":-1.003136427245217}},\"simSec\":2}"
+  },
+  {
+   "test": "sidestep arrives",
+   "pass": true,
+   "detail": "{\"ok\":true,\"v\":{\"arrived\":true,\"pos\":{\"x\":0.7529111153590271,\"y\":0,\"z\":-0.9995208930177027}},\"simSec\":1.5}"
+  },
+  {
+   "test": "stairs climb: on landing (~0.85 m)",
+   "pass": true,
+   "detail": "{\"st\":{\"ok\":true,\"v\":{\"arrived\":true,\"pos\":{\"x\":-4.455637909668077,\"y\":0.8500000000000001,\"z\":2.599405371395615}},\"simSec\":8},\"top\":{\"y\":0.8500000000000001,\"fl\":0.8683423070532814,\"fr\":0.8500000000000001}}"
+  },
+  {
+   "test": "stairs descend back to floor",
+   "pass": true,
+   "detail": "{\"ok\":true,\"v\":{\"arrived\":true,\"pos\":{\"x\":-2.1463703022034726,\"y\":0,\"z\":2.599989596761262}},\"simSec\":4}"
+  },
+  {
+   "test": "sit: seated (pelvis 0.45-0.65 m)",
+   "pass": true,
+   "detail": "{\"sit\":{\"ok\":true,\"v\":{\"ok\":true,\"posture\":\"sit\"},\"simSec\":7.5},\"sitY\":0.5577960610532661}"
+  },
+  {
+   "test": "stand: pelvis back to standing height",
+   "pass": true,
+   "detail": "0.979015042531175"
+  },
+  {
+   "test": "squat lowers pelvis ~0.4 m",
+   "pass": true,
+   "detail": "0.5809077978134155"
+  },
+  {
+   "test": "grabObject cup: walks, reaches, holds",
+   "pass": true,
+   "detail": "{\"g\":{\"ok\":true,\"v\":{\"ok\":true,\"mode\":\"grab\",\"holding\":\"cup\"},\"simSec\":8},\"held\":\"cup\"}"
+  },
+  {
+   "test": "playAnimation drink (with held cup)",
+   "pass": true,
+   "detail": "{\"ok\":true,\"v\":{\"ok\":true,\"clip\":\"drink\"},\"simSec\":3.5}"
+  },
+  {
+   "test": "releaseObject places cup on table",
+   "pass": true,
+   "detail": "{\"rel\":{\"ok\":true,\"v\":{\"ok\":true,\"mode\":\"release\"},\"simSec\":6.5},\"cupY0\":0.8420711825362889}"
+  },
+  {
+   "test": "error NOT_HOLDING: DH.releaseObject()",
+   "pass": true,
+   "detail": "NOT_HOLDING"
+  },
+  {
+   "test": "door opens (hinge > 1.2 rad)",
+   "pass": true,
+   "detail": "{\"ok\":true,\"v\":{\"ok\":true,\"door\":\"open\"},\"simSec\":8}"
+  },
+  {
+   "test": "gesture wave",
+   "pass": true,
+   "detail": "{\"ok\":true,\"v\":{\"ok\":true,\"gesture\":\"wave\"},\"simSec\":2.5}"
+  },
+  {
+   "test": "gesture nod",
+   "pass": true,
+   "detail": "{\"ok\":true,\"v\":{\"ok\":true,\"gesture\":\"nod\"},\"simSec\":1}"
+  },
+  {
+   "test": "gesture shake",
+   "pass": true,
+   "detail": "{\"ok\":true,\"v\":{\"ok\":true,\"gesture\":\"shake\"},\"simSec\":1.5}"
+  },
+  {
+   "test": "gesture shrug",
+   "pass": true,
+   "detail": "{\"ok\":true,\"v\":{\"ok\":true,\"gesture\":\"shrug\"},\"simSec\":1.5}"
+  },
+  {
+   "test": "gesture think",
+   "pass": true,
+   "detail": "{\"ok\":true,\"v\":{\"ok\":true,\"gesture\":\"think\"},\"simSec\":2.5}"
+  },
+  {
+   "test": "gesture handshake",
+   "pass": true,
+   "detail": "{\"ok\":true,\"v\":{\"ok\":true,\"gesture\":\"handshake\"},\"simSec\":3.5}"
+  },
+  {
+   "test": "blendAnimation",
+   "pass": true,
+   "detail": "{\"ok\":true,\"v\":[{\"ok\":true,\"clip\":\"stretch\"},{\"ok\":true,\"clip\":\"clap\"}],\"simSec\":4.5}"
+  },
+  {
+   "test": "lieDown: head near floor (< 0.4 m)",
+   "pass": true,
+   "detail": "{\"lie\":{\"ok\":true,\"v\":{\"ok\":true,\"posture\":\"lie\"},\"simSec\":14.5},\"lieY\":0.31422865548257034}"
+  },
+  {
+   "test": "speak(): completes with acoustic alignment",
+   "pass": true,
+   "detail": "ctc_forced_alignment+provider_window_fix(1/17)"
+  },
+  {
+   "test": "lip-sync opens the jaw on vowels (max jawOpen > 0.25)",
+   "pass": true,
+   "detail": "0.28591087325396825"
+  },
+  {
+   "test": "bilabial closure at /m b p/ (jaw < 0.12 at phone centre)",
+   "pass": true,
+   "detail": "{\"n\":5,\"jaw\":[0.073,0.074,0.073,0.073,0.073]}"
+  },
+  {
+   "test": "lip-sync is phoneme-timed (closures exist while audio energy is high)",
+   "pass": true,
+   "detail": "see bilabial test"
+  },
+  {
+   "test": "remember + recall (Korean query)",
+   "pass": true,
+   "detail": "[\"사용자는 커피를 좋아한다 (user likes coffee)\"]"
+  },
+  {
+   "test": "setGoal + autonomous behaviour: goal executed by utility AI",
+   "pass": true,
+   "detail": "{\"active\":{\"type\":\"go_to\",\"target\":{\"x\":1,\"z\":1}},\"queued\":0}"
+  },
+  {
+   "test": "error INVALID_ARGUMENT: DH.setGoal({ type: 'fly' })",
+   "pass": true,
+   "detail": "INVALID_ARGUMENT"
+  },
+  {
+   "test": "AI state has all required fields",
+   "pass": true,
+   "detail": "[]"
+  },
+  {
+   "test": "perf: simulation (AI+anim+IK+face) < 8 ms/frame on CPU",
+   "pass": true,
+   "detail": "{\"fps\":28.6,\"frameMs\":1.94,\"simMs\":0.58,\"drawCalls\":28,\"triangles\":173624,\"geometries\":41,\"textures\":25,\"jsHeapMB\":73.1}"
+  },
+  {
+   "test": "no uncaught page errors",
+   "pass": true,
+   "detail": "[]"
+  }
+ ],
+ "perf": {
+  "fps": 28.6,
+  "frameMs": 1.94,
+  "simMs": 0.58,
+  "drawCalls": 28,
+  "triangles": 173624,
+  "geometries": 41,
+  "textures": 25,
+  "jsHeapMB": 73.1
+ }
+}

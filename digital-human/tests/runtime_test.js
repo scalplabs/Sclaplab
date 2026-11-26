@@ -11,7 +11,7 @@ const path = require('path');
   p.on('pageerror', (e) => pageErrors.push(e.message));
   await p.goto((process.env.DH_SERVER || 'http://localhost:8765') + '/?q=rt', { waitUntil: 'load' });
   await p.waitForFunction(() => window.APP && window.APP.frameCount > 3, null, { timeout: 180000 });
-  await p.evaluate(() => { APP.startCapture(30); });   // deterministic fixed-step simulation (no wall-clock dependence)
+  await p.evaluate(() => { APP.startCapture(30); APP.noRender = true; });   // deterministic fixed-step simulation (no wall-clock dependence)
   const results = [];
   const check = (name, cond, detail = '') => { results.push({ test: name, pass: !!cond, detail: typeof detail === 'string' ? detail : JSON.stringify(detail) }); console.log((cond ? 'PASS ' : 'FAIL ') + name + (detail ? `  [${typeof detail === 'string' ? detail : JSON.stringify(detail)}]` : '')); };
   const run = (js) => p.evaluate(js);
@@ -22,7 +22,7 @@ const path = require('path');
   };
   // run an async API call while stepping the simulation until it resolves
   const until = async (js, maxSec = 60) => {
-    await run(`window.__r = undefined; Promise.resolve(${js}).then((v) => { window.__r = { ok: true, v }; }, (e) => { window.__r = { ok: false, e: e.code || e.message }; })`);
+    await run(`window.__r = undefined; void Promise.resolve(${js}).then((v) => { window.__r = { ok: true, v }; }, (e) => { window.__r = { ok: false, e: e.code || e.message }; }); null`);
     let t = 0;
     while (t < maxSec) { await step(0.5); t += 0.5; const r = await run('window.__r'); if (r) return { ...r, simSec: t }; }
     return { ok: false, e: 'TIMEOUT', simSec: t };
@@ -69,9 +69,10 @@ const path = require('path');
   check('setBlendshape override reaches the mesh', Math.abs(jaw - 0.7) < 1e-6, jaw);
   await run(`DH.setBlendshape('jawOpen', null)`);
   await expectErr(`DH.setBlendshape('nope', 1)`, 'NOT_FOUND');
-  await run(`DH.blink()`); await step(0.1);
-  const bl = await run(`APP.character.morphValues.eyeBlinkLeft`);
-  check('blink(): lids close (eyeBlink > 0.6 at 100 ms)', bl > 0.6, bl);
+  await step(0.4);   // let any spontaneous blink finish
+  await run(`DH.blink()`);
+  let bl = 0; for (let i = 0; i < 9; i++) { await step(1 / 30); bl = Math.max(bl, await run(`APP.character.morphValues.eyeBlinkLeft`)); }
+  check('blink(): lids close within 300 ms (peak eyeBlink > 0.8)', bl > 0.8, bl);
 
   // ---------------------------------------------------------- eyes / gaze
   await run(`DH.lookAt({x: 1.5, y: 1.7, z: 1.5})`); await step(1.0);
@@ -113,15 +114,18 @@ const path = require('path');
   check('walk duration plausible for 3 m at 1.35 m/s (2.5-6 s incl. accel/decel)', w.simSec >= 2.5 && w.simSec <= 6.5, w.simSec);
   // foot sliding: max horizontal speed of a planted foot's ANKLE joint (actual IK result, not the plant target)
   await run(`window.__slip = 0; window.__iv = setInterval(() => {}, 1000); APP.__ankles = null;`);
-  const rr = await run(`(async () => { const b = APP.body, c = APP.character; let maxSlip = 0, prev = {}; const r = DH.runTo({x: 0, z: -2});
+  const slipJs = (cmd) => `(async () => { const b = APP.body, c = APP.character; let maxSlip = 0, prev = {}; const r = ${cmd};
      let done = false; r.then(() => done = true);
      for (let i = 0; i < 30 * 15 && !done; i++) { APP.frame(); if (i % 15 === 0) await new Promise((r) => setTimeout(r, 0));
        for (const s of ['L', 'R']) { const a = c.worldPos('foot.' + s); a.y = 0; const F = b.feet[s];
          if (F.planted && F.stanceT > 0.15 && F.stanceT < 0.65 && prev[s]) maxSlip = Math.max(maxSlip, a.distanceTo(prev[s]) * 30);
          prev[s] = a; } }
-     return { done, maxSlip, peak: 0, pos: DH.getState().body.position }; })()`);
+     return { done, maxSlip, peak: 0, pos: DH.getState().body.position }; })()`;
+  const wr = await run(slipJs(`DH.walkTo({x: 0, z: 1})`));
+  check('no foot sliding in mid-stance while walking (ankle speed < 0.15 m/s)', wr.done && wr.maxSlip < 0.15, wr.maxSlip.toFixed(3) + ' m/s');
+  const rr = await run(slipJs(`DH.runTo({x: 0, z: -2})`));
   check('runTo arrives', rr.done && Math.hypot(rr.pos[0], rr.pos[2] + 2) < 0.12, rr);
-  check('no foot sliding in mid-stance (ankle speed < 0.15 m/s)', rr.maxSlip < 0.15, rr.maxSlip.toFixed(3) + ' m/s');
+  check('no foot sliding in mid-stance while running (ankle speed < 0.15 m/s)', rr.maxSlip < 0.15, rr.maxSlip.toFixed(3) + ' m/s');
   const bk = await until(`DH.walkBackward(1.0)`, 20);
   check('walk backward arrives', bk.ok, bk);
   const sd = await until(`DH.sidestep(0.8)`, 20);
@@ -168,6 +172,7 @@ const path = require('path');
   // ---------------------------------------------------------- speech / lip-sync (virtual clock)
   const sp = await run(`(async () => { const r = DH.speak('안녕하세요. 반갑습니다. 저는 민준입니다.'); const samples = [];
       let done = false; r.then(() => done = true);
+      for (let w = 0; w < 400 && !APP.lipsync.active && !done; w++) await new Promise((r) => setTimeout(r, 50));   // TTS + alignment round trip (real time)
       for (let i = 0; i < 30 * 12 && !done; i++) { APP.frame(); if (i % 10 === 0) await new Promise((r) => setTimeout(r, 0));
         if (APP.lipsync.active && APP.lipsync.time() > 0) samples.push({ t: APP.lipsync.time(), jaw: APP.character.morphValues.jawOpen, press: APP.character.morphValues.mouthPressLeft || 0 }); }
       return { done, n: samples.length, maxJaw: Math.max(...samples.map((s) => s.jaw)), method: DH.lastSpeech.method, phones: DH.lastSpeech.phones,
@@ -197,7 +202,7 @@ const path = require('path');
   check('AI state has all required fields', fields.every((f) => f in state), fields.filter((f) => !(f in state)));
 
   // ---------------------------------------------------------- performance
-  await run(`APP.stopCapture()`);
+  await run(`APP.noRender = false; APP.stopCapture()`);
   await p.waitForTimeout(3000);
   const perf = await run(`APP.perf()`);
   check('perf: simulation (AI+anim+IK+face) < 8 ms/frame on CPU', perf.simMs < 8, perf);

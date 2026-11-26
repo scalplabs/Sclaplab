@@ -39,5 +39,5 @@ cd pipeline && bash build_all.sh                  # ≈ 25 min on 4 CPU cores (4
 ~/dhvenv/bin/python render.py ../source/minjun_rig.blend ../renders --shots face_34,full_front --light studio --spp 256
 ```
 
-`source/minjun_rig.blend` (Git LFS) is the editable master: full-resolution body with subdivision, 163-bone armature, 75 shape keys, Cycles materials, 6 strand-hair systems (scalp, brows, lashes ×2, stubble, vellus, forearm).
+`source/minjun_rig.blend` (+ `source/textures/`, relative paths) is the editable master: full-resolution body with subdivision, 163-bone armature, 75 shape keys, Cycles materials, 6 strand-hair systems (scalp, brows, lashes ×2, stubble, vellus, forearm).
 For Unreal Engine import use `assets/characters/minjun/minjun_lod0.fbx` (skeleton + morphs; rebuild materials in UE from the texture set).

@@ -247,6 +247,23 @@ export class Body {
       const gh = (this.world.groundHeight(this.feet.L.plant.x, this.feet.L.plant.z) + this.world.groundHeight(this.feet.R.plant.x, this.feet.R.plant.z)) / 2;
       this.pelvisOffset.y += gh - this.pos.y;
     }
+    // reach constraint: never ask a planted leg to extend past 96% of its length (prevents ankle drag / slip)
+    if (moving) {
+      const Lmax = this.ch.legLength * 0.96;
+      let need = 0;
+      for (const s of ['L', 'R']) {
+        const F = this.feet[s];
+        if (!F.planted) continue;
+        const hip = this.ch.root.localToWorld(new THREE.Vector3(s === 'L' ? 0.09 : -0.09, 0, 0));
+        const dh = Math.hypot(hip.x - F.plant.x, hip.z - F.plant.z);
+        const maxV = Math.sqrt(Math.max(0.05, Lmax * Lmax - dh * dh));
+        const hipY = this.pos.y + this.hipH + this.pelvisOffset.y;
+        const allowed = F.plant.y + this.ankleH + maxV;
+        need = Math.max(need, hipY - allowed);
+      }
+      if (need > 0) this.pelvisOffset.y -= need;
+      this.debug.reachDrop = need;
+    }
     const swing = Math.sin(2 * Math.PI * this.phase) * gait * back;
     L.pelvis_tilt = (L.pelvis_tilt || 0) + gp.lean * gait * 0.4 * back;
     L.spine_flexion = (L.spine_flexion || 0) + gp.lean * gait * back + clamp(this.vel.length() - this.desiredVel.length(), -1, 1) * -3;
@@ -261,6 +278,12 @@ export class Body {
       L[`shoulder_flexion_${s}`] += -sgn * gp.armSwing * swing;
       L[`elbow_flexion_${s}`] += (gp.elbow - 12) * gait + 6 * Math.max(0, sgn * swing) * gait;
       L[`shoulder_abduction_${s}`] += 4 * gp.run * gait;
+    }
+    // a settle-step interrupted by gait start must not resume later with stale end points
+    if (moving && this._stepping) {
+      const F = this.feet[this._stepping.s];
+      F.planted = false; F.liftPos.copy(F.plant);
+      this._stepping = null;
     }
     // foot targets
     for (const s of ['L', 'R']) this._footStep(s, gp, dt, moving, speed);
@@ -315,6 +338,8 @@ export class Body {
     }
     if (this._stepping) {
       const st = this._stepping;
+      st.to = this.ch.root.localToWorld(this.feet[st.s].neutral.clone());     // retarget (heading may change)
+      st.to.y = this.world.groundHeight(st.to.x, st.to.z);
       st.t += dt / 0.45;
       const F = this.feet[st.s];
       const m = smooth(st.t);
@@ -543,7 +568,7 @@ export class LieAction extends Action {
   }
   pose(L) {
     const p = this.p || 0, down = smooth(p / 0.55), r = smooth((p - 0.45) / 0.55);
-    L.pelvis_tilt = (L.pelvis_tilt || 0) - 88 * r;     // whole body rotates back about the pelvis
+    L.body_pitch = (L.body_pitch || 0) - 88 * r;       // whole body rotates back about the pelvis
     for (const s of ['L', 'R']) {
       L[`hip_flexion_${s}`] = (L[`hip_flexion_${s}`] || 0) + lerp(85 * down, 3, r);
       L[`knee_flexion_${s}`] = (L[`knee_flexion_${s}`] || 0) + lerp(100 * down, 8, r);

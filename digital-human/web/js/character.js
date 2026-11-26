@@ -51,6 +51,8 @@ function dofTable() {
     add(`eye_pitch_${s}`, `eye.${s}`, null, [0, 1, 0], [-35, 30], { probe: 'tail' });
   }
   add('pelvis_tilt', 'root', 'spine05', [0, 0, 1], [-25, 25], { probe: 'child' });
+  // whole-body pitch about the pelvis (lying down / getting up), not an anatomical joint
+  add('body_pitch', 'root', 'spine05', [0, 0, 1], [-95, 60], { probe: 'child' });
   return t;
 }
 
@@ -120,7 +122,7 @@ export class Character {
     const mk = {
       DH_Skin: () => M.makeSkinMaterial(B, this.quality),
       DH_EyeSclera: () => M.makeEyeMaterial(B, this.meta.eye),
-      DH_Cornea: () => M.makeCorneaMaterial(), DH_TearFilm: () => M.makeTearMaterial(),
+      DH_Cornea: () => M.makeCorneaMaterial(this.quality), DH_TearFilm: () => M.makeTearMaterial(this.quality),
       DH_EyeOcclusion: () => M.makeEyeOcclusionMaterial(), DH_Caruncle: () => M.makeCaruncleMaterial(),
       DH_Teeth: () => M.makeTeethMaterial(B), DH_Tongue: () => M.makeTongueMaterial(B),
       DH_Eyebrows_Card: () => M.makeCardMaterial(B + '/textures/eyebrow.png', 'brow_card', 0x4a3628, 0.32),

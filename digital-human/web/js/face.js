@@ -149,7 +149,7 @@ export class FaceController {
       if (n.startsWith('corr_')) continue;
       const fast = /Blink|jaw|mouth|tongue/.test(n);
       const s = this.springs[n];
-      s.h = /Blink/.test(n) ? 0.012 : fast ? 0.035 : 0.09;
+      s.h = /Blink/.test(n) ? 0.012 : /jawOpen|mouthPress|mouthClose/.test(n) ? 0.018 : fast ? 0.03 : 0.09;
       out[n] = Math.max(n === 'mouthClose' ? -1 : 0, Math.min(1, s.update(target[n] || 0, dt)));
     }
     this.weights = out;

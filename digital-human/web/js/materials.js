@@ -157,14 +157,21 @@ export function makeEyeMaterial(base, eyeMeta) {
   return m;
 }
 
-export function makeCorneaMaterial() {
+export function makeCorneaMaterial(quality = 'hq') {
+  if (quality !== 'hq') {   // realtime LOD: specular-only coat (no screen-space transmission pass)
+    return new THREE.MeshPhysicalMaterial({ name: 'cornea', color: 0x000000, roughness: 0.03, ior: 1.376, specularIntensity: 1.0,
+      transparent: true, opacity: 0.18, depthWrite: false, envMapIntensity: 1.5, premultipliedAlpha: true });
+  }
   return new THREE.MeshPhysicalMaterial({
     name: 'cornea', color: 0xffffff, transmission: 1.0, thickness: 0.0005, roughness: 0.0, ior: 1.376,
     specularIntensity: 1.0, transparent: true, depthWrite: false, envMapIntensity: 1.4,
   });
 }
 
-export function makeTearMaterial() {
+export function makeTearMaterial(quality = 'hq') {
+  if (quality !== 'hq') {
+    return new THREE.MeshPhysicalMaterial({ name: 'tearfilm', color: 0x000000, roughness: 0.03, transparent: true, opacity: 0.25, depthWrite: false, envMapIntensity: 1.6 });
+  }
   return new THREE.MeshPhysicalMaterial({
     name: 'tearfilm', color: 0xffffff, transmission: 1.0, thickness: 0.0002, roughness: 0.02, ior: 1.336,
     transparent: true, depthWrite: false, envMapIntensity: 1.6,

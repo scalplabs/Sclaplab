@@ -237,7 +237,8 @@ export class App {
     }
     this.controls.update();
     const t1 = performance.now();
-    if (this.quality === 'hq' && !this.wireframe) {
+    if (this.noRender) { /* headless simulation tests */ }
+    else if (this.quality === 'hq' && !this.wireframe) {
       this.bokeh.enabled = this.dof;
       if (this.dof) this.bokeh.uniforms.focus.value = this.camera.position.distanceTo(ch.worldPos('head'));
       this.composer.render();
