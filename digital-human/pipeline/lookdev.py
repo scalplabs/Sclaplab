@@ -558,11 +558,20 @@ def main(blend_in, tex, cfg_path, blend_out, fast=False):
         S, r = hs.groom_brows(body, brows, rng, n=500 if fast else 1500, s=s)
         hs.make_curves("DH_Strands_Brows", S, r, mat_brow, rig)
         print("[groom] brow strands", len(S))
-    loops = hs.eyelid_loops(body, {sd: np.array(bpy.data.objects[f"DH_Eye_{sd}"].matrix_world.translation) for sd in ("L", "R")})
-    for sd, pts in loops.items():
-        S, r = hs.groom_lashes(pts, np.array(bpy.data.objects[f"DH_Eye_{sd}"].matrix_world.translation), rng, s=s)
-        hs.make_curves(f"DH_Strands_Lashes_{sd}", S, r, mat_lash, rig)
-        print("[groom] lashes", sd, len(S))
+    # Lashes: the lid-following card mesh is used offline too (strand lashes rooted from the geometric lid ring
+    # landed off the lid margin in eye macro renders; cards deform with blink/expression shapes).
+    lc = bpy.data.objects.get("DH_Eyelashes")
+    if lc:
+        lc.hide_render = False
+        if "realtime_only" in lc:
+            del lc["realtime_only"]
+        lm = lc.active_material
+        b = [n for n in lm.node_tree.nodes if n.type == "BSDF_PRINCIPLED"][0]
+        for l in list(lm.node_tree.links):
+            if l.to_socket == b.inputs["Base Color"]:
+                lm.node_tree.links.remove(l)
+        b.inputs["Base Color"].default_value = (0.03, 0.02, 0.015, 1)
+        b.inputs["Roughness"].default_value = 0.4
     beard_dir = lambda p, n: np.array([0, -0.2, -1.0])
     S, r = hs.groom_short(body, masks, 1, rng, 4000 if fast else 22000, (0.0004, 0.0012), s=s, flow=beard_dir,
                           radius=0.00004, lie=0.35)

@@ -16,14 +16,14 @@ Blender: `pip install bpy==5.3.0` into `/home/user/work/venv` (Python 3.13).
 ## Phases
 - [x] P0 environment + asset analysis
 - [x] P1 character build: pipeline/build_character.py (hm08 13.4k quads, 163 bones, 180.00cm, anatomical eyes)
-- [~] P2 lookdev: bake_geometry_maps.py, tex_skin.py, tex_micro.py, tex_eye.py, hair_strands.py, lookdev.py, render.py (iterating)
+- [x] P2 lookdev: bake_geometry_maps.py, tex_skin.py, tex_micro.py, tex_eye.py, hair_strands.py, lookdev.py, render.py (iterating)
 - [x] P3 face_rig.py: 52 ARKit + 11 extra from MH FACS units (BVH zup); 12 body correctives. NOTE Blender5 shape_key_add value=1 -> set 0
 - [x] P4 export_glb.py -> assets/characters/minjun (lod0/1/2 glb, fbx, textures, rig_meta.json)
 - [x] P5 web runtime web/js/* (character, materials, motion, eyes, face, lipsync, ai, api, app, ui, world, crowd)
 - [x] P6 server/: Typecast TTS w/ timestamps + G2P(ko/en) + wav2vec2 CTC forced alignment (speechvenv). Claude brain w/ rule fallback
 - [x] P7 AI (ai.js) + API (api.js, docs/API.md, /api/control bridge, tools/dh_client.py) + dev UI (index.html/ui.js)
-- [~] P8 tests: tests/test_assets.py 49/49, tests/test_speech.py 30/30, tests/runtime_test.js (pending run); video capture via webtest/capture.js + video/assemble.py (15 fps, ~1.9 s/frame on SwiftShader)
-- [ ] P9 docs, commit, push
+- [x] P8 tests: tests/test_assets.py 49/49, tests/test_speech.py 30/30, tests/runtime_test.js (pending run); video capture via webtest/capture.js + video/assemble.py (15 fps, ~1.9 s/frame on SwiftShader)
+- [x] P9 docs, commit, push (renders/ = Cycles stills + realtime frames; videos/ = 2 reels)
 
 ## Build order (reproduce)
 venv=/home/user/work/venv/bin/python ; cd pipeline
@@ -42,3 +42,8 @@ Server: /home/user/work/speechvenv/bin/python -m server.app --preload  (port 876
 - Garments bound to helper-tights -> correctives transferred via nearest-skin mapping (face_rig.transfer_correctives_to_clothes)
 - Git LFS endpoint (lfs.github.com) blocked by env proxy -> binaries committed directly (all < 25 MB)
 - SwiftShader cost dominated by double-sided alpha-tested hair cards (~1.8 s/frame at 640x360)
+
+## Next steps (not done)
+- strand lashes: derive lid margin from MakeHuman eyelid vertex loops instead of geometric ring (cards used for now)
+- running touchdown: blend IK target over 2 frames to remove the ~9 mm settle (test 'running slip' fails at 0.26 m/s)
+- cloth simulation pass in Blender for drape; real GPU benchmark; Claude path test with API key; mocap retargeting

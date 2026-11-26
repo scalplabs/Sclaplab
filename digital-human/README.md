@@ -32,7 +32,7 @@ lashes, teeth and tongue; animated wrinkle maps (forehead, glabella, crow's feet
 
 **Look** — procedural 4K skin from per-texel 3D anatomy: melanin/haemoglobin variation, vascular regions, beard follicles, moles,
 capillaries, wrinkles/folds/knuckle and palm creases, lip lines, tiled micro-normal (pores + dermal grooves), roughness/specular/cavity/
-translucency maps. Cycles: random-walk SSS (skin mfp ratios), principled hair strands (81k scalp + brows, lashes, stubble, vellus, arm hair).
+translucency maps. Cycles: random-walk SSS (skin mfp ratios), principled hair strands (81k scalp + brows, stubble, vellus, arm hair; lashes as lid-following cards).
 Real time: per-channel bent-normal SSS + thin-tissue transmission, dual-lobe (clearcoat) sebum specular, refraction-parallax eyes with
 physiological pupil, double-layer hair cards, GTAO, DOF, SMAA, AgX tone mapping, HDRI lighting presets.
 

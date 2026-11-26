@@ -77,7 +77,7 @@ shape keys at value 1.0 (all 70 expressions were stacked).
 | Motion data | Procedural locomotion and actions (no licensed motion-capture library was available); no physics-based balance controller (COM is computed and used for posture, not closed-loop balance). |
 | Cloth | Garments are skinned with transferred correctives; **no cloth simulation** at runtime (Blender cloth sim not applied). |
 | Clothing/body penetration | prevented structurally by removing skin under garments; not measured numerically for extreme poses. |
-| Strand lashes/brows (Cycles) | parented to the head bone: they do not follow eyelid shapes in expression renders (cards do in realtime). |
+| Eyelashes (Cycles) | the first eye-macro render showed strand lashes rooted off the lid margin (geometric lid-ring finder); offline renders now use the lid-following lash cards. Strand brows are head-parented and do not follow brow shapes in expression renders. |
 | LLM | Claude adapter implemented (structured output, fallbacks) but **not executed** here (no API key); rule-based fallback was tested. |
 | ElevenLabs | adapter implemented to the public API, **not executed** (no key available to the server). |
 | Facial motion capture / mocap retargeting | not implemented (no device/data). Animation clips are DOF-space keyframes. |
